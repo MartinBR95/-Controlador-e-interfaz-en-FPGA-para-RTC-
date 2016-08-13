@@ -34,57 +34,55 @@ ControladorVGA ControladorVGA_uut(.clk(clk), .rst(rst), .RBG_in(RBG_in), .hsync(
 //Generacion del reloj
 always
 begin
-
-	clk=1b'1;
+	clk<=1'b1;
 	#(T/2);
-	clk=1b'0;
+	clk<=1'b0;
 	#(T/2);
-
 end
 
 //Inicializacion por reset
 initial
 begin
-	rst=1'b1; //inicializa el rst
+	rst<=1'b1; //inicializa el rst
 	@(negedge clk); //se espera al flanco negatico del relog
 	#(T);// se espera a que pase el flanco positvo
-	rst=1'b0; //se pone en marcha la uut
+	rst<=1'b0; //se pone en marcha la uut
 end
 
 
 //Prueba de funcionamiento
 initial
 begin
-	RGB_in = 3'b000;//valor inicial
+	RGB_in <= 3'b000;//valor inicial
 	@(negedge rst); //espera al reinicio
 	
 	wait(hsync | vsync ==0); //espera a que no se este escribiendo en pantalla
 	@(negedge clk); //espera al eje negativo del relog para proporcionar una señal estable de  RBG_in
-	RGB_in =  3'b001; //se prueba el siguiente valor
+	RGB_in <=  3'b001; //se prueba el siguiente valor
 	
 	wait(hsync | vsync ==0);
 	@(negedge clk);
-	RGB_in =  3'b010;
+	RGB_in <=  3'b010;
 	
 	wait(hsync | vsync ==0);
 	@(negedge clk);
-	RGB_in =  3'b011;
+	RGB_in <=  3'b011;
 	
 	wait(hsync | vsync ==0);
 	@(negedge clk);
-	RGB_in =  3'b100;
+	RGB_in <=  3'b100;
 	
 	wait(hsync | vsync ==0);
 	@(negedge clk);
-	RGB_in =  3'b101;
+	RGB_in <=  3'b101;
 	
 	wait(hsync | vsync ==0);
 	@(negedge clk);
-	RGB_in =  3'b110;
+	RGB_in <=  3'b110;
 	
 	wait(hsync | vsync ==0);
 	@(negedge clk);
-	RGB_in =  3'b111;
+	RGB_in <=  3'b111;
 	
 	$stop;
 end
