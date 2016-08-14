@@ -1,5 +1,5 @@
 
-
+//primer modulo de sincronizacion sin pulso habilitador (funciona a la velocidad maxima de la FPGA)
 
 module vgasync1(input clk, rst, output wire hsync, vsync, output wire [9:0] px_X, px_Y);
 	
@@ -11,9 +11,7 @@ module vgasync1(input clk, rst, output wire hsync, vsync, output wire [9:0] px_X
 	localparam VF = 10;
 	localparam VB = 33;
 	localparam VR = 2;
-	
-	//reg mod2_reg;
-	//wire mod2_next;
+
 	
 	reg [9:0] hcnt, hcnt_next;
 	reg [9:0] vcnt, vcnt_next;
