@@ -5,7 +5,8 @@ module Objetos_Top (L,X,Y,R,G,B);
 /////////////////// Entradas y salidas del circuito /////////////////// 
 
 input wire R,G,B; //Entradas provenientes de interruptores (Colores Rojo, Verde y Azul)
-input wire X,Y;   //Estas entradas provienen del modulo "Sincronizacion" le dicen a objetos por que parte de la pantalla se esta recorriendo
+input wire [9:0]X;
+input wire [9:0]Y;   //Estas entradas provienen del modulo "Sincronizacion" le dicen a objetos por que parte de la pantalla se esta recorriendo
 output reg [2:0] L;     //Despues de ser condicionadas estas senales son las que le indican a la pantalla que color debe ser pintado 
 
 
@@ -16,9 +17,9 @@ output reg [2:0] L;     //Despues de ser condicionadas estas senales son las que
 
 ///////////////////   Cables de seccion de Almacenamiento de objetos  /////////////////// 
 // Entradas 
-wire [3:0] PY; 
-wire [2,0] PX; 
-wire [2:0] EN; 
+reg [3:0]PY; 
+reg [2:0]PX; 
+reg [2:0]EN; 
 
 
 ///////////////////          Cables de seccion de filtro              /////////////////// 
@@ -38,55 +39,55 @@ wire [3:0] SelectorY2 = {Y[3],Y[2],Y[1],Y[0]};
 always @(X,Y)                 //A partir de las entradas X y Y se determinan PX, PY y EN, que son las senales responsables de encontrar el dato deseado 
 begin 
 	case (SelectorX1)                     //Se determina EN
-	7'bxxxxxxx : EN = 3b'000;
-	7'bxxxxxxx : EN = 3b'001;
-	7'bxxxxxxx : EN = 3b'010;
-	7'bxxxxxxx : EN = 3b'011;
-	7'bxxxxxxx : EN = 3b'100;
-	7'bxxxxxxx : EN = 3b'101;
-	default : EN = 3b'111;
+	7'b0000000 : EN = 3'b000;
+	7'b0001000 : EN = 3'b001;
+	7'b0001111 : EN = 3'b010;
+	7'b0011000 : EN = 3'b011;
+	7'b0100000 : EN = 3'b100;
+	7'b0101000 : EN = 3'b101;
+	default : EN = 3'b111;
 	endcase 
 
 	case (SelectorX1)                     //Se determina PX	
-	7'bxxxxxxx : PX = SelectorX2;
-	7'bxxxxxxx : PX = SelectorX2;
-	7'bxxxxxxx : PX = SelectorX2;
-	7'bxxxxxxx : PX = SelectorX2;
-	7'bxxxxxxx : PX = SelectorX2;
-	7'bxxxxxxx : PX = SelectorX2;
-	default : PX = 000;
+	7'b0000000 : PX = SelectorX2;
+	7'b0001000 : PX = SelectorX2;
+	7'b0001111 : PX = SelectorX2;
+	7'b0011000 : PX = SelectorX2;
+	7'b0100000 : PX = SelectorX2;
+	7'b0101000 : PX = SelectorX2;
+	default : PX = 3'b000;
 	endcase 
 
 	case (SelectorY1)                     //Se determina PY	
-	6'bxxxxxx : PY = SelectorY2;
-	default : PY = 0000;	
+	6'b000000 : PY = SelectorY2;
+	default : PY = 4'b0000;	
 	endcase 
 end 
 
 ///////////////////  Submodulo "Almacenamiento de objetos" /////////////////// 
 wire [7:0] Data;               //Esta es la salida de datos de la memoria ROM
-Almacenamiento ROM (EN,PY,Data)
+Almacenamiento ROM (EN,PY,Data);
 
 always @(PX)                   //El dato de la ROM posee 8 bits, pero solo se necesita 1, en esta seccion se escoge cual; dependiendo directamente del valor de PX 
 begin 
 	case (PX)
 
-	4b'0000 : Activador = Data[0];
-	4b'0001 : Activador = Data[1];
-	4b'0010 : Activador = Data[2];
-	4b'0011 : Activador = Data[3];
-	4b'0100 : Activador = Data[4];
-	4b'0101 : Activador = Data[5];
-	4b'0110 : Activador = Data[6];
-	4b'0111 : Activador = Data[7];
-	4b'1000 : Activador = Data[8];
-	4b'1001 : Activador = Data[9];
-	4b'1010 : Activador = Data[10];
-	4b'1011 : Activador = Data[11];
-	4b'1100 : Activador = Data[12];
-	4b'1101 : Activador = Data[13];
-	4b'1110 : Activador = Data[14];
-	4b'1111 : Activador = Data[15];
+	4'b0000 : Activador = Data[0];
+	4'b0001 : Activador = Data[1];
+	4'b0010 : Activador = Data[2];
+	4'b0011 : Activador = Data[3];
+	4'b0100 : Activador = Data[4];
+	4'b0101 : Activador = Data[5];
+	4'b0110 : Activador = Data[6];
+	4'b0111 : Activador = Data[7];
+	4'b1000 : Activador = Data[8];
+	4'b1001 : Activador = Data[9];
+	4'b1010 : Activador = Data[10];
+	4'b1011 : Activador = Data[11];
+	4'b1100 : Activador = Data[12];
+	4'b1101 : Activador = Data[13];
+	4'b1110 : Activador = Data[14];
+	4'b1111 : Activador = Data[15];
 	
 	default : Activador = Data[0];
 	endcase 
