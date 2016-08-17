@@ -39,28 +39,28 @@ wire [3:0] SelectorY2 = {Y[3],Y[2],Y[1],Y[0]};
 always @(X,Y)                 //A partir de las entradas X y Y se determinan PX, PY y EN, que son las senales responsables de encontrar el dato deseado 
 begin 
 	case (SelectorX1)                     //Se determina EN
-	7'b0000000 : EN <= 3'b000;
-	7'b0001000 : EN <= 3'b001;
-	7'b0001111 : EN <= 3'b010;
-	7'b0011000 : EN <= 3'b011;
-	7'b0100000 : EN <= 3'b100;
-	7'b0101000 : EN <= 3'b101;
-	default : EN <= 3'b111;
+	7'b0000000 : EN = 3'b000;
+	7'b0001000 : EN = 3'b001;
+	7'b0001111 : EN = 3'b010;
+	7'b0011000 : EN = 3'b011;
+	7'b0100000 : EN = 3'b100;
+	7'b0101000 : EN = 3'b101;
+	default : EN = 3'b111;
 	endcase 
 
 	case (SelectorX1)                     //Se determina PX	
-	7'b0000000 : PX <= SelectorX2;
-	7'b0001000 : PX <= SelectorX2;
-	7'b0001111 : PX <= SelectorX2;
-	7'b0011000 : PX <= SelectorX2;
-	7'b0100000 : PX <= SelectorX2;
-	7'b0101000 : PX <= SelectorX2;
-	default : PX <= 3'b000;
+	7'b0000000 : PX = SelectorX2;
+	7'b0001000 : PX = SelectorX2;
+	7'b0001111 : PX = SelectorX2;
+	7'b0011000 : PX = SelectorX2;
+	7'b0100000 : PX = SelectorX2;
+	7'b0101000 : PX = SelectorX2;
+	default : PX = 3'b000;
 	endcase 
 
 	case (SelectorY1)                     //Se determina PY	
-	6'b000000 : PY <= SelectorY2;
-	default : PY <= 4'b0000;	
+	6'b000000 : PY = SelectorY2;
+	default : PY = 4'b0000;	
 	endcase 
 end 
 
@@ -72,24 +72,24 @@ always @(PX)                   //El dato de la ROM posee 8 bits, pero solo se ne
 begin 
 	case (PX)
 
-	4'b0000 : Activador <= Data[0];
-	4'b0001 : Activador <= Data[1];
-	4'b0010 : Activador <= Data[2];
-	4'b0011 : Activador <= Data[3];
-	4'b0100 : Activador <= Data[4];
-	4'b0101 : Activador <= Data[5];
-	4'b0110 : Activador <= Data[6];
-	4'b0111 : Activador <= Data[7];
-	4'b1000 : Activador <= Data[8];
-	4'b1001 : Activador <= Data[9];
-	4'b1010 : Activador <= Data[10];
-	4'b1011 : Activador <= Data[11];
-	4'b1100 : Activador <= Data[12];
-	4'b1101 : Activador <= Data[13];
-	4'b1110 : Activador <= Data[14];
-	4'b1111 : Activador <= Data[15];
+	4'b0000 : Activador = Data[0];
+	4'b0001 : Activador = Data[1];
+	4'b0010 : Activador = Data[2];
+	4'b0011 : Activador = Data[3];
+	4'b0100 : Activador = Data[4];
+	4'b0101 : Activador = Data[5];
+	4'b0110 : Activador = Data[6];
+	4'b0111 : Activador = Data[7];
+	4'b1000 : Activador = Data[8];
+	4'b1001 : Activador = Data[9];
+	4'b1010 : Activador = Data[10];
+	4'b1011 : Activador = Data[11];
+	4'b1100 : Activador = Data[12];
+	4'b1101 : Activador = Data[13];
+	4'b1110 : Activador = Data[14];
+	4'b1111 : Activador = Data[15];
 	
-	default : Activador <= Data[0];
+	default : Activador = Data[0];
 	endcase 
 end  
 
@@ -99,8 +99,8 @@ always @(Activador,R,G,B)
 begin 
 	case (Activador)
 	
-	1'b1 : L <= {R,G,B};
-	default : L <= 3'b000;
+	1'b1 : L = {R,G,B};
+	default : L = 3'b000;
 	
 	endcase
 end 
