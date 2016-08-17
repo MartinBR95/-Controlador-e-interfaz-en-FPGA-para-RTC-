@@ -4,7 +4,7 @@
 // 
 // Create Date:    17:02:37 08/12/2016 
 // Design Name: 
-// Module Name:    Testbench 
+// Module Name:    ControladorVGA_tb 
 // Project Name:   Controlador de VGA
 // Target Devices: Nexys2(Spartan 3E)
 // Tool versions: 
