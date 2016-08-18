@@ -18,7 +18,7 @@ output reg [2:0] L;  //Despues de ser condicionadas estas senales son las que le
 // Entradas 
 wire [3:0]PY = {Y[3],Y[2],Y[1],Y[0]};
 wire [2:0]PX = {X[2],X[1],X[0]};
-reg  [1:0]EN; 
+reg  [2:0]EN; 
 
 
 ///////////////////          Cables de seccion de filtro              /////////////////// 
@@ -104,7 +104,7 @@ begin
 	4'h6 : Activador <= Data[6];
 	4'h7 : Activador <= Data[7];
 	
-	default : Activador <= Data[0];
+	default : Activador <= 1'b0;
 	endcase 
 end  
 
