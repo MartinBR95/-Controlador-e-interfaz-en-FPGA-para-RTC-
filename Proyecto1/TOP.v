@@ -8,6 +8,6 @@ wire [9:0]X,Y;
 
 vgasync Sincronizacion (clk,reset,hsinc,vsinc,ENclock,X,Y);
 
-Objetos objets (L,X,Y,R,G,B);
+Objetos_Top objets (L,X,Y,R,G,B);
 
 endmodule 
