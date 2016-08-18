@@ -29,7 +29,7 @@ reg [2:0] RGB_in;
 wire vsync,hsync,RGB_out;
 
 //Instanciacion de el Controlador de VGA
-ControladorVGA ControladorVGA_uut(.clk(clk), .rst(rst), .RBG_in(RBG_in), .hsync(hsync), .vsync(vsync));
+TOP ControladorVGA_uut(.clk(clk), .rst(rst), .RBG_in(RBG_in), .hsync(hsync), .vsync(vsync));
 
 //Generacion del reloj
 always
