@@ -1,13 +1,12 @@
-module Objetos_Top (L,X,Y,R,G,B);
+module Objetos_Top(L,X,Y,R,G,B);
 
 //Este modulo es el encargado de pintar en pantalla las letras segun el lugar en el que se encuentre el cursor 
-
 /////////////////// Entradas y salidas del circuito /////////////////// 
 
-input wire R,G,B; //Entradas provenientes de interruptores (Colores Rojo, Verde y Azul)
+input wire R,G,B;    //Entradas provenientes de interruptores (Colores Rojo, Verde y Azul)
 input wire [9:0]X;
 input wire [9:0]Y;   //Estas entradas provienen del modulo "Sincronizacion" le dicen a objetos por que parte de la pantalla se esta recorriendo
-output reg [2:0] L;     //Despues de ser condicionadas estas senales son las que le indican a la pantalla que color debe ser pintado 
+output reg [2:0] L;  //Despues de ser condicionadas estas senales son las que le indican a la pantalla que color debe ser pintado 
 
 
 ///////////////////     Cables de seccion de Selector de Objetos      /////////////////// 
@@ -19,15 +18,15 @@ output reg [2:0] L;     //Despues de ser condicionadas estas senales son las que
 // Entradas 
 wire [3:0]PY = {Y[3],Y[2],Y[1],Y[0]};
 wire [2:0]PX = {X[2],X[1],X[0]};
-reg  [3:0]EN; 
+reg  [1:0]EN; 
 
 
 ///////////////////          Cables de seccion de filtro              /////////////////// 
 // Entradas
-reg Activador;  //A grandes razgos es el que determina si las senales R,G,B llegan a pantalla o no 
+reg Activador;         //A grandes razgos es el que determina si las senales R,G,B llegan a pantalla o no 
 
 
-///////////////////     Submodulo "Selector de Objetos"     /////////////////// 
+///////////////////    Submodulo "Selector de Objetos"    /////////////////// 
 
 localparam X_in_J  = 0;
 localparam X_end_J = 7;
@@ -48,8 +47,8 @@ localparam X_in_L  = 54;
 localparam X_end_L = 60;
 
 
-localparam Y_in  = 0;
-localparam Y_end = 15;
+localparam  Y_in  = 0;
+localparam  Y_end = 15;
 
 wire J_on,V_on,M_on,B_on,S_on,L_on;
 
@@ -60,33 +59,32 @@ assign B_on = (X_in_B <=X) && (X <=X_end_B) && (Y_in <=Y) && (Y <=Y_end);
 assign S_on = (X_in_S <=X) && (X <=X_end_S) && (Y_in <=Y) && (Y <=Y_end);
 assign L_on = (X_in_L <=X) && (X <=X_end_L) && (Y_in <=Y) && (Y <=Y_end);
 
-
 always @(*)                 //A partir de las entradas X y Y se determinan PX, PY y EN, que son las senales responsables de encontrar el dato deseado 
 begin
 		if (J_on)
-			EN = 4'h1;
+			EN <= 4'h1;
 		else 
 			if (V_on)
-			EN = 4'h2;
+			EN <= 3'h2;
 		
 		else 
 			if (M_on)
-			EN = 4'h3;
+			EN <= 3'h3;
 		
 		else
 			if (B_on)
-			EN = 4'h4;
+			EN <= 3'h4;
 		
 		else 
 			if (S_on)
-			EN = 4'h5;
+			EN <= 3'h5;
 		
 		else 
 			if (L_on)
-			EN = 4'h6;
+			EN <= 3'h6;
 			
 		else 
-			EN = 4'h0;
+			EN <= 3'h0;
 end 
 
 ///////////////////  Submodulo "Almacenamiento de objetos" /////////////////// 
@@ -116,8 +114,8 @@ always @(Activador,R,G,B)
 begin 
 	case (Activador)
 	
-	1'b1 : L = {R,G,B};
-	default : L = 3'b000;
+	1'b1 : L <= {R,G,B};
+	default : L <= 3'b000;
 	
 	endcase
 end 

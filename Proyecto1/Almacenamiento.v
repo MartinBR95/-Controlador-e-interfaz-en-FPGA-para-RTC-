@@ -5,7 +5,7 @@ input wire  [3:0]rom;
 
 output reg  [7:0]rom_data; // Datos de salida 
 
-wire [7:0]rom_addr = {direccion,rom};
+wire [7:0]rom_addr = {1'b0,direccion,rom};
 
 always @(*) // Se ejecuta cada vez que se cabia la direccion ingresada 
 begin
