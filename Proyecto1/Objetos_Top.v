@@ -62,7 +62,7 @@ assign L_on = (X_in_L <=X) && (X <=X_end_L) && (Y_in <=Y) && (Y <=Y_end);
 always @(*)                 //A partir de las entradas X y Y se determinan PX, PY y EN, que son las senales responsables de encontrar el dato deseado 
 begin
 		if (J_on)
-			EN <= 4'h1;
+			EN <= 3'h1;
 		else 
 			if (V_on)
 			EN <= 3'h2;

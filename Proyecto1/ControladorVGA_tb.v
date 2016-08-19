@@ -84,7 +84,7 @@ begin
 	@(negedge vsync);
 	@(negedge clk);
 	{R,G,B} <=  3'b111;
-	
+	@(negedge vsync);
 	$stop;
 end
 endmodule

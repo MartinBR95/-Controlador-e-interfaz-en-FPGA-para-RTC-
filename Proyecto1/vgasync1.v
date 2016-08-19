@@ -37,12 +37,13 @@ module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9
 //y define las acciones a tomar si no se encuentra en estado de reset	
 	
 	always @(posedge clk, posedge rst)
+	begin
 		if(rst) begin //seccion para definir todos los parametros de inicio como cero
 			vcnt <= 0;
 			hcnt <= 0;
 			v_sync_reg <= 1'b0;
 			h_sync_reg <= 1'b0;
-			ENpulse = 0;
+			ENpulse <= 0;
 			end
 		else begin
 			ENpulse <= ENpulse_next; //en cada ciclo de reloj se le asigna al pulso habilitador su valor siguiente
@@ -50,9 +51,9 @@ module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9
 			hcnt <= hcnt_next;
 			v_sync_reg <= v_sync_next;
 			h_sync_reg <= h_sync_next;
-			end 
-			
-
+			end
+	end
+	
 //aqui se configura la oscilacion del pulso habilitador
 //dandole un valor siguiente que es el complemento de su valor actual			
 		assign ENpulse_next = ~ENpulse;
@@ -62,19 +63,30 @@ module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9
 		assign v_end = (vcnt == (VD+VF+VB+VR-1));
 		
 //estos ciclos determinan el siguiente estado que debe tener cada una de las variables
-		always @*
+		always @(*)
+		begin
 			if(ENpulse_next)begin //solamente se cambia el valor del estado siguiente cuando el pulso habilitador lo permite
-				if (h_end) hcnt_next = 0;
-				else hcnt_next = hcnt + 1;
+				if (h_end) hcnt_next <= 0;
+				else hcnt_next <= hcnt + 1;
 				end
-			else begin hcnt_next = hcnt; end
-		always @*
-			if(ENpulse_next && h_end)begin
-				if (v_end) vcnt_next= 0;
-				else vcnt_next = vcnt + 1;
-				end
-			else begin vcnt_next = vcnt; end
-			
+			else 
+			begin 
+			hcnt_next <= hcnt;
+			end
+		end
+		
+		always @(*)
+		begin
+			if(ENpulse_next && h_end)
+			begin
+				if (v_end) vcnt_next <= 0;
+				else vcnt_next <= vcnt + 1;
+			end
+			else begin
+				vcnt_next <= vcnt; 
+			end
+		end
+		
 //aqui se asignan los valores de los pulsos de sincronia vertical y horizontal
 //de acuerdo con la posicion que tiene el "cursor" en una fila o columna
 			
