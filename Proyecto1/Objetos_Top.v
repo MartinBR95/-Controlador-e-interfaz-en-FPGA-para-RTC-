@@ -34,17 +34,17 @@ localparam X_end_J = 7;
 localparam X_in_V  = 8;
 localparam X_end_V = 15;
 
-localparam X_in_M  = 23;
-localparam X_end_M = 30;
+localparam X_in_M  = 24;
+localparam X_end_M = 31;
 
-localparam X_in_B  = 31;
-localparam X_end_B = 38;
+localparam X_in_B  = 32;
+localparam X_end_B = 39;
  
-localparam X_in_S  = 46;
-localparam X_end_S = 53;
+localparam X_in_S  = 48;
+localparam X_end_S = 55;
 
-localparam X_in_L  = 54;
-localparam X_end_L = 61;
+localparam X_in_L  = 56;
+localparam X_end_L = 63;
 
 
 localparam  Y_in  = 0;
