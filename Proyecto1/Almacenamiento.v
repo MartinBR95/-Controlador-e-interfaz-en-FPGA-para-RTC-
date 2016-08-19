@@ -102,7 +102,7 @@ begin
 	8'h53 : rom_data <= 8'b11111110;
 	8'h54 : rom_data <= 8'b11100000;
 	8'h55 : rom_data <= 8'b11100000;
-     8'h56 : rom_data <= 8'b01111000; //S	
+   8'h56 : rom_data <= 8'b01111000; //S	
 	8'h57 : rom_data <= 8'b00111100;
 	8'h58 : rom_data <= 8'b00001110;
 	8'h59 : rom_data <= 8'b00000110;

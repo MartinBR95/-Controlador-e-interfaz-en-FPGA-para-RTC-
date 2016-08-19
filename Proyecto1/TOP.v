@@ -7,8 +7,8 @@ output wire hsinc,vsinc,ENclock;
 wire [9:0] X;
 wire [9:0] Y;
 
-vgasync Sincronizacion (clk,reset,hsinc,vsinc,ENclock,X,Y);
+vgasync Sincronizacion (.clk(clk),.rst(reset),.hsync(hsinc),.vsync(vsinc),.ENclock(ENclock),.px_X(X),.px_Y(Y));
 
-Objetos_Top objets (L,X,Y,R,G,B);
+Objetos_Top objets (.L(L),.X(X),.Y(Y),.R(R),.G(G),.B(B));
 
 endmodule 

@@ -89,7 +89,7 @@ end
 
 ///////////////////  Submodulo "Almacenamiento de objetos" /////////////////// 
 wire [7:0] Data;               //Esta es la salida de datos de la memoria ROM
-Almacenamiento ROM (EN,PY,Data);
+Almacenamiento ROM (.direccion(EN),.rom(PY),.rom_data(Data));
 
 always @(*)                   //El dato de la ROM posee 8 bits, pero solo se necesita 1, en esta seccion se escoge cual; dependiendo directamente del valor de PX 
 begin 
