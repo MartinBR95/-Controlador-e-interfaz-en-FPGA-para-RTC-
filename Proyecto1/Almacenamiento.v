@@ -83,16 +83,16 @@ begin
 	8'h41 : rom_data <= 8'b00000000;
 	8'h42 : rom_data <= 8'b11111100;
 	8'h43 : rom_data <= 8'b11000110;
-	8'h44 : rom_data <= 8'b11000010;
-	8'h45 : rom_data <= 8'b11000010;
-	8'h46 : rom_data <= 8'b11000100; //B
+	8'h44 : rom_data <= 8'b11000011;
+	8'h45 : rom_data <= 8'b11000011;
+	8'h46 : rom_data <= 8'b11000110; //B
 	8'h47 : rom_data <= 8'b11111000;
 	8'h48 : rom_data <= 8'b11111000;
-	8'h49 : rom_data <= 8'b11000100;
-	8'h4a : rom_data <= 8'b11000010;
-	8'h4b : rom_data <= 8'b11000010;
+	8'h49 : rom_data <= 8'b11000110;
+	8'h4a : rom_data <= 8'b11000011;
+	8'h4b : rom_data <= 8'b11000011;
 	8'h4c : rom_data <= 8'b11000110;
-	8'h4d : rom_data <= 8'b11111110;
+	8'h4d : rom_data <= 8'b11111100;
 	8'h4e : rom_data <= 8'b00000000;
 	8'h4f : rom_data <= 8'b00000000;
 
@@ -102,7 +102,7 @@ begin
 	8'h53 : rom_data <= 8'b11111110;
 	8'h54 : rom_data <= 8'b11100000;
 	8'h55 : rom_data <= 8'b11100000;
-   8'h56 : rom_data <= 8'b01111000; //S	
+     8'h56 : rom_data <= 8'b01111000; //S	
 	8'h57 : rom_data <= 8'b00111100;
 	8'h58 : rom_data <= 8'b00001110;
 	8'h59 : rom_data <= 8'b00000110;
