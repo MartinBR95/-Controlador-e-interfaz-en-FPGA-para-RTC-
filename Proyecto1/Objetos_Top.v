@@ -47,8 +47,8 @@ localparam X_in_L  = 56;
 localparam X_end_L = 63;
 
 
-localparam  Y_in  = 0;
-localparam  Y_end = 15;
+localparam  Y_in  = 16;
+localparam  Y_end = 31;
 
 wire J_on,V_on,M_on,B_on,S_on,L_on;
 
@@ -95,14 +95,14 @@ always @(*)                   //El dato de la ROM posee 8 bits, pero solo se nec
 begin 
 	case (PX)
 	
-	3'h0 : Activador <= Data[0];
-	3'h1 : Activador <= Data[1];
-	3'h2 : Activador <= Data[2];
-	3'h3 : Activador <= Data[3];
-	3'h4 : Activador <= Data[4];
-	3'h5 : Activador <= Data[5];
-	3'h6 : Activador <= Data[6];
-	3'h7 : Activador <= Data[7];
+	3'h0 : Activador <= Data[7];
+	3'h1 : Activador <= Data[6];
+	3'h2 : Activador <= Data[5];
+	3'h3 : Activador <= Data[4];
+	3'h4 : Activador <= Data[3];
+	3'h5 : Activador <= Data[2];
+	3'h6 : Activador <= Data[1];
+	3'h7 : Activador <= Data[0];
 	
 	default : Activador <= 1'b0;
 	endcase 
