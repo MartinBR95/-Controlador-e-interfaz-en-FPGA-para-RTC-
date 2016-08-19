@@ -95,14 +95,14 @@ always @(*)                   //El dato de la ROM posee 8 bits, pero solo se nec
 begin 
 	case (PX)
 	
-	4'h0 : Activador <= Data[0];
-	4'h1 : Activador <= Data[1];
-	4'h2 : Activador <= Data[2];
-	4'h3 : Activador <= Data[3];
-	4'h4 : Activador <= Data[4];
-	4'h5 : Activador <= Data[5];
-	4'h6 : Activador <= Data[6];
-	4'h7 : Activador <= Data[7];
+	3'h0 : Activador <= Data[0];
+	3'h1 : Activador <= Data[1];
+	3'h2 : Activador <= Data[2];
+	3'h3 : Activador <= Data[3];
+	3'h4 : Activador <= Data[4];
+	3'h5 : Activador <= Data[5];
+	3'h6 : Activador <= Data[6];
+	3'h7 : Activador <= Data[7];
 	
 	default : Activador <= 1'b0;
 	endcase 
