@@ -4,7 +4,8 @@ input wire R,G,B,reset,clk;
 output wire [2:0]L;
 output wire hsinc,vsinc,ENclock;
 
-wire [9:0]X,Y;
+wire [9:0] X;
+wire [9:0] Y;
 
 vgasync Sincronizacion (clk,reset,hsinc,vsinc,ENclock,X,Y);
 

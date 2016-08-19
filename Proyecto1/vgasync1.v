@@ -1,6 +1,6 @@
 //segundo modulo de sincronizacion CON pulso habilitador (Adaptado para funcionar a 25Mhz, compatible con VGA)
 
-module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9:0] px_X, px_Y);
+module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9:0] px_X,output wire [9:0] px_Y);
 
 //Es preferible definir los parametros de retraso y tiempo de
 //display como constantes que se pueden modificar y ajustar al

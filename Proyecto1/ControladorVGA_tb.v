@@ -17,19 +17,20 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-`timescale 1ns / 10ps
+`timescale 10ns / 1ps
 module ControladorVGA_tb();
 
 localparam T=20; //Define el periodo del reloj
 
 //Define estradas del uut
 reg clk,rst;
-reg [2:0] RGB_in;
+reg R,G,B;
 //Define salidas del uut
-wire vsync,hsync,RGB_out;
+wire vsync,hsync;
+wire [2:0] L;
 
 //Instanciacion de el Controlador de VGA
-TOP ControladorVGA_uut(.clk(clk), .rst(rst), .RBG_in(RBG_in), .hsync(hsync), .vsync(vsync));
+TOP TOP_uut(.R(R),.G(G),.B(B),.L(L),.clk(clk),.reset(rst),.hsinc(hsync),.vsinc(vsync),.ENclock(ENclock));
 
 //Generacion del reloj
 always
@@ -53,36 +54,36 @@ end
 //Prueba de funcionamiento
 initial
 begin
-	RGB_in <= 3'b000;//valor inicial
+	{R,G,B} <= 3'b000;//valor inicial
 	@(negedge rst); //espera al reinicio
 	
-	wait(hsync | vsync ==0); //espera a que no se este escribiendo en pantalla
+	@(negedge vsync);//espera a que no se este escribiendo en pantalla
 	@(negedge clk); //espera al eje negativo del relog para proporcionar una señal estable de  RBG_in
-	RGB_in <=  3'b001; //se prueba el siguiente valor
+	{R,G,B} <=  3'b001; //se prueba el siguiente valor
 	
-	wait(hsync | vsync ==0);
+	@(negedge vsync);
 	@(negedge clk);
-	RGB_in <=  3'b010;
+	{R,G,B} <=  3'b010;
 	
-	wait(hsync | vsync ==0);
+	@(negedge vsync);
 	@(negedge clk);
-	RGB_in <=  3'b011;
+	{R,G,B} <=  3'b011;
 	
-	wait(hsync | vsync ==0);
+	@(negedge vsync);
 	@(negedge clk);
-	RGB_in <=  3'b100;
+	{R,G,B} <=  3'b100;
 	
-	wait(hsync | vsync ==0);
+	@(negedge vsync);
 	@(negedge clk);
-	RGB_in <=  3'b101;
+	{R,G,B} <=  3'b101;
 	
-	wait(hsync | vsync ==0);
+	@(negedge vsync);
 	@(negedge clk);
-	RGB_in <=  3'b110;
+	{R,G,B} <=  3'b110;
 	
-	wait(hsync | vsync ==0);
+	@(negedge vsync);
 	@(negedge clk);
-	RGB_in <=  3'b111;
+	{R,G,B} <=  3'b111;
 	
 	$stop;
 end

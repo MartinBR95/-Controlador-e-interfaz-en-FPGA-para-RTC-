@@ -4,8 +4,8 @@ module Objetos_Top(L,X,Y,R,G,B);
 /////////////////// Entradas y salidas del circuito /////////////////// 
 
 input wire R,G,B;    //Entradas provenientes de interruptores (Colores Rojo, Verde y Azul)
-input wire [9:0]X;
-input wire [9:0]Y;   //Estas entradas provienen del modulo "Sincronizacion" le dicen a objetos por que parte de la pantalla se esta recorriendo
+input wire [9:0] X;
+input wire [9:0] Y;   //Estas entradas provienen del modulo "Sincronizacion" le dicen a objetos por que parte de la pantalla se esta recorriendo
 output reg [2:0] L;  //Despues de ser condicionadas estas senales son las que le indican a la pantalla que color debe ser pintado 
 
 
