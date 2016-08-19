@@ -42,7 +42,7 @@ module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9
 			vcnt <= 0;
 			hcnt <= 0;
 			v_sync_reg <= 1'b0;
-			h_sync_reg <= 1'b0;
+			h_sync_reg <= 1'b1;
 			ENpulse <= 0;
 			end
 		else begin
@@ -90,18 +90,18 @@ module vgasync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9
 //aqui se asignan los valores de los pulsos de sincronia vertical y horizontal
 //de acuerdo con la posicion que tiene el "cursor" en una fila o columna
 			
-		assign h_sync_next = (hcnt >= (HD+HB) && hcnt <= (HD+HB+HR-1));
+		assign h_sync_next = !(hcnt >= (HD+HB) && hcnt <= (HD+HB+HR-1));
 		assign v_sync_next = (vcnt >= (VD+VB) && vcnt <= (VD+VB+VR-1));
 		
 //finalmente, se asignan los valores de cada una de las variables utilizadas
 //a la salida del modulo para que puedan ser utilizadas por otros modulos		
 		assign hsync = h_sync_reg;
-		assign vsync = v_sync_reg;
+		assign vsync = !v_sync_reg;
 		assign px_X = hcnt;
 		assign px_Y = vcnt;
 		assign ENclock = ENpulse_next; 
 		
-endmodule
+endmodule 
 	
 	
 	
