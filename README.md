@@ -4,7 +4,7 @@ Integrantes:
 
 Santiago Lopez, Martín Barquero, Juan José Vásquez
 
-Indince: 
+Indice: 
 
 
 Proyecto1 -> Controlador de VGA
