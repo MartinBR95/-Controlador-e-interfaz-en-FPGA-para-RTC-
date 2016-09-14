@@ -2,9 +2,8 @@
 
 Integrantes: 
 
-Santiago Lopez
-Martín Barquero
-Juan José Vásquez
+Santiago Lopez, Martín Barquero, Juan José Vásquez\n
 
-Proyecto1 -> Controlador de VGA
-Proyecto2 -> Controlador e interfaz de RTC
+Indince: \n
+Proyecto1 -> Controlador de VGA\n
+Proyecto2 -> Controlador e interfaz de RTC\n
