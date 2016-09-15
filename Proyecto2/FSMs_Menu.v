@@ -19,6 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,DIR,Numup,Numdown,Punt);
+
 input wire CLK,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [2:0] DIR; //Direccion de memoria del rtc al que se apunta
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
@@ -40,11 +41,18 @@ wire cond1;
 assign cond1 = Barriba|Babajo|Bderecha|Bizquierda|Bcentro;
 
 //Valores Iniciales y asignacion de estado
-always @( posedge CLK, posedge RST )
+always @( posedge CLK )
 begin
 	if (RST)
 	begin
-		EstadoActual <= 3'd1 ; //Estado inicial			
+		EstadoActual <= 3'd1 ; //Estado inicial
+		Punt<=1'b1;
+		Mod<=1'b0;
+		Acceso<=1'b1;
+		Espera<=1'b0;
+		Barrido<=1'b0;
+		Numup<=1'b0;
+		Numdown<=1'b0;
 	end
 	else
 	begin
@@ -54,13 +62,6 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
-	Punt=1'b1;
-	Mod=1'b0;
-	Acceso=1'b0;
-	Espera=1'b0;
-	Barrido=1'b0;
-	Numup=1'b0;
-	Numdown=1'b0;
 	case(EstadoActual)
 	3'd1:if(FRW)
 		begin
@@ -123,16 +124,19 @@ end
 //Registros de estado
 reg [1:0] EstadoActualc;
 reg [1:0] EstadoSiguientec;
+reg [2:0] DIRSiguiente;
 //Valores Iniciales y asignacion de estado
 always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
 	begin
 		EstadoActualc <= 2'd1;
+		DIR <= 1;
 	end
 	else
 	begin
 		EstadoActualc <= EstadoSiguientec;
+		DIR <= DIRSiguiente;
 	end
 end
 
@@ -142,7 +146,7 @@ begin
 	Fcount=1'b0;
 	FBarrido=1'b0;
 	EstadoSiguientec = 2'd1;
-	DIR<=3'b1;
+	DIRSiguiente = 3'b1;
 	case(EstadoActualc)	
 	2'd1:if(Barrido)
 		begin
@@ -161,7 +165,7 @@ begin
 			end
 			else
 			begin
-				DIR <= DIR+1'b1;
+				DIRSiguiente = DIR + 1'b1;
 			end			
 		end
 		else
@@ -170,7 +174,7 @@ begin
 		end
 	2'd3:if(Fcount)
 		begin			
-			DIR<=3'b1;
+			DIRSiguiente = 3'b1;
 			FBarrido=1'b1;
 			EstadoSiguientec=2'd1;
 		end
