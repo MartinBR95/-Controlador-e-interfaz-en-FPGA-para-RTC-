@@ -2,7 +2,7 @@
 
 module transfer(
 	input Acceso, read, clk, reset,    				//Entradas del módulo
-	output wire AD, CS, RD, WR         				//Salidas de control del RTC, en lógica negativa, donde AD es ~A/D para abreviar
+	output wire AD, CS, RD, WR, FRW         				//Salidas de control del RTC, en lógica negativa, donde AD es ~A/D para abreviar
    );
 	
 	reg ADr, RDr, CSr, WRr;						//Se definen los registros en los que se trabajará secuencialmente el valor de las
@@ -23,15 +23,36 @@ module transfer(
 //	assign tacc = (cycles > 1 & cycles <= 4);			//a 100MHz, entonces se aproximan los valores de operación de cada
 	assign tw = (cycles > 7 & cycles <= 17) | (cycles > 24 & cycles <= 34);				 	 
 																			 //señal según se especifíca en la hoja de datos del RTC
-	assign tadt = (cycles > 12 & cycles <= 14);			//y así se activan en el orden y momento correctos las señales para
+	assign tadt = (cycles > 7 & cycles <= 10);			//y así se activan en el orden y momento correctos las señales para
 //	assign tdf = (cycles > 12 & cycles <= 16);           	 	//controlar el dispositivo V3023
 //	assign tdw = (cycles > 4 & cycles <= 12);					 
 //	assign tdh = (cycles > 12 & cycles <= 16);
 	
 	wire leido, escrito;
-
+	
+	
+	reg [2:0] timer;
+	always @(posedge clk) begin
+		if (reset) begin timer <= 0; end
+		else begin
+			if(leido | escrito)begin
+				timer <= 1;
+			end
+			else begin
+				if (timer > 0) begin
+					timer <= timer + 1; 
+				end
+				else begin
+					timer <= timer;
+				end
+			end
+		end
+	end
+	
+	
 	assign leido = ~tcs & (state == 2);
 	assign escrito = ~tcs & (state == 3);
+	assign FRW = (timer > 4);
 	
 	
 	always @(posedge clk) begin 					//Se define la FSM como un dispositivo sincronico sensible al flanco positivo del reloj.

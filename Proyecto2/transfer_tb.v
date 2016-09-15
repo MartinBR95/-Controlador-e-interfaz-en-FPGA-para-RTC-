@@ -1,33 +1,33 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    03:57:31 09/14/2016 
-// Design Name: 
-// Module Name:    transfer_tb 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+// Company:
+// Engineer:
 //
-// Dependencies: 
+// Create Date:    03:57:31 09/14/2016
+// Design Name:
+// Module Name:    transfer_tb
+// Project Name:
+// Target Devices:
+// Tool versions:
+// Description:
 //
-// Revision: 
+// Dependencies:
+//
+// Revision:
 // Revision 0.01 - File Created
-// Additional Comments: 
+// Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
 module transfer_tb;
 	reg clk, reset, read, access;
-	
-	wire AD, CS, RD, WR;
-	
+
+	wire AD, CS, RD, WR, FRW;
+
 	always begin
 		clk <= ~clk;
 		#5;
 	end
-	
+
 	initial begin
 		clk <= 0;
 		reset <= 1;
@@ -45,7 +45,7 @@ module transfer_tb;
 		#1000;
 		$stop;
 	end
-	
-	transfer rtc(access, read, clk, reset, AD, CS, RD, WR);	
-	
+
+	transfer rtc(access, read, clk, reset, AD, CS, RD, WR, FRW);
+
 endmodule
