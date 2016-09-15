@@ -65,11 +65,11 @@ begin
 	3'd1:if(FRW)
 		begin
 			Barrido=1'b1;
-			EstadoSiguiente<=3'd2;
+			EstadoSiguiente=3'd2;
 		end
 		else
 		begin
-			EstadoSiguiente<=3'd1;			
+			EstadoSiguiente=3'd1;			
 		end
 	3'd2:if(FBarrido)
 		begin
