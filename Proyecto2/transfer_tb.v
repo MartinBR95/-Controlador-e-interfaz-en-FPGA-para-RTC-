@@ -25,7 +25,7 @@ module transfer_tb;
 	
 	always begin
 		clk <= ~clk;
-		#10;
+		#5;
 	end
 	
 	initial begin
