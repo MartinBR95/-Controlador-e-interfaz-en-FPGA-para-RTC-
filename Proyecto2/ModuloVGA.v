@@ -1,11 +1,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 module ModuloVGA
 	(
-   input  CLK,RST,    		  //Senal de reloj 
-   output [11:0] COLOR_OUT,  //bits de color hacia la VGA
-   output HS,					  //Sincronizacion horizontal
-   output VS,					  //Sincronizacion vertical
+  input  CLK,RST,    		  //Senal de reloj
+  output [11:0] COLOR_OUT,  //bits de color hacia la VGA
+  output HS,					  //Sincronizacion horizontal
+  output VS,					  //Sincronizacion vertical
 	output ENClock,
+	output video_on,
+	output [9:0] pixX, pixY,
 	input [7:0]DIA_T,         //Senal de dia de la RTC
 	input [7:0]MES_T,         //Senal de mes de la RTC
 	input [7:0]ANO_T,         //Senal de ano de la RTC
@@ -16,19 +18,19 @@ module ModuloVGA
 	input [7:0]MINUTOT_T,     //Senal de minutos de temporizador de la RTC
 	input [7:0]SEGUNDOT_T	  //Senal de segundos de temporizador de la RTC
 	);
-	
-   //VALORES QUE CAMBIAN DEPENDIENDO DE LA IMANGEN 
+
+   //VALORES QUE CAMBIAN DEPENDIENDO DE LA IMANGEN
 	parameter imagen = 15'd25600;	     //En general la plantilla tiene 25600 pixels
 	parameter imagenXY = 8'd160;	     //sus dimenciones son 200x200 pixels
 	parameter InicioImagenX = 10'd100; //Parametro de inicio de la imagen en X
 	parameter InicioImagenY  = 9'd100; //Parametro de inicio de la imagen en Y
-	
-	//VALORES QUE CAMBIAN DEPENDIENDO DE POSICION Y DIMENSIONES DE NUMEROS 
+
+	//VALORES QUE CAMBIAN DEPENDIENDO DE POSICION Y DIMENSIONES DE NUMEROS
 	parameter Numeros = 10'd600;      //En general numeros tiene 6000 pixeles
-	
+
 	parameter NumerosX  = 5'd20;			//Los numeros tienen una dimencion en x de 20
-	parameter NumerosY  = 5'd30;         //Y una dimencion en y de 30 
-	
+	parameter NumerosY  = 5'd30;         //Y una dimencion en y de 30
+
 	//posiciones de los numeros en la plantilla (NO EN LA VGA)
 	parameter Fecha_inY = 7'd120;
 	parameter Hora_inY  = 8'd170;
@@ -44,14 +46,14 @@ module ModuloVGA
 	parameter linea4_inX = 8'd174;
 	parameter linea5_inX = 8'd200;
 	parameter linea6_inX = 8'd222;
-	
-	parameter linea1_endX = 7'd122; 
+
+	parameter linea1_endX = 7'd122;
 	parameter linea2_endX = 8'd144;
 	parameter linea3_endX = 8'd172;
 	parameter linea4_endX = 8'd194;
 	parameter linea5_endX = 8'd220;
 	parameter linea6_endX = 8'd242;
-		
+
 	//VARIABLES
 	reg [11:0] PLANTILLA_DATA [0:imagen-1]; //Memoria donde se almacena los datos de plantilla
 	reg [11:0] NUMERO0_DATA [0:Numeros -1];  //Memoria donde se almacena los datos de numeros
@@ -72,20 +74,20 @@ module ModuloVGA
 ///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////// Direcciones de lectura en memorias  //////////////////////////////////
 
-//Segun sea el lugar del cual se debe sacar los pixeles se usan estas direcciones 
+//Segun sea el lugar del cual se debe sacar los pixeles se usan estas direcciones
 
 	wire [14:0] STATE_Plantilla;           //Direccion en memoria de plantilla
-	
+
 	wire [9:0]STATE_dia1;					   //Direccion en memoria de numeros (sea cual sea)
-	wire [9:0]STATE_dia2;					   //Todas las demas direcciones cumplen con el mismo fin 
+	wire [9:0]STATE_dia2;					   //Todas las demas direcciones cumplen con el mismo fin
 
-	wire [9:0]STATE_mes1;						
-	wire [9:0]STATE_mes2;							
+	wire [9:0]STATE_mes1;
+	wire [9:0]STATE_mes2;
 
-	wire [9:0]STATE_ano1;                  
+	wire [9:0]STATE_ano1;
 	wire [9:0]STATE_ano2;
 
-	wire [9:0]STATE_Horas1;                
+	wire [9:0]STATE_Horas1;
 	wire [9:0]STATE_Horas2;
 
 	wire [9:0]STATE_minutos1;
@@ -96,7 +98,7 @@ module ModuloVGA
 
 	wire [9:0]STATE_HorasT1;
 	wire [9:0]STATE_HorasT2;
-	
+
 	wire [9:0]STATE_minutosT1;
 	wire [9:0]STATE_minutosT2;
 
@@ -120,42 +122,43 @@ module ModuloVGA
 	$readmemh ("NUMERO8.list", NUMERO8_DATA );
 	$readmemh ("NUMERO9.list", NUMERO9_DATA );
 	end
-	
+
 	assign STATE_Plantilla  = (ADDRV-InicioImagenY)*imagenXY+ADDRH-InicioImagenX;
-	
-	assign STATE_dia1       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea1_inX; 
+
+	assign STATE_dia1       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea1_inX;
 	assign STATE_dia2       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea2_inX;
-  	
+
 	assign STATE_mes1       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea3_inX;
 	assign STATE_mes2       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea4_inX;
-	
+
 	assign STATE_ano1       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea5_inX;
 	assign STATE_ano2       = (ADDRV-Fecha_inY)*NumerosX + ADDRH- linea6_inX;
 
 	assign STATE_Horas1     = (ADDRV-Hora_inY)*NumerosX + ADDRH- linea1_inX;
 	assign STATE_Horas2     = (ADDRV-Hora_inY)*NumerosX + ADDRH- linea2_inX;
-	
+
 	assign STATE_minutos1   = (ADDRV-Hora_inY)*NumerosX + ADDRH- linea3_inX;
 	assign STATE_minutos2   = (ADDRV-Hora_inY)*NumerosX + ADDRH- linea4_inX;
-	
+
 	assign STATE_segundos1  = (ADDRV-Hora_inY)*NumerosX + ADDRH- linea5_inX;
 	assign STATE_segundos2  = (ADDRV-Hora_inY)*NumerosX + ADDRH- linea6_inX;
-	
+
 	assign STATE_HorasT1    = (ADDRV-Timer_inY)*NumerosX + ADDRH- linea1_inX;
 	assign STATE_HorasT2    = (ADDRV-Timer_inY)*NumerosX + ADDRH- linea2_inX;
-	
+
 	assign STATE_minutosT1  = (ADDRV-Timer_inY)*NumerosX + ADDRH- linea3_inX;
 	assign STATE_minutosT2  = (ADDRV-Timer_inY)*NumerosX + ADDRH- linea4_inX;
-	
+
 	assign STATE_segundosT1 = (ADDRV-Timer_inY)*NumerosX + ADDRH- linea5_inX;
 	assign STATE_segundosT2 = (ADDRV-Timer_inY)*NumerosX + ADDRH- linea6_inX;
-	
+
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/////////////////////////// LLAMADO A MODULO DE SINCRONIA //////////////////////////////
-		
-	sync Sincronia(CLK, RST, HS, VS, ENClock, ADDRH, ADDRV);  //Sincronizacion para la VGA
-	
+
+	sync Sincronia(CLK, RST, HS, VS, ENClock, video_on, ADDRH, ADDRV);  //Sincronizacion para la VGA
+	assign pixX = ADDRH;
+	assign pixY = ADDRV;
 	////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////  DEFINICION DE PARAMETROS DE SECCIONES NUMERICAS  ///////////////////
 
@@ -168,8 +171,8 @@ module ModuloVGA
 
 	assign A_on1 = (linea5_inX <= ADDRH) && (ADDRH <=linea5_endX) && (Fecha_inY <= ADDRV) && (ADDRV <=Fecha_endY);
 	assign A_on2 = (linea6_inX <= ADDRH) && (ADDRH <=linea6_endX) && (Fecha_inY <= ADDRV) && (ADDRV <=Fecha_endY);
-	
-	//// PARAMETROS DE HORA 
+
+	//// PARAMETROS DE HORA
 	assign H_on1  = (linea1_inX <= ADDRH) && (ADDRH <=linea1_endX) && (Hora_inY <= ADDRV) && (ADDRV <=Hora_endY);
 	assign H_on2  = (linea2_inX <= ADDRH) && (ADDRH <=linea2_endX) && (Hora_inY <= ADDRV) && (ADDRV <=Hora_endY);
 
@@ -178,7 +181,7 @@ module ModuloVGA
 
 	assign S_on1  = (linea5_inX <= ADDRH) && (ADDRH <=linea5_endX) && (Hora_inY <= ADDRV) && (ADDRV <=Hora_endY);
 	assign S_on2  = (linea6_inX <= ADDRH) && (ADDRH <=linea6_endX) && (Hora_inY <= ADDRV) && (ADDRV <=Hora_endY);
-	
+
 	//// PARAMETROS DE TIMER
 	assign HT_on1  = (linea1_inX <= ADDRH) && (ADDRH <=linea1_endX) && (Timer_inY <= ADDRV) && (ADDRV <=Timer_endY);
 	assign HT_on2  = (linea2_inX <= ADDRH) && (ADDRH <=linea2_endX) && (Timer_inY <= ADDRV) && (ADDRV <=Timer_endY);
@@ -188,21 +191,21 @@ module ModuloVGA
 
 	assign ST_on1  = (linea5_inX <= ADDRH) && (ADDRH <=linea5_endX) && (Timer_inY <= ADDRV) && (ADDRV <=Timer_endY);
 	assign ST_on2  = (linea6_inX <= ADDRH) && (ADDRH <=linea6_endX) && (Timer_inY <= ADDRV) && (ADDRV <=Timer_endY);
-   
-	
-	
+
+
+
 	////////////////////////////////////////////////////////////////////////////////////////
-	////////////////  DEFINICION DE DATOS DE PIXELES SALIENTES A PANTALLA  /////////////////	
-	
+	////////////////  DEFINICION DE DATOS DE PIXELES SALIENTES A PANTALLA  /////////////////
+
 	wire [17:0]Selector ={D_on1,D_on2,M_on1,M_on2,A_on1,A_on2,H_on1,H_on2,MI_on1,MI_on2,S_on1,S_on2,HT_on1,HT_on2,MIT_on1,MIT_on2,ST_on1,ST_on2};
 	reg [9:0]Adress;
 	reg [3:0]Numero_RTC = 4'hF;
-	
-	// seleccion de direccion en memoria de numeros  
-	always @(*) 
-	begin 
+
+	// seleccion de direccion en memoria de numeros
+	always @(*)
+	begin
 		case (Selector)
-		18'b100000000000000000 : Adress = STATE_dia1;               
+		18'b100000000000000000 : Adress = STATE_dia1;
 		18'b010000000000000000 : Adress = STATE_dia2;
 		18'b001000000000000000 : Adress = STATE_mes1;
 		18'b000100000000000000 : Adress = STATE_mes2;
@@ -222,14 +225,14 @@ module ModuloVGA
 		18'b000000000000000001 : Adress = STATE_segundosT2;
 		default Adress = 8'hFF;
 		endcase
-	end 
-	
-	
-	// seleccion de entradas del RTC 	
-	always @(*) 
-	begin 
+	end
+
+
+	// seleccion de entradas del RTC
+	always @(*)
+	begin
 		case (Selector)
-		18'b100000000000000000 : Numero_RTC = {DIA_T[0],DIA_T[1],DIA_T[2],DIA_T[3]};               
+		18'b100000000000000000 : Numero_RTC = {DIA_T[0],DIA_T[1],DIA_T[2],DIA_T[3]};
 		18'b010000000000000000 : Numero_RTC = {DIA_T[4],DIA_T[5],DIA_T[6],DIA_T[7]};
 		18'b001000000000000000 : Numero_RTC = {MES_T[0],MES_T[1],MES_T[2],MES_T[3]};
 		18'b000100000000000000 : Numero_RTC = {MES_T[4],MES_T[5],MES_T[6],MES_T[7]};
@@ -248,16 +251,16 @@ module ModuloVGA
 		18'b000000000000000010 : Numero_RTC = {SEGUNDOT_T[0],SEGUNDOT_T[1],SEGUNDOT_T[2],SEGUNDOT_T[3]};
 		18'b000000000000000001 : Numero_RTC = {SEGUNDOT_T[4],SEGUNDOT_T[5],SEGUNDOT_T[6],SEGUNDOT_T[7]};
 		default Numero_RTC = 4'hF;
-		endcase 
-	end 	
-	
-	// seleccion de SALIDA 
-	always @(posedge CLK) 
+		endcase
+	end
+
+	// seleccion de SALIDA
+	always @(posedge CLK)
 	begin
 		if (ADDRH>=InicioImagenX && ADDRH<InicioImagenX+imagenXY
 			&& ADDRV>=InicioImagenY && ADDRV<InicioImagenY+imagenXY)
 				if (Selector > 1'b0)
-				begin 
+				begin
 					case (Numero_RTC)
 					8'h0 : COLOR_IN <= NUMERO0_DATA[{Adress}];
 					8'h1 : COLOR_IN <= NUMERO1_DATA[{Adress}];
@@ -270,14 +273,14 @@ module ModuloVGA
 					8'h8 : COLOR_IN <= NUMERO8_DATA[{Adress}];
 					8'h9 : COLOR_IN <= NUMERO9_DATA[{Adress}];
 					default COLOR_IN <= PLANTILLA_DATA[{STATE_Plantilla}];
-					endcase 
-				end 
-				else 
+					endcase
+				end
+				else
 				COLOR_IN <= PLANTILLA_DATA[{STATE_Plantilla}];
 			else
 				COLOR_IN <= 12'hFFF;
 	end
-	
-	assign COLOR_OUT = COLOR_IN;	
 
-endmodule 
+	assign COLOR_OUT = COLOR_IN;
+
+endmodule
