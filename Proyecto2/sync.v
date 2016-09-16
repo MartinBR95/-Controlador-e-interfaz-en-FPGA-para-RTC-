@@ -1,4 +1,4 @@
-module sync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9:0] px_X,output wire [9:0] px_Y);
+module sync (input clk, rst, output wire hsync, vsync, ENclock, output wire [9:0] px_X,output wire [9:0] px_Y);
 
 //Es preferible definir los parametros de retraso y tiempo de
 //display como constantes que se pueden modificar y ajustar al
@@ -21,9 +21,10 @@ module sync(input clk, rst, output wire hsync, vsync, ENclock, output wire [9:0]
 	
 //con estos registros se lleva la cuenta de la columna y fila en que se encuentra el pixel
 		
-	reg [9:0] hcnt, hcnt_next;
-	reg [9:0] vcnt, vcnt_next;
-	
+	reg [9:0] hcnt;
+	reg [9:0] hcnt_next;
+	reg [9:0] vcnt; 
+	reg [9:0] vcnt_next;
 //estos registros indican si se ha terminado o no la linea o cuadro
 	
 	reg v_sync_reg, h_sync_reg;

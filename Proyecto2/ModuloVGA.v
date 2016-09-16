@@ -153,9 +153,16 @@ module ModuloVGA
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/////////////////////////// LLAMADO A MODULO DE SINCRONIA //////////////////////////////
+	
+	reg CLK2 = 1'b0;
+	
+	always @ (posedge CLK) // La seccion de sincronia necesita un reloj de 50MHz 
+	begin 
+		CLK2 = ~CLK2;
+	end 
 
 	
-	sync Sincronia(CLK, RST, HS, VS, ENClock, ADDRH, ADDRV);  //Sincronizacion para la VGA
+	sync Sincronia(CLK2, RST, HS, VS, ENClock, ADDRH, ADDRV);  //Sincronizacion para la VGA
 	
 	////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////  DEFINICION DE PARAMETROS DE SECCIONES NUMERICAS  ///////////////////
@@ -197,8 +204,7 @@ module ModuloVGA
 	
 	wire [17:0]Selector ={D_on1,D_on2,M_on1,M_on2,A_on1,A_on2,H_on1,H_on2,MI_on1,MI_on2,S_on1,S_on2,HT_on1,HT_on2,MIT_on1,MIT_on2,ST_on1,ST_on2};
 	reg [9:0]Adress;
-	reg [3:0]Numero_RTC;
-	reg BanderaN;
+	reg [3:0]Numero_RTC = 4'hF;
 	
 	// seleccion de direccion en memoria de numeros  
 	always @(*) 
@@ -226,31 +232,6 @@ module ModuloVGA
 		endcase
 	end 
 	
-	//Indicacion de si se esta trabajando un numero o no 
-	always @(*) 
-	begin 
-		case (Selector)
-		18'b100000000000000000 : BanderaN = 1'b1;               
-		18'b010000000000000000 : BanderaN = 1'b1; 
-		18'b001000000000000000 : BanderaN = 1'b1; 
-		18'b000100000000000000 : BanderaN = 1'b1; 
-		18'b000010000000000000 : BanderaN = 1'b1; 
-		18'b000001000000000000 : BanderaN = 1'b1; 
-		18'b000000100000000000 : BanderaN = 1'b1; 
-		18'b000000010000000000 : BanderaN = 1'b1; 
-		18'b000000001000000000 : BanderaN = 1'b1; 
-		18'b000000000100000000 : BanderaN = 1'b1; 
-		18'b000000000010000000 : BanderaN = 1'b1; 
-		18'b000000000001000000 : BanderaN = 1'b1; 
-		18'b000000000000100000 : BanderaN = 1'b1; 
-		18'b000000000000010000 : BanderaN = 1'b1; 
-		18'b000000000000001000 : BanderaN = 1'b1; 
-		18'b000000000000000100 : BanderaN = 1'b1; 
-		18'b000000000000000010 : BanderaN = 1'b1; 
-		18'b000000000000000001 : BanderaN = 1'b1; 
-		default BanderaN = 1'b0;
-		endcase
-	end 	
 	
 	// seleccion de entradas del RTC 	
 	always @(*) 
@@ -283,7 +264,7 @@ module ModuloVGA
 	begin
 		if (ADDRH>=InicioImagenX && ADDRH<InicioImagenX+imagenXY
 			&& ADDRV>=InicioImagenY && ADDRV<InicioImagenY+imagenXY)
-				if (BanderaN > 1'b0)
+				if (Selector > 1'b0)
 				begin 
 					case (Numero_RTC)
 					8'h0 : COLOR_IN <= NUMERO0_DATA[{Adress}];
