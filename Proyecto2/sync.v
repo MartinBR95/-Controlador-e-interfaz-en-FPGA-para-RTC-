@@ -55,7 +55,19 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, output wire [9:0
 	
 //aqui se configura la oscilacion del pulso habilitador
 //dandole un valor siguiente que es el complemento de su valor actual			
-		assign ENpulse_next = ~ENpulse;
+		
+		reg cont;
+		always @(posedge clk) begin
+			if(rst) begin
+				cont <= 0;
+			end
+			else begin	
+				cont <= cont + 1;
+			end
+		end
+
+		assign ENpulse_next = (cont == 1)? ~ENpulse:ENpulse;
+		
 		
 //estas variables indican si ya se ha terminado o no una linea o pantalla
 		assign h_end = (hcnt == (HD+HF+HB+HR-1));

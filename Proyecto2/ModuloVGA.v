@@ -153,16 +153,8 @@ module ModuloVGA
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	/////////////////////////// LLAMADO A MODULO DE SINCRONIA //////////////////////////////
-	
-	reg CLK2 = 1'b0;
-	
-	always @ (posedge CLK) // La seccion de sincronia necesita un reloj de 50MHz 
-	begin 
-		CLK2 = ~CLK2;
-	end 
-
-	
-	sync Sincronia(CLK2, RST, HS, VS, ENClock, ADDRH, ADDRV);  //Sincronizacion para la VGA
+		
+	sync Sincronia(CLK, RST, HS, VS, ENClock, ADDRH, ADDRV);  //Sincronizacion para la VGA
 	
 	////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////  DEFINICION DE PARAMETROS DE SECCIONES NUMERICAS  ///////////////////
