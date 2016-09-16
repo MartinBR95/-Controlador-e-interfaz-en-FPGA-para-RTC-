@@ -1,4 +1,4 @@
- `timescale 500ns/100ps
+ `timescale 1ns/1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
 // Engineer: 
@@ -59,9 +59,21 @@ begin
 		EstadoActual <= EstadoSiguiente ;
 	end
 end
+
+reg [1:0] wtime;
+always @(posedge CLK) begin 				 //Se define contador para temporización de ventanas de tiempo de señales, como se mencionó antes.
+		if(Acceso & wtime > 0) begin			 //El contador se sincroniza con el clock pero inicia una vez que se activa la escritura de dirección.
+			wtime <= wtime + 1;
+		end
+		else begin
+			Acceso <= 1'b0;
+		end	
+	end
+
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
+//	Acceso = 1'b0;
 	case(EstadoActual)
 	3'd1:if(FRW)
 		begin
@@ -132,6 +144,9 @@ begin
 	begin
 		EstadoActualc <= 2'd1;
 		DIR <= 1;
+		Fcount<=1'b0;
+		EstadoSiguientec <= 2'd1;
+		DIRSiguiente <= 3'b1;
 	end
 	else
 	begin
@@ -143,13 +158,11 @@ end
 
 always @(*)
 begin
-	Fcount=1'b0;
-	FBarrido=1'b0;
-	EstadoSiguientec = 2'd1;
-	DIRSiguiente = 3'b1;
+	
 	case(EstadoActualc)	
 	2'd1:if(Barrido)
 		begin
+			FBarrido<=1'b0;
 			EstadoSiguientec=2'd2;	
 		end
 		else
