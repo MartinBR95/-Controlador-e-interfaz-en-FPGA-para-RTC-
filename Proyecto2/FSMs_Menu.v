@@ -37,31 +37,36 @@ reg Espera; //Indica a la maquina de estado que debe realizar un ciclo de espera
 reg [8:0] cuenta_espera;
 reg Fespera;//La maquina de estado de espera indica que termino la espera
 reg Fcount;
+reg [2:0] PuntSiguiente;
 wire cond1;
 assign cond1 = Barriba|Babajo|Bderecha|Bizquierda|Bcentro;
 
 //Valores Iniciales y asignacion de estado
-always @( posedge CLK )
+always @( posedge CLK,posedge RST)
 begin
 	if (RST)
 	begin
 		EstadoActual <= 3'd1 ; //Estado inicial
-		Punt<=1'b1;
-		Mod<=1'b0;
-		Acceso<=1'b1;
-		Espera<=1'b0;
-		Barrido<=1'b0;
-		Numup<=1'b0;
-		Numdown<=1'b0;
+		Punt<=3'b1;
+		
+
 	end
 	else
 	begin
 		EstadoActual <= EstadoSiguiente ;
+		Punt<=PuntSiguiente;
 	end
 end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
+	Mod=1'b0;
+	Acceso=1'b1;
+	Espera=1'b0;
+	Barrido=1'b0;
+	Numup=1'b0;
+	Numdown=1'b0;
+	PuntSiguiente=Punt;
 	case(EstadoActual)
 	3'd1:if(FRW)
 		begin
@@ -79,6 +84,7 @@ begin
 		end
 		else
 		begin
+			Barrido=1'b1;
 			EstadoSiguiente=3'd2;
 		end
 		
@@ -99,11 +105,11 @@ begin
 			Mod=1'b1;
 			if(Bcentro)
 			begin
-				Punt=3'd1;
+				PuntSiguiente = 3'd1;
 			end
 			else
 			begin
-				Punt = DIR + Bizquierda - Bderecha;
+				PuntSiguiente = DIR + Bizquierda - Bderecha;
 			end
 			EstadoSiguiente = 3'd2;			
 		end
@@ -131,7 +137,7 @@ begin
 	if (RST)
 	begin
 		EstadoActualc <= 2'd1;
-		DIR <= 1;
+		DIR <= 3'b1;
 	end
 	else
 	begin
@@ -146,40 +152,40 @@ begin
 	Fcount=1'b0;
 	FBarrido=1'b0;
 	EstadoSiguientec = 2'd1;
-	DIRSiguiente = 3'b1;
+	DIRSiguiente = DIR;
 	case(EstadoActualc)	
 	2'd1:if(Barrido)
 		begin
-			EstadoSiguientec=2'd2;	
+			EstadoSiguientec=2'd2;		
 		end
 		else
 		begin
 			EstadoSiguientec=2'd1;
 		end
 	2'd2:if(FRW)
-		begin			
+		begin		
 			if(DIR==3'b111)
 			begin
 				Fcount=1'b1;
-				EstadoSiguientec=2'd3;
 			end
 			else
 			begin
 				DIRSiguiente = DIR + 1'b1;
-			end			
+			end	
+			EstadoSiguientec=2'd3;			
 		end
 		else
 		begin
 			EstadoSiguientec=2'd2;
 		end
 	2'd3:if(Fcount)
-		begin			
-			DIRSiguiente = 3'b1;
+		begin
 			FBarrido=1'b1;
 			EstadoSiguientec=2'd1;
+			DIRSiguiente=1'b1;
 		end
 		else
-		begin
+		begin	
 			EstadoSiguientec=2'd1;
 		end
 	default
