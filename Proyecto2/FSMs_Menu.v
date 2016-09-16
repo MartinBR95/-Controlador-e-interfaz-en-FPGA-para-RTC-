@@ -25,7 +25,7 @@ output reg [2:0] DIR; //Direccion de memoria del rtc al que se apunta
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [2:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
-localparam TiempoEspera=100;
+localparam TiempoEspera=5;
 //Registros de estado
 reg [2:0] EstadoActual;
 reg [2:0] EstadoSiguiente;
@@ -47,8 +47,7 @@ begin
 	if (RST)
 	begin
 		EstadoActual <= 3'd1 ; //Estado inicial
-		Punt<=3'b1;
-		
+		Punt<=3'b1;		
 
 	end
 	else
@@ -81,6 +80,7 @@ begin
 		begin
 			Espera=1'b1;
 			EstadoSiguiente=3'd3;
+			Acceso=1'b0;
 		end
 		else
 		begin
@@ -98,8 +98,7 @@ begin
 			EstadoSiguiente=3'd3;
 		end
 	3'd4:if(cond1)
-		begin
-			Acceso = 1'b1;			
+		begin		
 			Numup = Barriba;
 			Numdown = Babajo;
 			Mod=1'b1;
@@ -163,22 +162,15 @@ begin
 			EstadoSiguientec=2'd1;
 		end
 	2'd2:if(FRW)
-		begin		
-			if(DIR==3'b111)
-			begin
-				Fcount=1'b1;
-			end
-			else
-			begin
-				DIRSiguiente = DIR + 1'b1;
-			end	
+		begin	
+			DIRSiguiente = DIR + 1'b1;
 			EstadoSiguientec=2'd3;			
 		end
 		else
 		begin
 			EstadoSiguientec=2'd2;
 		end
-	2'd3:if(Fcount)
+	2'd3:if(DIR==3'b111)
 		begin
 			FBarrido=1'b1;
 			EstadoSiguientec=2'd1;
@@ -198,15 +190,18 @@ end
 //Registros de estado
 reg [1:0] EstadoActuale;
 reg [1:0] EstadoSiguientee;
+reg [7:0]cuenta_espera_reg;
 //Valores Iniciales y asignacion de estado
 always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
 	begin
 		EstadoActuale <= 2'd1;
+		cuenta_espera <= 8'd1;
 	end
 	else
 	begin
+		cuenta_espera<=cuenta_espera_reg;
 		EstadoActuale <= EstadoSiguientee;
 	end
 end
@@ -214,7 +209,7 @@ end
 
 always @(*)
 begin
-	cuenta_espera=8'b0;
+	cuenta_espera_reg =8'b0;
 	Fespera=1'b0;
 	case(EstadoActuale)	
 	3'd1:if(Espera)
@@ -234,13 +229,13 @@ begin
 		begin
 			if(cuenta_espera==TiempoEspera)
 			begin
-				cuenta_espera=8'b1;
+				cuenta_espera_reg=8'b1;
 				Fespera=1'b1;
 				EstadoSiguientee=2'd1;
 			end
 			else
 			begin			
-				cuenta_espera=cuenta_espera+1;
+				cuenta_espera_reg=cuenta_espera+1;
 			end
 		end
 	default
