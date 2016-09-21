@@ -21,16 +21,16 @@
 module FSMs_Menu_tb(
     );
 
-//module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,DIR,Numup,Numdown,Punt);
+//module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,Dir,Numup,Numdown,Punt);
 
 
 // Se definen las entradas de la UUT
 reg CLK,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW;
 // Se definen las entradas de la UUT
-wire [2:0] DIR;
+wire [6:0] Dir;
 wire Acceso,Mod,Alarma,STW,Numup,Numdown;
-wire [2:0] Punt;
-FSMs_Menu FSMs_Menu_uut(.IRQ(IRQ),.Barriba(Barriba),.Babajo(Babajo),.Bderecha(Bderecha),.Bizquierda(Bizquierda),.Bcentro(Bcentro),.RST(RST),.FRW(FRW),.Acceso(Acceso),.Mod(Mod),.Alarma(Alarma),.STW(STW),.CLK(CLK),.DIR(DIR),.Numup(Numup),.Numdown(Numdown),.Punt(Punt));
+wire [6:0] Punt;
+FSMs_Menu FSMs_Menu_uut(.IRQ(IRQ),.Barriba(Barriba),.Babajo(Babajo),.Bderecha(Bderecha),.Bizquierda(Bizquierda),.Bcentro(Bcentro),.RST(RST),.FRW(FRW),.Acceso(Acceso),.Mod(Mod),.Alarma(Alarma),.STW(STW),.CLK(CLK),.Dir(Dir),.Numup(Numup),.Numdown(Numdown),.Punt(Punt));
 
 localparam T=10;//ns
 
@@ -67,28 +67,31 @@ begin
 	@(negedge RST); //espera al reinicio
 	FRW<=0;//Estado 1 ,falso
 	@(negedge CLK);
-	FRW<=1;//Estado 1 ,verdadero
+	FRW<=1;//Estado 1 ,verdadero	
 	@(negedge CLK);
 	//estado 2
-	wait(Acceso==0);
-	//estado 3
-	//estado 4, falso
-	wait(Acceso==1);
+	wait(Dir==7'h44);
+	//estado 3	
+	@(negedge CLK);
+	Bderecha<=1;
+	@(negedge CLK);
+	Bderecha<=0;
+	//estado 4, falso	
 	//estado 2,
-	wait(Acceso==0);
+	wait(Dir==7'h44);
+	IRQ<=1'b1;
 	//estado 3
-	//estado 4, verdadero
-	Bderecha<=1;
-	wait(Mod==1);
+	@(negedge CLK);
+	IRQ<=1'b0;
+	Bcentro<=1'b1;
+	wait(Mod==1'b1)
+	Bcentro<=1'b1;
 	//estado 2
-	Bderecha<=1;
-	wait(Acceso==0);
-	//estado 3		
-	wait(Acceso==1);
-	//estado 4
-	//estado 2
-	wait(Acceso==0)
-
+	//estado 3
+	//estado 4, verdadero	
+	wait(STW==1'b1);
+	wait(STW==1'b0);
+	@(negedge CLK);
 	$stop;
 end
 
