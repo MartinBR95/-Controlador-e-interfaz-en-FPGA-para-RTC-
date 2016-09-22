@@ -16,8 +16,8 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 //estas variables controlan cuando se ejecutan los cambios a las variables
 //para que conmuten con una frecuencia diferente de la del clock.
 
-	reg ENpulse;
-	wire ENpulse_next;
+	reg ENpulse, tick;
+	wire ENpulse_next, ticknxt;
 
 //con estos registros se lleva la cuenta de la columna y fila en que se encuentra el pixel
 
@@ -43,11 +43,13 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 			v_sync_reg <= 1'b0;
 			h_sync_reg <= 1'b1;
 			ENpulse <= 0;
+			tick <= 0;
 			end
 		else begin
 			ENpulse <= ENpulse_next; //en cada ciclo de reloj se le asigna al pulso habilitador su valor siguiente
 			vcnt <= vcnt_next;
 			hcnt <= hcnt_next;
+			tick <= ticknxt;
 			v_sync_reg <= v_sync_next;
 			h_sync_reg <= h_sync_next;
 			end
@@ -67,6 +69,9 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 		end
 
 		assign ENpulse_next = (cont == 1)? ~ENpulse:ENpulse;
+		
+		assign ticknxt = ~tick;
+		
 
 
 //estas variables indican si ya se ha terminado o no una linea o pantalla
@@ -76,7 +81,7 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 //estos ciclos determinan el siguiente estado que debe tener cada una de las variables
 		always @(*)
 		begin
-			if(ENpulse_next)begin //solamente se cambia el valor del estado siguiente cuando el pulso habilitador lo permite
+			if(ENpulse_next && ticknxt)begin //solamente se cambia el valor del estado siguiente cuando el pulso habilitador lo permite
 				if (h_end) hcnt_next <= 0;
 				else hcnt_next <= hcnt + 1;
 				end
@@ -88,7 +93,7 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 
 		always @(*)
 		begin
-			if(ENpulse_next && h_end)
+			if(ENpulse_next && ticknxt && h_end)
 			begin
 				if (v_end) vcnt_next <= 0;
 				else vcnt_next <= vcnt + 1;
@@ -97,6 +102,7 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 				vcnt_next <= vcnt;
 			end
 		end
+		
 
 //aqui se asignan los valores de los pulsos de sincronia vertical y horizontal
 //de acuerdo con la posicion que tiene el "cursor" en una fila o columna
@@ -110,8 +116,7 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 		assign vsync = !v_sync_reg;
 		assign px_X = hcnt;
 		assign px_Y = vcnt;
-		assign ENclock = ENpulse_next;
-
+		assign ENclock = ENpulse;
 		assign video_on = (hcnt<HD) && (vcnt<VD);
 
 endmodule
