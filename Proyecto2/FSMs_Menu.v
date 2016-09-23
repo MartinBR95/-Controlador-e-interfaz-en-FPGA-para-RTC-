@@ -61,7 +61,7 @@ begin
 	end
 end
 
-reg [2:0] cnt;
+reg [2:0] cnt;   //Contador para limitar el tiempo de una señal
 always @(posedge CLK) begin
 	if(RST) cnt <= 1'b0;
 	else begin
@@ -76,9 +76,10 @@ always @(*)
 begin
 	if(cnt == 3'b111) Acceso = 1'b0;
 	else Acceso = Acceso;
+	if(Mod_Siguiente && FRW) Mod_Siguiente = ~Mod_Siguiente;
+	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
-	Mod_Siguiente=Mod;
 	case(EstadoActual)//distintos estados
 	3'd1:if(FRW)
 		begin
