@@ -1,22 +1,22 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    15:51:55 09/13/2016 
-// Design Name: 
-// Module Name:    FSMs_Menu 
-// Module Name:    FSMs_Menu 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
+// Company:
+// Engineer:
 //
-// Dependencies: 
+// Create Date:    15:51:55 09/13/2016
+// Design Name:
+// Module Name:    FSMs_Menu
+// Module Name:    FSMs_Menu
+// Project Name:
+// Target Devices:
+// Tool versions:
+// Description:
 //
-// Revision: 
+// Dependencies:
+//
+// Revision:
 // Revision 0.01 - File Created
-// Additional Comments: 
+// Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
 module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,Dir,Numup,Numdown,Punt);
@@ -50,7 +50,7 @@ begin
 	if (RST)
 	begin
 		EstadoActual <= 3'd1 ; //Estado inicial
-		Mod<=1'b0;
+		Mod<=1'b1;
 		Numup<=1'b0;
 		Numdown<=1'b0;
 	end
@@ -60,9 +60,22 @@ begin
 		Mod<=Mod_Siguiente;
 	end
 end
+
+reg [2:0] cnt;
+always @(posedge CLK) begin
+	if(RST) cnt <= 1'b0;
+	else begin
+		if(Acceso) cnt <= cnt + 1'b1;
+		else cnt <= 0;
+	end
+end
+
+
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
-begin	
+begin
+	if(cnt == 3'b111) Acceso = 1'b0;
+	else Acceso = Acceso;
 	Espera=1'b0;
 	Barrido=1'b0;
 	Mod_Siguiente=Mod;
@@ -74,7 +87,7 @@ begin
 		end
 		else
 		begin
-			EstadoSiguiente=3'd1;//se espera a que se termine la inicializacion		
+			EstadoSiguiente=3'd1;//se espera a que se termine la inicializacion
 		end
 	3'd2:if(FBarrido)
 		begin
@@ -84,10 +97,10 @@ begin
 		end
 		else
 		begin
-			Barrido=1'b1;//Se mantiene la señal de barrido, y se espera a la finalizacion de la maquina de cuenta
+			Barrido=1'b1;//Se mantiene la seï¿½al de barrido, y se espera a la finalizacion de la maquina de cuenta
 			EstadoSiguiente=3'd2;
 		end
-		
+
 	3'd3:if(Fespera)
 		begin
 			Barrido=1'b1;
@@ -98,16 +111,16 @@ begin
 			EstadoSiguiente=3'd3;//se espera a que la maquina de espera termine
 		end
 	3'd4:if(Bcentro)
-		begin		
+		begin
 			Mod_Siguiente=1'b1;//se ejecuta en caso de que el usuario haya introducido valores nuevos
-			Barrido=1'b1;			
+			Barrido=1'b1;
 			EstadoSiguiente = 3'd2;
 		end
 		else
 		begin
 			Barrido=1'b1;
 			EstadoSiguiente = 3'd2;//Si el usuario no ha modificado ningun valor se continua con las lecturas
-		end		
+		end
 	default
 	begin
 		EstadoSiguiente = 3'd1;
@@ -138,15 +151,15 @@ end
 
 always @(*)
 begin
-	Acceso=1'b0;//salidas por defecto
+	//salidas por defecto
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente = Dir;
-	case(EstadoActualc)	
+	case(EstadoActualc)
 	3'd1:if(Barrido)
 		begin
 			EstadoSiguientec=3'd2;
-			Dir_Siguiente=7'h21;			
+			Dir_Siguiente=7'h21;
 		end
 		else
 		begin
@@ -161,7 +174,7 @@ begin
 			end
 		end
 	3'd2:if(FRW)
-		begin	
+		begin
 			Dir_Siguiente = Dir + 1'b1;
 			EstadoSiguientec=3'd3;
 			Acceso=1'b1;
@@ -170,7 +183,7 @@ begin
 		begin
 			EstadoSiguientec=3'd2;
 		end
-	
+
 	3'd3:if(Dir==7'h27)
 		begin
 			Dir_Siguiente=7'h41;
@@ -187,17 +200,17 @@ begin
 			Dir_Siguiente=7'h21;
 		end
 		else
-		begin	
+		begin
 			EstadoSiguientec=3'd2;
 			Acceso=1'b1;
 		end
 	default
 	begin
-		
+
 		EstadoSiguientec = 3'd1;
-		
-	end	
-	endcase	
+
+	end
+	endcase
 end
 //////////////////////////////////////Maquina de estados de Espera////////////////////////////////////
 //Registros de estado
@@ -225,7 +238,7 @@ begin
 	cuenta_espera_sig = cuenta_espera;
 	Fespera=1'b0;
 	EstadoSiguientee=2'd1;
-	case(EstadoActuale)	
+	case(EstadoActuale)
 	3'd1:if(Espera)
 		begin
 			EstadoSiguientee=2'd2;
@@ -249,7 +262,7 @@ begin
 				EstadoSiguientee=2'd1;
 			end
 			else
-			begin			
+			begin
 				cuenta_espera_sig = cuenta_espera+1'b1;
 				EstadoSiguientee = 2'd2;
 			end
@@ -257,8 +270,8 @@ begin
 	default
 	begin
 		EstadoSiguientee = 2'd1;
-	end	
-	endcase	
+	end
+	endcase
 end
 
 
@@ -292,7 +305,7 @@ begin
 		default
 		begin
 			Punt_Siguiente=Punt + Bizquierda - Bderecha;
-		end	
+		end
 		endcase
 	end
 end
@@ -328,7 +341,7 @@ begin
 	EstadoSiguientea=2'd1;
 	Alarma=1'b0;
 	STW=1'b0;
-	case(EstadoActuala)	
+	case(EstadoActuala)
 	3'd1:if(IRQ)
 		begin
 			EstadoSiguientea=2'd2;
@@ -341,7 +354,7 @@ begin
 	3'd2:if(Fespera_alarma)
 		begin
 			EstadoSiguientea=2'd1;
-			cuenta_alarma_sig=8'b1;			
+			cuenta_alarma_sig=8'b1;
 		end
 		else
 		begin
@@ -354,7 +367,7 @@ begin
 				STW=1'b1;
 			end
 			else
-			begin			
+			begin
 				cuenta_alarma_sig = cuenta_alarma+1'b1;
 				EstadoSiguientea = 2'd2;
 			end
@@ -362,18 +375,8 @@ begin
 	default
 	begin
 		EstadoSiguientea = 2'd1;
-	end	
-	endcase	
+	end
+	endcase
 end
 
 endmodule
-
-
-
-
-
-
-
-
-
-
