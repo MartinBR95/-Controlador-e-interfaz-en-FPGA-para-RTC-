@@ -26,7 +26,7 @@ output reg [6:0] Dir; //Direccion de memoria del rtc al que se apunta
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
-localparam [7:0]TiempoEspera=5;
+localparam [7:0]TiempoEspera=8'd5;
 localparam [7:0]TiempoEspera_alarma=8'd3;
 //Registros de estado
 reg [2:0] EstadoActual;
@@ -150,7 +150,15 @@ begin
 		end
 		else
 		begin
-			EstadoSiguientec=3'd1;
+			if(Dir==2'h2)
+			begin
+				Acceso=1'b1;
+				EstadoSiguientec=3'd1;
+			end
+			else
+			begin
+				EstadoSiguientec=3'd1;
+			end
 		end
 	3'd2:if(FRW)
 		begin	
@@ -185,7 +193,9 @@ begin
 		end
 	default
 	begin
+		
 		EstadoSiguientec = 3'd1;
+		
 	end	
 	endcase	
 end
