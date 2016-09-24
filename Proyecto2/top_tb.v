@@ -35,7 +35,7 @@ module top_tb;
 	reg CLK;
 
 	// Outputs
-	wire [6:0] Dir;
+	wire [7:0] Dir;
 	wire [6:0] Punt;
 	wire CS;
 	wire RD;

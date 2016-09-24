@@ -22,8 +22,8 @@
 module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,Dir,Numup,Numdown,Punt);
 
 input wire CLK,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
-output reg [6:0] Dir; //Direccion de memoria del rtc al que se apunta
-output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
+output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
+//output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
@@ -40,7 +40,7 @@ reg Barrido; //Indica que se debe recorrer la memoria
 reg FBarrido; //Proviene de la maquina de Cuenta e indica que se ha terminado de recorrer la memoria
 reg Espera; //Indica a la maquina de estado que debe realizar un ciclo de espera
 reg [7:0] cuenta_espera;
-reg Accesonxt; //Variable para manejar los valores de la salida de Acceso en la l�gica combinacional
+reg Accesonxt, AccesoCMD; //Variable para manejar los valores de la salida de Acceso en la l�gica combinacional
 reg Fespera;//La maquina de estado de espera indica que termino la espera
 wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
@@ -70,6 +70,8 @@ begin
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
+	if(FBarrido)AccesoCMD = 1'b1;
+	else AccesoCMD = 1'b0;
 	case(EstadoActual)//distintos estados
 	3'd1:if(FRW)
 		begin
@@ -122,7 +124,7 @@ end
 //Registros de estado
 reg [2:0] EstadoActualc;
 reg [2:0] EstadoSiguientec;
-reg [6:0] Dir_Siguiente;
+reg [7:0] Dir_Siguiente;
 //Valores Iniciales y asignacion de estado
 always@ ( posedge CLK, posedge RST )
 begin
@@ -158,10 +160,14 @@ begin
 	if(EstadoActualc != EstadoSiguiente) InicioEstado = 1'b1;
 	else InicioEstado = 1'b0;
 	if(cnt == 3'b111) Accesonxt = 1'b0;
-  else Accesonxt = Acceso;
+  else begin
+		if(AccesoCMD) Accesonxt = 1'b1;
+		else Accesonxt = Acceso;
+	end
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
-	Dir_Siguiente = Dir;
+	if(EstadoActual==3'd3) Dir_Siguiente = 8'hf0;
+	else	Dir_Siguiente = Dir;
 	case(EstadoActualc)
 	3'd0:if(FRW)
 			EstadoSiguientec = 3'd1;
