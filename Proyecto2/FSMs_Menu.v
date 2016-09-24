@@ -26,7 +26,7 @@ output reg [6:0] Dir; //Direccion de memoria del rtc al que se apunta
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
-localparam [7:0]TiempoEspera=8'd5;
+localparam [7:0]TiempoEspera=8'd40;
 localparam [7:0]TiempoEspera_alarma=8'd3;
 //Registros de estado
 reg [2:0] EstadoActual;
@@ -65,7 +65,7 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
-	if(Mod_Siguiente && FRW) Mod_Siguiente = ~Mod_Siguiente;
+	if(Mod_Siguiente && FBarrido) Mod_Siguiente = ~Mod_Siguiente;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
@@ -83,7 +83,6 @@ begin
 		begin
 			Espera=1'b1;//en caso de terminar el barrido de memoria se inicia la maquina de estados de espera
 			EstadoSiguiente=3'd3;
-			Mod_Siguiente=1'b0;
 		end
 		else
 		begin

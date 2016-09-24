@@ -93,6 +93,7 @@ module top_tb;
 		//estado 4, falso
 		//estado 2,
 		wait(Dir==7'h44);
+		#50000;
 		IRQ<=1'b1;
 		//estado 3
 		@(negedge CLK);
