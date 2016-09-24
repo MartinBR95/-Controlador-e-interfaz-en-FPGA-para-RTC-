@@ -70,15 +70,7 @@ module ModuloVGA
 
 	/////////////////////////// LLAMADO A MODULO DE SINCRONIA //////////////////////////////
 
-	reg CLK2 = 1'b0;        //Se crea una variable de reloj para el modulo de sincronia
-
-	always @ (posedge CLK)  //La seccion de sincronia necesita un reloj de 50MHz, y la nexys da un clock de 100MHz
-	begin
-		CLK2 = ~CLK2;
-	end
-
-
-	sync Sincronia(CLK2, RST, HS, VS, ENClock, video_on, ADDRH, ADDRV);  //Sincronizacion para la VGA
+	sync Sincronia(CLK, RST, HS, VS, ENClock, video_on, ADDRH, ADDRV);  //Sincronizacion para la VGA
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// MEMORIAS empleadas  ////////////////////////////////////////
@@ -217,7 +209,7 @@ entradas provenientes de multiplexado */
 
 	initial  //Se leen los datos de los .txt o .list y se pasan a las memorias
 	begin
-	$readmemh ("PLANTILLA.txt", PLANTILLA_DATA); //paso de listas txt a memorias
+	$readmemh ("plantilla.txt", PLANTILLA_DATA); //paso de listas txt a memorias
 	$readmemh ("NUMERO0.list", NUMERO0_DATA );
 	$readmemh ("NUMERO1.list", NUMERO1_DATA );
 	$readmemh ("NUMERO2.list", NUMERO2_DATA );
