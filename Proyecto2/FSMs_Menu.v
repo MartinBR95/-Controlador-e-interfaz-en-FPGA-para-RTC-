@@ -23,6 +23,7 @@ module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,
 
 input wire CLK,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [6:0] Dir; //Direccion de memoria del rtc al que se apunta
+output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
@@ -65,7 +66,7 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
-	if(Mod_Siguiente && FBarrido) Mod_Siguiente = ~Mod_Siguiente;
+	if(Mod_Siguiente && Fespera) Mod_Siguiente = ~Mod_Siguiente;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
