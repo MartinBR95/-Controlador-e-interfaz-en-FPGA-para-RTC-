@@ -39,6 +39,7 @@ reg Barrido; //Indica que se debe recorrer la memoria
 reg FBarrido; //Proviene de la maquina de Cuenta e indica que se ha terminado de recorrer la memoria
 reg Espera; //Indica a la maquina de estado que debe realizar un ciclo de espera
 reg [7:0] cuenta_espera;
+reg Accesonxt; //Variable para manejar los valores de la salida de Acceso en la l�gica combinacional
 reg Fespera;//La maquina de estado de espera indica que termino la espera
 wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
@@ -60,16 +61,6 @@ begin
 		Mod<=Mod_Siguiente;
 	end
 end
-
-reg [2:0] cnt;   //Contador para limitar el tiempo de una señal
-always @(posedge CLK) begin
-	if(RST) cnt <= 1'b0;
-	else begin
-		if(Acceso) cnt <= cnt + 1'b1;
-		else cnt <= 0;
-	end
-end
-
 
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
@@ -137,49 +128,64 @@ always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
 	begin
-		EstadoActualc <= 3'd1;
+		Acceso <= 1'b1;
+		EstadoActualc <= 3'd0;
 		Dir <= 7'h02;
 	end
 	else
 	begin
+		Acceso <= Accesonxt;
 		EstadoActualc <= EstadoSiguientec;
 		Dir <= Dir_Siguiente;
 	end
 end
 
+reg [2:0] cnt;   //Contador para limitar el tiempo de una señal
+always @(posedge CLK) begin
+	if(RST) begin
+		cnt <= 1'b0;
+	end
+	else begin
+		if(Acceso) cnt <= cnt + 1'b1;
+		else cnt <= 1'b0;
+	end
+end
+
+reg InicioEstado; //Variable para saber si es la primera vez que se ingresa a un estado
 
 always @(*)
 begin
-	//salidas por defecto
+	if(EstadoActualc != EstadoSiguiente) InicioEstado = 1'b1;
+	else InicioEstado = 1'b0;
+	if(cnt == 3'b111) Accesonxt = 1'b0;
+  else Accesonxt = Acceso;
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente = Dir;
 	case(EstadoActualc)
+	3'd0:if(FRW)
+			EstadoSiguientec = 3'd1;
+		else
+			EstadoSiguientec = 3'd0;
 	3'd1:if(Barrido)
 		begin
 			EstadoSiguientec=3'd2;
 			Dir_Siguiente=7'h21;
+			Accesonxt=1'b1;
 		end
 		else
 		begin
-			if(Dir==2'h2)
-			begin
-				Acceso=1'b1;
-				EstadoSiguientec=3'd1;
-			end
-			else
-			begin
-				EstadoSiguientec=3'd1;
-			end
+			EstadoSiguientec=3'd1;
 		end
 	3'd2:if(FRW)
 		begin
 			Dir_Siguiente = Dir + 1'b1;
 			EstadoSiguientec=3'd3;
-			Acceso=1'b1;
+//		Accesonxt=1'b1;
 		end
 		else
 		begin
+			if(InicioEstado) Accesonxt=1'b1;
 			EstadoSiguientec=3'd2;
 		end
 
@@ -201,7 +207,7 @@ begin
 		else
 		begin
 			EstadoSiguientec=3'd2;
-			Acceso=1'b1;
+  		Accesonxt=1'b1;
 		end
 	default
 	begin
@@ -234,11 +240,6 @@ end
 
 always @(*)
 begin
-	if(RST) Acceso=1'b1;
-	else begin
-		if(cnt == 3'b111) Acceso = 1'b0;
-		else Acceso = Acceso;
-	end
 	cuenta_espera_sig = cuenta_espera;
 	Fespera=1'b0;
 	EstadoSiguientee=2'd1;
