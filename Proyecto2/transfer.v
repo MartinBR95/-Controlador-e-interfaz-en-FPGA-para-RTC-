@@ -60,7 +60,7 @@ module transfer(
 			state <= 0;					//y estado.
 			ADr <= 1;
 			CSr <= 1;
-			RDr <= 1'bz;					//La máquina de estados principal de este módulo consta de 4 estados, y se coordina con un contados
+			RDr <= 1'b1;					//La máquina de estados principal de este módulo consta de 4 estados, y se coordina con un contados
 			WRr <= 1;					//para dar los tiempos de espera correspondientes a cada estado u operación.
 		end							//Dado que el RTC especifica tiempos de diferencia entre la conmutación de algunas señales
 		else begin						//cada uno de estos estados es una rutina en si, que realiza varias operaciones según se lo indique
@@ -99,7 +99,7 @@ module transfer(
 							end
 						end
 						else begin
-							RDr <= 1'bz;
+							RDr <= 1'b1;
 							if(~tw) begin
 								state <= 3;
 							end
@@ -124,7 +124,7 @@ module transfer(
 				else begin
 					if(leido) begin
 						CSr <= 1;
-						RDr <= 1'bz;
+						RDr <= 1'b1;
 						state <= 0;
 					end
 					else begin
@@ -144,7 +144,7 @@ module transfer(
 					if(escrito) begin
 						CSr <= 1;
 						WRr <= 1;
-						RDr <= 1'bz;
+						RDr <= 1'b1;
 						state <= 0;
 					end
 					else begin

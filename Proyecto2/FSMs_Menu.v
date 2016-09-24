@@ -74,8 +74,6 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
-	if(cnt == 3'b111) Acceso = 1'b0;
-	else Acceso = Acceso;
 	if(Mod_Siguiente && FRW) Mod_Siguiente = ~Mod_Siguiente;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
@@ -236,6 +234,11 @@ end
 
 always @(*)
 begin
+	if(RST) Acceso=1'b1;
+	else begin
+		if(cnt == 3'b111) Acceso = 1'b0;
+		else Acceso = Acceso;
+	end
 	cuenta_espera_sig = cuenta_espera;
 	Fespera=1'b0;
 	EstadoSiguientee=2'd1;
