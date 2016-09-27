@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module top(
-  input wire IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,CLK,
+  input wire IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,CLK,Alarma_stop,
   output wire [7:0] Dir,
   output wire [6:0] Punt,
   output wire CS, RD, WR, AD
@@ -27,7 +27,7 @@ module top(
 
   wire FRW, Mod, Acceso, STW, Numup, Numdown, Alarma;
 
-  FSMs_Menu MasterControl(IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,Dir,Numup,Numdown,Punt);
+  FSMs_Menu MasterControl(IRQ,Alarma_stop,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,Dir,Numup,Numdown,Punt);
   transfer RTCControl(Acceso,~Mod,CLK,RST,AD,CS,RD,WR,FRW);
 
 
