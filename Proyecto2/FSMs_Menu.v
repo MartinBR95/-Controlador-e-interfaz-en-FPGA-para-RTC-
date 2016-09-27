@@ -27,7 +27,7 @@ output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
 output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
-localparam [7:0]TiempoEspera=8'b11111111;
+localparam [7:0]TiempoEspera=8'd3;
 //Registros de estado
 reg [2:0] EstadoActual;
 reg [2:0] EstadoSiguiente;
@@ -43,7 +43,7 @@ reg Accesonxt, AccesoCMD; //Variable para manejar los valores de la salida de Ac
 reg Fespera;//La maquina de estado de espera indica que termino la espera
 wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
-assign Fcount=Dir==7'h44;//Constante de ultima direccion
+assign Fcount=Dir==8'hf1;//Constante de ultima direccion
 //Valores Iniciales y asignacion de estado
 //////////////////////////////////Maquina de estados Principal//////////////////////
 always @( posedge CLK,posedge RST)
@@ -159,14 +159,13 @@ begin
 	if(EstadoActualc != EstadoSiguiente) InicioEstado = 1'b1;
 	else InicioEstado = 1'b0;
 	if(cnt == 3'b111) Accesonxt = 1'b0;
-  else begin
+	else begin
 		if(AccesoCMD) Accesonxt = 1'b1;
 		else Accesonxt = Acceso;
 	end
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
-	if(EstadoActual==3'd3) Dir_Siguiente = 8'hf0;
-	else	Dir_Siguiente = Dir;
+	Dir_Siguiente=Dir;
 	case(EstadoActualc)
 	3'd0:if(FRW)
 			EstadoSiguientec = 3'd1;
@@ -175,7 +174,7 @@ begin
 	3'd1:if(Barrido)
 		begin
 			EstadoSiguientec=3'd2;
-			Dir_Siguiente=7'h21;
+			Dir_Siguiente=8'h21;
 			Accesonxt=1'b1;
 		end
 		else
@@ -194,7 +193,42 @@ begin
 			EstadoSiguientec=3'd2;
 		end
 
-	3'd3:if(Dir==7'h27)
+	3'd3:case(Dir)
+			7'h1:
+				begin
+				Dir_Siguiente=8'hf0;
+				EstadoSiguientec=3'd4;
+				end
+			7'h27:
+				begin
+				Dir_Siguiente=8'h41;
+				EstadoSiguientec=3'd4;
+				end
+			7'h44:if(IRQ)
+				begin
+					Dir_Siguiente=8'h0;
+					EstadoSiguientec=3'd4;
+				end
+				else
+				begin
+					Dir_Siguiente=8'hf0;
+					EstadoSiguientec=3'd4;
+				end
+			default
+			begin
+				Dir_Siguiente=Dir;
+				EstadoSiguientec=3'd4;
+			end
+		endcase
+			
+	
+	
+	
+	
+	
+	
+	
+	/*if(Dir==7'h27)
 		begin
 			Dir_Siguiente=7'h41;
 			EstadoSiguientec=3'd4;
@@ -202,23 +236,21 @@ begin
 		else
 		begin
 			EstadoSiguientec=3'd4;
-		end
+		end*/
 	3'd4:if(Fcount)
 		begin
 			FBarrido=1'b1;
 			EstadoSiguientec=3'd1;
-			Dir_Siguiente=7'h21;
+			Dir_Siguiente=8'h21;
 		end
 		else
 		begin
 			EstadoSiguientec=3'd2;
-  		Accesonxt=1'b1;
+			Accesonxt=1'b1;
 		end
 	default
 	begin
-
 		EstadoSiguientec = 3'd1;
-
 	end
 	endcase
 end
@@ -303,7 +335,7 @@ begin
 			7'h27:Punt_Siguiente=7'h41;//saltos de puntero
 			7'h44:Punt_Siguiente=7'h21;
 			7'h20:Punt_Siguiente=7'h43;
-			7'h44:Punt_Siguiente=7'h26;
+			7'h40:Punt_Siguiente=7'h26;
 		default
 		begin
 			Punt_Siguiente=Punt + Bizquierda - Bderecha;
