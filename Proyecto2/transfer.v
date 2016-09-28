@@ -29,9 +29,9 @@ module transfer(
 																			 //señal según se especifíca en la hoja de datos del RTC
 	assign tadt = (cycles > 7 & cycles <= 10);			//y así se activan en el orden y momento correctos las señales para
 																		//controlar el dispositivo V3023
-	assign tacc = (cycles > 18 & cycles <= 24);	    //Ventanas de Dato de lectura valido
-	assign tdf = (cycles > 26 & cycles <= 30);
-	assign RValid = (tcs && ~tacc || (tdf && timer > 4)) ? 1 : 0;
+																		    //Ventanas de Dato de lectura valido
+	assign tdf = (cycles > 24 & cycles <= 28);
+	assign RValid = (tdf && read) ? 1 : 0;
 
 	assign taw = (cycles > 4 & cycles <= 7);				//Ventanas de Address valido
 	assign tah = (cycles > 7 & cycles <= 14);
@@ -39,7 +39,7 @@ module transfer(
 
 	assign tdw = (cycles > 19 & cycles <= 26);			//Ventanas de Dato de escritura valido
 	assign tdh = (cycles > 26 & cycles <= 28);
-	assign WValid = ((tdw || tdh)) ? 1 : 0;
+	assign WValid = (~read && (tdw || tdh)) ? 1 : 0;
 
 
 //assign AValid = ((state == 1 || state == 0) && (tdw | tdh) ? : ;
