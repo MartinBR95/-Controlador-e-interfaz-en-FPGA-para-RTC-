@@ -84,7 +84,7 @@ initial
 		  {HORAT_T} <= 8'h00;       //Senal de horas de temporizador de la RTC	
 		  {MINUTOT_T} <= 8'h00;     //Senal de minutos de temporizador de la RTC
 		  {SEGUNDOT_T} <= 8'h00;	  //Senal de segundos de temporizador de la RTC
-		  {ALARMA} <= 1'h0;
+		  {ALARMA} <= 1'h1;
 		  CLK = 0;
 		  RST = 1;
         

@@ -24,58 +24,57 @@ module ModuloVGA
    //						 CON EL FIN DE QUE LA DIMENSION DE LOS PUNTEROS SEA IGUAL A LA DE LAS MEMORIAS	
 	
    //VALORES QUE CAMBIAN DEPENDIENDO DE LA IMANGEN 
-	parameter imagen = 18'd159999;	     //En general la plantilla tiene esta cantidad de pixels
-	parameter ImagenX = 9'd400;	     //su dimension en pixeles X es esta 
-	parameter ImagenY = 9'd400;        //su dimensoon en pixeles Y es esta
+	parameter imagen = 16'd39999;	     //En general la plantilla tiene esta cantidad de pixels
+	parameter ImagenX = 8'd200;	     //su dimension en pixeles X es esta 
+	parameter ImagenY = 8'd200;        //su dimensoon en pixeles Y es esta
 	parameter InicioImagenX = 7'd100;  //Parametro de inicio de la imagen en X
-	parameter InicioImagenY = 7'd50;  //Parametro de inicio de la imagen en Y
+	parameter InicioImagenY = 7'd100;  //Parametro de inicio de la imagen en Y
 
 	/////////////DATOS DE NUMEROS////////////////   
 	//VALORES QUE CAMBIAN DEPENDIENDO DE POSICION Y DIMENSIONES DE NUMEROS 
-	parameter Numeros = 12'd2846;      //En general numeros tienen esta cantidad de pixels
-	parameter NumerosX  = 6'd39;   	 //sus dimensiones en pixeles X es esta 
-	parameter NumerosY  = 7'd73;      //sus dimensiones en pixeles Y es esta 
+	parameter Numeros = 10'd739;      //En general numeros tienen esta cantidad de pixels
+	parameter NumerosX  = 5'd20;   	 //sus dimensiones en pixeles X es esta 
+	parameter NumerosY  = 6'd37;      //sus dimensiones en pixeles Y es esta 
 	 
 	/////////////DATOS DE ALARMA////////////////   
-	parameter Alarma  = 12'd2500;
-	parameter AlarmaX = 6'd50;
-	parameter AlarmaY = 6'd50;
+	parameter Alarma  = 10'd624;
+	parameter AlarmaX = 5'd25;
+	parameter AlarmaY = 5'd25;
 	
-	parameter AY_in  = 9'd350;
-	parameter AY_end = 9'd399;
+	parameter AY_in  = 8'd175;
+	parameter AY_end = 8'd199;
 	
-	parameter AX_in  = 9'd350;
-	parameter AX_end = 9'd399;
+	parameter AX_in  = 8'd175;
+	parameter AX_end = 8'd199;
 	
 	//posiciones de los numeros en la plantilla (NO EN LA VGA)
 	//pocision en y 
-	parameter SecFecha_inY = 7'd45;
-	parameter SecHora_inY  = 8'd171;
-	parameter SecTimer_inY = 9'd294;
+	parameter SecFecha_inY = 5'd22;
+	parameter SecHora_inY  = 7'd85;
+	parameter SecTimer_inY = 8'd146;
 
-	parameter SecFecha_endY = 7'd118;           //hay tres subclases para los numeros, la fecha, la hora y el cronometro
-	parameter SecHora_endY  = 8'd243;
-	parameter SecTimer_endY = 9'd368;
+	parameter SecFecha_endY = 6'd58;           //hay tres subclases para los numeros, la fecha, la hora y el cronometro
+	parameter SecHora_endY  = 7'd121;
+	parameter SecTimer_endY = 8'd182;
 
 	//pocision en y 
-	parameter linea1_inX = 7'd70;           //Todos los numeros se agrupan en filas verticales
-	parameter linea2_inX = 7'd109;		     //Ejemplo: en la linea 1 y 2, en fecha estan los dias, en hora estan las horas y en cronometro estan las horas
+	parameter linea1_inX = 7'd35;           //Todos los numeros se agrupan en filas verticales
+	parameter linea2_inX = 7'd55;		     //Ejemplo: en la linea 1 y 2, en fecha estan los dias, en hora estan las horas y en cronometro estan las horas
                                             //Recordad que cada bloque (hora, minutos, etc.) posee dos numeros 
-	parameter linea3_inX = 8'd160;      
-	parameter linea4_inX = 8'd199;
+	parameter linea3_inX = 8'd80;      
+	parameter linea4_inX = 8'd100;
 
-	parameter linea5_inX = 8'd250;
-	parameter linea6_inX = 9'd289;
+	parameter linea5_inX = 8'd125;
+	parameter linea6_inX = 9'd145;
 	
-	parameter linea1_endX = 7'd108; 
-	parameter linea2_endX = 8'd147; 
+	parameter linea1_endX = 7'd54; 
+	parameter linea2_endX = 8'd74; 
 
-	parameter linea3_endX = 8'd198;
-	parameter linea4_endX = 8'd237;
+	parameter linea3_endX = 8'd99;
+	parameter linea4_endX = 8'd119;
 
-	parameter linea5_endX = 9'd288;
-	parameter linea6_endX = 9'd328;
-
+	parameter linea5_endX = 9'd144;
+	parameter linea6_endX = 9'd164;
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -156,87 +155,9 @@ module ModuloVGA
 
 	//// PARAMETROS DE ALARMA
 	assign alarma_on = ((InicioImagenX +  AX_in)<= ADDRH) && (ADDRH < (InicioImagenX +  AX_end)) && ((InicioImagenY +  AY_in) < ADDRV) && (ADDRV < (InicioImagenY +  AY_end) && ALARMA);	
+
 	
-	///////////////////////////////////
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////// Direcciones de lectura en memorias  //////////////////////////////////
-
-//Segun sea el lugar del cual se debe sacar los pixeles se usan estas direcciones 
-
-//DECLARACIONES  
-//Se declaran los punteros de las memorias
- 	wire [17:0]STATE_Plantilla;          //Puntero de memoria de plantilla general    
-	
-	//NOTA IMPORTANTE, LA DIMENSION DE LOS PUNTEROS DEBE SER LA MISMA QUE EL REGISTRO "Adress"
-	
-	wire [11:0]STATE_dia1;					 //Puntero a una de las memorias de numeros dependiendo de la entrada "DIA_T"
-	wire [11:0]STATE_dia2;					   
-
-	wire [11:0]STATE_mes1;					 //Puntero a una de las memorias de numeros dependiendo de la entrada "MES_T"
-	wire [11:0]STATE_mes2;							
-
-	wire [11:0]STATE_ano1;                //Puntero a una de las memorias de numeros dependiendo de la entrada "ANO_T"
-	wire [11:0]STATE_ano2;
-
-	wire [11:0]STATE_Horas1;              //Puntero a una de las memorias de numeros dependiendo de la entrada "HORA_T"
-	wire [11:0]STATE_Horas2;
-
-	wire [11:0]STATE_minutos1;				 //Puntero a una de las memorias de numeros dependiendo de la entrada "MINUTO_T"
-	wire [11:0]STATE_minutos2;
-	
-	wire [11:0]STATE_segundos1;           //Puntero a una de las memorias de numeros dependiendo de la entrada "SEGUNDO_T"
-	wire [11:0]STATE_segundos2;
-
-	wire [11:0]STATE_HorasT1;             //Puntero a una de las memorias de numeros dependiendo de la entrada "HORAT_T"
-	wire [11:0]STATE_HorasT2;
-	
-	wire [11:0]STATE_minutosT1;           //Puntero a una de las memorias de numeros dependiendo de la entrada "HORAT_T"
-	wire [11:0]STATE_minutosT2;
-
-	wire [11:0]STATE_segundosT1;          //Puntero a una de las memorias de numeros dependiendo de la entrada "SEGUNDOT_T"
-	wire [11:0]STATE_segundosT2;
-
-	wire [11:0]STATE_ALARMA;	
-
-//ASIGNACIONES  	
-//Se asigna los valores que deben tener estos punteros para leer las memorias
-//Esto se hace tomando en cuenta los parametros previamente definidos 
-/*Para los STATE que no son el de plantilla; estos punteros pueden apuntar a cualquier memoria de numeros, dependiendo de las 
-entradas provenientes de multiplexado */
-
-	assign STATE_Plantilla  = (ADDRV- InicioImagenY) + (ADDRH-InicioImagenX)*ImagenY; //Establecimieto de puntero para memoria de plantilla 
-
-	assign STATE_ALARMA     = (ADDRV- InicioImagenY- AY_in) + (ADDRH- InicioImagenX- AX_in)*AlarmaY;     //Establecimieto de puntero para memoria de NUMERON 
-	
-	assign STATE_dia1       = (ADDRV- InicioImagenY- SecFecha_inY) + (ADDRH- InicioImagenX- linea1_inX)*NumerosY;     //Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_dia2       = (ADDRV- InicioImagenY- SecFecha_inY) + (ADDRH- InicioImagenX- linea2_inX)*NumerosY;
-  	
-	assign STATE_mes1       = (ADDRV- InicioImagenY- SecFecha_inY) + (ADDRH- InicioImagenX- linea3_inX)*NumerosY; 		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_mes2       = (ADDRV- InicioImagenY- SecFecha_inY) + (ADDRH- InicioImagenX- linea4_inX)*NumerosY;
-
-	assign STATE_ano1       = (ADDRV- InicioImagenY- SecFecha_inY) + (ADDRH- InicioImagenX- linea5_inX)*NumerosY;		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_ano2       = (ADDRV- InicioImagenY- SecFecha_inY) + (ADDRH- InicioImagenX- linea6_inX)*NumerosY;
-
-	assign STATE_Horas1     = (ADDRV- InicioImagenY- SecHora_inY)  + (ADDRH- InicioImagenX- linea1_inX)*NumerosY;		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_Horas2     = (ADDRV- InicioImagenY- SecHora_inY)  + (ADDRH- InicioImagenX- linea2_inX)*NumerosY;
-	
-	assign STATE_minutos1   = (ADDRV- InicioImagenY- SecHora_inY)  + (ADDRH- InicioImagenX- linea3_inX)*NumerosY;		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_minutos2   = (ADDRV- InicioImagenY- SecHora_inY)  + (ADDRH- InicioImagenX- linea4_inX)*NumerosY;
-	
-	assign STATE_segundos1  = (ADDRV- InicioImagenY- SecHora_inY)  + (ADDRH- InicioImagenX- linea5_inX)*NumerosY;		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_segundos2  = (ADDRV- InicioImagenY- SecHora_inY)  + (ADDRH- InicioImagenX- linea6_inX)*NumerosY;
-	
-	assign STATE_HorasT1    = (ADDRV- InicioImagenY- SecTimer_inY) + (ADDRH- InicioImagenX- linea1_inX)*NumerosY;		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_HorasT2    = (ADDRV- InicioImagenY- SecTimer_inY) + (ADDRH- InicioImagenX- linea2_inX)*NumerosY;
-		
-	assign STATE_minutosT1  = (ADDRV- InicioImagenY- SecTimer_inY) + (ADDRH- InicioImagenX- linea3_inX)*NumerosY;		//Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_minutosT2  = (ADDRV- InicioImagenY- SecTimer_inY) + (ADDRH- InicioImagenX- linea4_inX)*NumerosY;		
-	
-	assign STATE_segundosT1 = (ADDRV- InicioImagenY- SecTimer_inY) + (ADDRH- InicioImagenX- linea5_inX)*NumerosY;	   //Establecimieto de puntero para memoria de NUMERON 
-	assign STATE_segundosT2 = (ADDRV- InicioImagenY- SecTimer_inY) + (ADDRH- InicioImagenX- linea6_inX)*NumerosY;		
-	
 
 	////////////////////////////////////////////////////////////////////////////////////////
 	////////////////  DEFINICION DE DATOS DE PIXELES SALIENTES A PANTALLA  /////////////////	
@@ -258,35 +179,41 @@ entradas provenientes de multiplexado */
 	end
 
 	wire [18:0]Selector = {D_on1,D_on2,M_on1,M_on2,A_on1,A_on2,H_on1,H_on2,MI_on1,MI_on2,S_on1,S_on2,HT_on1,HT_on2,MIT_on1,MIT_on2,ST_on1,ST_on2,alarma_on};
-	reg  [12:0]Adress = 10'h0;
 	reg  [3:0]Numero_RTC = 4'hF;
 	
-	// seleccion de direccion en memoria de numeros  
-	always @(*) 
-	begin 
-		case (Selector)
-		19'b1000000000000000000 : Adress = STATE_dia1;               
-		19'b0100000000000000000 : Adress = STATE_dia2;
-		19'b0010000000000000000 : Adress = STATE_mes1;
-		19'b0001000000000000000 : Adress = STATE_mes2;
-		19'b0000100000000000000 : Adress = STATE_ano1;
-		19'b0000010000000000000 : Adress = STATE_ano2;
-		19'b0000001000000000000 : Adress = STATE_Horas1;
-		19'b0000000100000000000 : Adress = STATE_Horas2;
-		19'b0000000010000000000 : Adress = STATE_minutos1;
-		19'b0000000001000000000 : Adress = STATE_minutos2;
-		19'b0000000000100000000 : Adress = STATE_segundos1;
-		19'b0000000000010000000 : Adress = STATE_segundos2;
-		19'b0000000000001000000 : Adress = STATE_HorasT1;
-		19'b0000000000000100000 : Adress = STATE_HorasT2;
-		19'b0000000000000010000 : Adress = STATE_minutosT1;
-		19'b0000000000000001000 : Adress = STATE_minutosT2;
-		19'b0000000000000000100 : Adress = STATE_segundosT1;
-		19'b0000000000000000010 : Adress = STATE_segundosT2;
-		default Adress = 12'hFFF;
-		endcase
-	end 
-	
+	wire [17:0]Adress;
+	reg  [8:0]Y;
+	reg  [8:0]X;
+	reg  [8:0]MUL; 
+
+	always @(*)
+	begin
+		case(Selector)
+			19'b1000000000000000000 : begin Y = SecFecha_inY; X= linea1_inX; MUL= NumerosY;  end               
+			19'b0100000000000000000 : begin Y = SecFecha_inY; X= linea2_inX; MUL= NumerosY;  end       
+			19'b0010000000000000000 : begin Y = SecFecha_inY; X= linea3_inX; MUL= NumerosY;  end       
+			19'b0001000000000000000 : begin Y = SecFecha_inY; X= linea4_inX; MUL= NumerosY;  end       
+			19'b0000100000000000000 : begin Y = SecFecha_inY; X= linea5_inX; MUL= NumerosY;  end       
+			19'b0000010000000000000 : begin Y = SecFecha_inY; X= linea6_inX; MUL= NumerosY;  end       
+			19'b0000001000000000000 : begin Y =  SecHora_inY; X= linea1_inX; MUL= NumerosY;  end       
+			19'b0000000100000000000 : begin Y =  SecHora_inY; X= linea2_inX; MUL= NumerosY;  end       
+			19'b0000000010000000000 : begin Y =  SecHora_inY; X= linea3_inX; MUL= NumerosY;  end       
+			19'b0000000001000000000 : begin Y =  SecHora_inY; X= linea4_inX; MUL= NumerosY;  end       
+			19'b0000000000100000000 : begin Y =  SecHora_inY; X= linea5_inX; MUL= NumerosY;  end       
+			19'b0000000000010000000 : begin Y =  SecHora_inY; X= linea6_inX; MUL= NumerosY;  end       
+			19'b0000000000001000000 : begin Y = SecTimer_inY; X= linea1_inX; MUL= NumerosY;  end       
+			19'b0000000000000100000 : begin Y = SecTimer_inY; X= linea2_inX; MUL= NumerosY;  end       
+			19'b0000000000000010000 : begin Y = SecTimer_inY; X= linea3_inX; MUL= NumerosY;  end      
+			19'b0000000000000001000 : begin Y = SecTimer_inY; X= linea4_inX; MUL= NumerosY;  end       
+			19'b0000000000000000100 : begin Y = SecTimer_inY; X= linea5_inX; MUL= NumerosY;  end       
+			19'b0000000000000000010 : begin Y = SecTimer_inY; X= linea6_inX; MUL= NumerosY;  end       
+			19'b0000000000000000001 : begin Y = AY_in; X= AX_in; MUL= AlarmaY;   end    
+			19'b0000000000000000000 : begin Y = 9'd0 ;  X= 9'd0; MUL= ImagenY;  end               
+			default begin Y = 9'd0 ; X= 9'd0; MUL= ImagenY; end 
+	endcase 
+end
+ //  assign STATE_Plantilla  = (ADDRV- InicioImagenY) + (ADDRH-InicioImagenX)*ImagenY;
+	assign Adress = (ADDRV - InicioImagenY - Y) + (ADDRH - InicioImagenX - X)*MUL; //Establecimieto de puntero para memoria de plantilla 	
 
 	// seleccion de entradas del RTC 	
 	always @(*) 
@@ -330,9 +257,9 @@ entradas provenientes de multiplexado */
 					4'h7 : COLOR_IN = NUMERO7_DATA[{Adress}];
 					4'h8 : COLOR_IN = NUMERO8_DATA[{Adress}];
 					4'h9 : COLOR_IN = NUMERO9_DATA[{Adress}];
-					4'hA : COLOR_IN = ALARMA_DATA[{STATE_ALARMA}];
+					4'hA : COLOR_IN = ALARMA_DATA[{Adress}];
 									
-					default COLOR_IN = PLANTILLA_DATA[{STATE_Plantilla}];
+					default COLOR_IN = PLANTILLA_DATA[{Adress}];
 					endcase 
 					end 
 		else COLOR_IN = 12'h000;
