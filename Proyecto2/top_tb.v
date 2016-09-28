@@ -35,12 +35,14 @@ module top_tb;
 	reg CLK;
 
 	// Outputs
-	wire [7:0] Dir;
-	wire [6:0] Punt;
+	wire Alarma_stop;
 	wire CS;
 	wire RD;
 	wire WR;
 	wire AD;
+	wire [7:0] A_D_Bus;
+	wire [7:0] Dir;
+	wire [6:0] Punt;
 
 	// Instantiate the Unit Under Test (UUT)
 	top uut (
@@ -52,12 +54,14 @@ module top_tb;
 		.Bcentro(Bcentro),
 		.RST(RST),
 		.CLK(CLK),
-		.Dir(Dir),
-		.Punt(Punt),
+		.Alarma_stop(Alarma_stop),
 		.CS(CS),
 		.RD(RD),
 		.WR(WR),
-		.AD(AD)
+		.AD(AD),
+		.A_D_Bus(A_D_Bus),
+		.Dir(Dir),
+		.Punt(Punt)
 	);
 
 	localparam  T = 10;
@@ -99,8 +103,8 @@ module top_tb;
 		IRQ<=1'b1;
 		//estado 3
 		wait(Dir==8'hf1)
-		@(negedge CLK);		
-		IRQ<=1'b0;	
+		@(negedge CLK);
+		IRQ<=1'b0;
 		@(negedge CLK);
 		$stop;
 
