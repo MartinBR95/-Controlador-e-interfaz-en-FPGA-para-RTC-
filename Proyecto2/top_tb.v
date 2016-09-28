@@ -89,14 +89,16 @@ module top_tb;
 		@(negedge CLK);
 		Bderecha<=1;
 		@(negedge CLK);
+		Bcentro<=1'b1;
 		Bderecha<=0;
 		//estado 4, falso
 		//estado 2,
 		wait(Dir==7'h44);
 		#50000;
 		IRQ<=1'b1;
-		//estado 3
+		//estado 3		
 		@(negedge CLK);
+		Bcentro<=1'b1;
 		IRQ<=1'b0;
 		Bcentro<=1'b1;
 		@(negedge CLK);
