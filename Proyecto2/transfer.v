@@ -2,7 +2,7 @@
 
 module transfer(
 	input wire Acceso, read, clk, reset,    				//Entradas del módulo
-	output wire AD, CS, RD, WR, FRW         				//Salidas de control del RTC, en lógica negativa, donde AD es ~A/D para abreviar
+	output wire AD, CS, RD, WR, FRW, AValid, WValid, RValid         				//Salidas de control del RTC, en lógica negativa, donde AD es ~A/D para abreviar
    );
 
 	reg ADr, RDr, CSr, WRr;						//Se definen los registros en los que se trabajará secuencialmente el valor de las
@@ -14,24 +14,37 @@ module transfer(
 	assign RD = RDr;
 	assign WR = WRr;
 
-	wire tcs, tw, tacc, tadt, tads, twr, tdf, tdw, tdh; 	 	//Se definen las ventanas de tiempo como pulsos en los que
+
+	reg [2:0] timer;
+	wire leido, escrito;
+
+	wire tcs, tw, tacc, tadt, tads, taw, tah, tdf, tdw, tdh; 	 	//Se definen las ventanas de tiempo como pulsos en los que
 																			 //no se permitirá o se permitirá el cambio de señales según
 	assign tads = (cycles <= 1);					//corresponda para evitar errores de lectura/escritura
-	assign tcs = (cycles > 1 & cycles <= 7) | (cycles > 18 & cycles <= 24);
+	assign tcs = (cycles > 1 & cycles <= 7) | (cycles > 18 & cycles <= 26);
 																			 //las ventanas de tiempo se definen haciendo uso del contador.
 																//Dado que cada cuenta equivale a 10ns, dado que el CLK funciona
 																	//a 100MHz, entonces se aproximan los valores de operación de cada
-	assign tw = (cycles > 7 & cycles <= 17) | (cycles > 24 & cycles <= 34);
+	assign tw = (cycles > 7 & cycles <= 17) | (cycles > 26 & cycles <= 36);
 																			 //señal según se especifíca en la hoja de datos del RTC
 	assign tadt = (cycles > 7 & cycles <= 10);			//y así se activan en el orden y momento correctos las señales para
 																		//controlar el dispositivo V3023
+	assign tacc = (cycles > 18 & cycles <= 24);	    //Ventanas de Dato de lectura valido
+	assign tdf = (cycles > 26 & cycles <= 30);
+	assign RValid = (tcs && ~tacc || (tdf && timer > 4)) ? 1 : 0;
+
+	assign taw = (cycles > 4 & cycles <= 7);				//Ventanas de Address valido
+	assign tah = (cycles > 7 & cycles <= 14);
+	assign AValid = (taw | tah) ? 1 : 0;
+
+	assign tdw = (cycles > 19 & cycles <= 26);			//Ventanas de Dato de escritura valido
+	assign tdh = (cycles > 26 & cycles <= 28);
+	assign WValid = ((tdw || tdh)) ? 1 : 0;
 
 
+//assign AValid = ((state == 1 || state == 0) && (tdw | tdh) ? : ;
 
-	wire leido, escrito;
 
-
-	reg [2:0] timer;
 	always @(posedge clk) begin
 		if (reset) begin timer <= 0; end
 		else begin
