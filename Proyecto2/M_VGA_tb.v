@@ -24,11 +24,10 @@ localparam T=20; //Define el periodo del reloj
 
 //Define las salidas 
 
-wire HS,VS,ENClock;
+wire HS,VS;
 wire [11:0] COLOR_OUT;   //bits de color hacia la VGA
-wire Plantilla_ON;
-wire [9:0] ADDRH;
-wire [9:0] ADDRV;
+wire Video_on;
+wire [9:0]DIR;
 
 //Define las entradas  
 reg CLK,RST;           
@@ -50,15 +49,13 @@ reg ALARMA;
 //Instanciacion de el Controlador de VGA
 ModuloVGA TOP
 	(
-	CLK,RST,    		  //Senal de reloj 
-   COLOR_OUT,  //bits de color hacia la VGA
-   HS,					  //Sincronizacion horizontal
-   VS,					  //Sincronizacion vertical
-	ENClock,
+   CLK,RST,    	//Senal de reloj 
+   COLOR_OUT,     //bits de color hacia la VGA
+   HS,				//Sincronizacion horizontal
+   VS,				//Sincronizacion vertical
 	DIA_T,         //Senal de dia de la RTC
-	ALARMA,             //Senal de alarma
-	ADDRH,       //Direccion horizontales de pixel en la pantalla
-	ADDRV,          //Direccion vertical de pixel en la pantalla 
+	ALARMA,        //Senal de alarma
+	Video_on,
 	MES_T,         //Senal de mes de la RTC
 	ANO_T,         //Senal de ano de la RTC
 	HORA_T,        //Senal de horas de la RTC
@@ -66,11 +63,11 @@ ModuloVGA TOP
 	SEGUNDO_T,     //Senal de segundos de la RTC
 	HORAT_T,       //Senal de horas de temporizador de la RTC
 	MINUTOT_T,     //Senal de minutos de temporizador de la RTC
-	SEGUNDOT_T,	  //Senal de segundos de temporizador de la RTC
-	Plantilla_ON
+	SEGUNDOT_T,     //Senal de segundos de temporizador de la RTC
+	DIR
 	);
 	
-integer j;
+integer j; 
 integer i;
 
 always #5 CLK = ~CLK;
@@ -78,11 +75,11 @@ always #5 CLK = ~CLK;
 initial
    begin 
 	
-		  {DIA_T} <= 8'h10;         //Senal de dia de la RTC
-		  {MES_T} <= 8'h04;         //Senal de mes de la RTC
-		  {ANO_T} <= 8'h00;         //Senal de ano de la RTC
-		  {HORA_T} <= 8'h50;        //Senal de horas de la RTC
-		  {MINUTO_T} <= 8'h00;      //Senal de minutos de la RTC
+		  {DIA_T} <= 8'h12;         //Senal de dia de la RTC
+		  {MES_T} <= 8'h34;         //Senal de mes de la RTC
+		  {ANO_T} <= 8'h56;         //Senal de ano de la RTC
+		  {HORA_T} <= 8'h78;        //Senal de horas de la RTC
+		  {MINUTO_T} <= 8'h90;      //Senal de minutos de la RTC
 		  {SEGUNDO_T} <= 8'h00;     //Senal de segundos de la RTC
 		  {HORAT_T} <= 8'h00;       //Senal de horas de temporizador de la RTC	
 		  {MINUTOT_T} <= 8'h00;     //Senal de minutos de temporizador de la RTC
@@ -103,10 +100,10 @@ initial
         for(j=0; j<383520; j=j+1)
 		  begin
           #40
-          if(Plantilla_ON) begin
+          if(Video_on) begin
             $fwrite(i,"%h",COLOR_OUT);
           end
-          else if(ADDRH ==641) $fwrite(i,"\n");
+          else if(DIR == 641) $fwrite(i,"\n");
        end
     #16800000
     $fclose(i);

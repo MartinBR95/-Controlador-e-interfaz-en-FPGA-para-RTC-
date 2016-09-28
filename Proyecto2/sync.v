@@ -1,4 +1,4 @@
-module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output wire [9:0] px_X,output wire [9:0] px_Y);
+module sync (input clk, rst, output wire hsync, vsync, video_on, output wire [9:0] px_X,output wire [9:0] px_Y);
 
 //Es preferible definir los parametros de retraso y tiempo de
 //display como constantes que se pueden modificar y ajustar al
@@ -116,7 +116,6 @@ module sync (input clk, rst, output wire hsync, vsync, ENclock, video_on, output
 		assign vsync = !v_sync_reg;
 		assign px_X = hcnt;
 		assign px_Y = vcnt;
-		assign ENclock = ENpulse;
 		assign video_on = (hcnt<HD) && (vcnt<VD);
 
 endmodule
