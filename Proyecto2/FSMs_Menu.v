@@ -19,16 +19,15 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-module FSMs_Menu (IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,Alarma,STW,CLK,Dir,Numup,Numdown,Punt);
+module FSMs_Menu (IRQ,Alarma_stop,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Numup,Numdown,Punt);
 
-input wire CLK,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
+input wire CLK,Alarma_stop,IRQ,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
 //output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
-output reg Acceso,Mod,Alarma,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
+output reg Acceso,Mod,STW,Numup,Numdown; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
-localparam [7:0]TiempoEspera=8'd40;
-localparam [7:0]TiempoEspera_alarma=8'd3;
+localparam [7:0]TiempoEspera=8'd3;
 //Registros de estado
 reg [2:0] EstadoActual;
 reg [2:0] EstadoSiguiente;
@@ -36,6 +35,7 @@ reg Mod_Siguiente;
 reg Numup_Siguiente;
 reg Numdown_Siguiente;
 //Registros Internos
+reg Bcentro_reg;
 reg Barrido; //Indica que se debe recorrer la memoria
 reg FBarrido; //Proviene de la maquina de Cuenta e indica que se ha terminado de recorrer la memoria
 reg Espera; //Indica a la maquina de estado que debe realizar un ciclo de espera
@@ -44,7 +44,7 @@ reg Accesonxt, AccesoCMD; //Variable para manejar los valores de la salida de Ac
 reg Fespera;//La maquina de estado de espera indica que termino la espera
 wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
-assign Fcount=Dir==7'h44;//Constante de ultima direccion
+assign Fcount=Dir==8'hf1;//Constante de ultima direccion
 //Valores Iniciales y asignacion de estado
 //////////////////////////////////Maquina de estados Principal//////////////////////
 always @( posedge CLK,posedge RST)
@@ -55,11 +55,22 @@ begin
 		Mod<=1'b1;
 		Numup<=1'b0;
 		Numdown<=1'b0;
+		Bcentro_reg<=1'b0;
+		STW<=1'b0;
 	end
 	else
 	begin
 		EstadoActual <= EstadoSiguiente ;
-		Mod<=Mod_Siguiente;
+		Mod<=Mod_Siguiente;	
+		STW<=IRQ&&Alarma_stop;
+		if(Dir==8'h0)
+		begin
+			Bcentro_reg<=1'b0;
+		end
+		else
+		begin
+			Bcentro_reg<=Bcentro;
+		end
 	end
 end
 
@@ -102,7 +113,7 @@ begin
 		begin
 			EstadoSiguiente=3'd3;//se espera a que la maquina de espera termine
 		end
-	3'd4:if(Bcentro)
+	3'd4:if(Bcentro_reg)
 		begin
 			Mod_Siguiente=1'b1;//se ejecuta en caso de que el usuario haya introducido valores nuevos
 			Barrido=1'b1;
@@ -160,14 +171,13 @@ begin
 	if(EstadoActualc != EstadoSiguiente) InicioEstado = 1'b1;
 	else InicioEstado = 1'b0;
 	if(cnt == 3'b111) Accesonxt = 1'b0;
-  else begin
+	else begin
 		if(AccesoCMD) Accesonxt = 1'b1;
 		else Accesonxt = Acceso;
 	end
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
-	if(EstadoActual==3'd3) Dir_Siguiente = 8'hf0;
-	else	Dir_Siguiente = Dir;
+	Dir_Siguiente=Dir;
 	case(EstadoActualc)
 	3'd0:if(FRW)
 			EstadoSiguientec = 3'd1;
@@ -176,7 +186,7 @@ begin
 	3'd1:if(Barrido)
 		begin
 			EstadoSiguientec=3'd2;
-			Dir_Siguiente=7'h21;
+			Dir_Siguiente=8'h21;
 			Accesonxt=1'b1;
 		end
 		else
@@ -195,7 +205,42 @@ begin
 			EstadoSiguientec=3'd2;
 		end
 
-	3'd3:if(Dir==7'h27)
+	3'd3:case(Dir)
+			7'h1:
+				begin
+				Dir_Siguiente=8'hf0;
+				EstadoSiguientec=3'd4;
+				end
+			7'h27:
+				begin
+				Dir_Siguiente=8'h41;
+				EstadoSiguientec=3'd4;
+				end
+			7'h44:if(IRQ)
+				begin
+					Dir_Siguiente=8'h0;
+					EstadoSiguientec=3'd4;
+				end
+				else
+				begin
+					Dir_Siguiente=8'hf0;
+					EstadoSiguientec=3'd4;
+				end
+			default
+			begin
+				Dir_Siguiente=Dir;
+				EstadoSiguientec=3'd4;
+			end
+		endcase
+			
+	
+	
+	
+	
+	
+	
+	
+	/*if(Dir==7'h27)
 		begin
 			Dir_Siguiente=7'h41;
 			EstadoSiguientec=3'd4;
@@ -203,23 +248,21 @@ begin
 		else
 		begin
 			EstadoSiguientec=3'd4;
-		end
+		end*/
 	3'd4:if(Fcount)
 		begin
 			FBarrido=1'b1;
 			EstadoSiguientec=3'd1;
-			Dir_Siguiente=7'h21;
+			Dir_Siguiente=8'h21;
 		end
 		else
 		begin
 			EstadoSiguientec=3'd2;
-  		Accesonxt=1'b1;
+			Accesonxt=1'b1;
 		end
 	default
 	begin
-
 		EstadoSiguientec = 3'd1;
-
 	end
 	endcase
 end
@@ -259,24 +302,16 @@ begin
 			EstadoSiguientee=2'd1;
 		end
 
-	3'd2:if(Fespera)
+	3'd2:if(cuenta_espera==TiempoEspera)
 		begin
-			EstadoSiguientee=2'd1;
 			cuenta_espera_sig=8'b1;
+			Fespera = 1'b1;
+			EstadoSiguientee=2'd1;
 		end
 		else
 		begin
-			if(cuenta_espera==TiempoEspera)
-			begin
-				cuenta_espera_sig=8'b1;
-				Fespera = 1'b1;
-				EstadoSiguientee=2'd1;
-			end
-			else
-			begin
-				cuenta_espera_sig = cuenta_espera+1'b1;
-				EstadoSiguientee = 2'd2;
-			end
+			cuenta_espera_sig = cuenta_espera+1'b1;
+			EstadoSiguientee = 2'd2;
 		end
 	default
 	begin
@@ -295,14 +330,14 @@ begin
 	end
 	else
 	begin
-		Punt<=Punt_Siguiente;
+		Punt<=Punt_Siguiente;		
 	end
 end
 
 always @(*)
 begin
 	Punt_Siguiente=Punt+Bizquierda - Bderecha;
-	if(Bcentro)
+	if(Bcentro_reg)
 	begin
 		Punt_Siguiente=7'h21;
 	end
@@ -312,7 +347,7 @@ begin
 			7'h27:Punt_Siguiente=7'h41;//saltos de puntero
 			7'h44:Punt_Siguiente=7'h21;
 			7'h20:Punt_Siguiente=7'h43;
-			7'h44:Punt_Siguiente=7'h26;
+			7'h40:Punt_Siguiente=7'h26;
 		default
 		begin
 			Punt_Siguiente=Punt + Bizquierda - Bderecha;
@@ -321,73 +356,5 @@ begin
 	end
 end
 
-//////////////////////////////////Maquina de encendido de Alarma////////////////////////
-//////////////////////////////////////Maquina de estados de Espera////////////////////////////////////
-//Registros de estado
-reg [1:0] EstadoActuala;
-reg [1:0] EstadoSiguientea;
-reg [7:0] cuenta_alarma;
-reg [7:0] cuenta_alarma_sig;
-reg Fespera_alarma;
-//Valores Iniciales y asignacion de estado
-always@ ( posedge CLK, posedge RST )
-begin
-	if (RST)
-	begin
-		EstadoActuala <= 2'd1;
-		cuenta_alarma <= 8'd1;
-	end
-	else
-	begin
-		cuenta_alarma <= cuenta_alarma_sig;
-		EstadoActuala <= EstadoSiguientea;
-	end
-end
-
-
-always @(*)
-begin
-	cuenta_alarma_sig = cuenta_alarma;
-	Fespera_alarma=1'b0;
-	EstadoSiguientea=2'd1;
-	Alarma=1'b0;
-	STW=1'b0;
-	case(EstadoActuala)
-	3'd1:if(IRQ)
-		begin
-			EstadoSiguientea=2'd2;
-		end
-		else
-		begin
-			EstadoSiguientea=2'd1;
-		end
-
-	3'd2:if(Fespera_alarma)
-		begin
-			EstadoSiguientea=2'd1;
-			cuenta_alarma_sig=8'b1;
-		end
-		else
-		begin
-			Alarma=1'b1;
-			if(cuenta_alarma==TiempoEspera_alarma)
-			begin
-				cuenta_alarma_sig=8'b1;
-				Fespera_alarma = 1'b1;
-				EstadoSiguientea=2'd1;
-				STW=1'b1;
-			end
-			else
-			begin
-				cuenta_alarma_sig = cuenta_alarma+1'b1;
-				EstadoSiguientea = 2'd2;
-			end
-		end
-	default
-	begin
-		EstadoSiguientea = 2'd1;
-	end
-	endcase
-end
 
 endmodule

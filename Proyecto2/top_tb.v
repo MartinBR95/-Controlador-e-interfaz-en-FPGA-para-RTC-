@@ -85,6 +85,7 @@ module top_tb;
 		#100;
 		RST = 0;
 		wait(Dir==7'h44);
+		Bcentro=1'b1;
 		//estado 3
 		@(negedge CLK);
 		Bderecha<=1;
@@ -93,12 +94,13 @@ module top_tb;
 		//estado 4, falso
 		//estado 2,
 		wait(Dir==7'h44);
+		Bcentro=1'b0;
 		#50000;
 		IRQ<=1'b1;
 		//estado 3
-		@(negedge CLK);
-		IRQ<=1'b0;
-		Bcentro<=1'b1;
+		wait(Dir==8'hf1)
+		@(negedge CLK);		
+		IRQ<=1'b0;	
 		@(negedge CLK);
 		$stop;
 
