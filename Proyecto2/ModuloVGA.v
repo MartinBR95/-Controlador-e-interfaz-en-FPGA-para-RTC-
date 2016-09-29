@@ -51,32 +51,32 @@ module ModuloVGA
 	
 	//posiciones de los numeros en la plantilla (NO EN LA VGA)
 	//pocision en y 
-	parameter SecFecha_inY = 8'd122;
+	parameter SecFecha_inY = 8'd120;
 	parameter SecHora_inY  = 8'd185;
-	parameter SecTimer_inY = 8'd246;
+	parameter SecTimer_inY = 8'd245;
 
-	parameter SecFecha_endY = 8'd151;           //hay tres subclases para los numeros, la fecha, la hora y el cronometro
-	parameter SecHora_endY  = 9'd214;
+	parameter SecFecha_endY = 8'd152;           //hay tres subclases para los numeros, la fecha, la hora y el cronometro
+	parameter SecHora_endY  = 9'd215;
 	parameter SecTimer_endY = 9'd275;
 
 	//pocision en y 
-	parameter linea1_inX = 8'd135;           //Todos los numeros se agrupan en filas verticales
-	parameter linea2_inX = 8'd155;		     //Ejemplo: en la linea 1 y 2, en fecha estan los dias, en hora estan las horas y en cronometro estan las horas
+	parameter linea1_inX = 8'd134;           //Todos los numeros se agrupan en filas verticales
+	parameter linea2_inX = 8'd154;		     //Ejemplo: en la linea 1 y 2, en fecha estan los dias, en hora estan las horas y en cronometro estan las horas
                                             //Recordad que cada bloque (hora, minutos, etc.) posee dos numeros 
-	parameter linea3_inX = 8'd180;      
-	parameter linea4_inX = 8'd200;
+	parameter linea3_inX = 8'd179;      
+	parameter linea4_inX = 8'd199;
 
-	parameter linea5_inX = 8'd225;
-	parameter linea6_inX = 9'd245;
+	parameter linea5_inX = 8'd224;
+	parameter linea6_inX = 9'd244;
 	
-	parameter linea1_endX = 8'd154; 
-	parameter linea2_endX = 8'd174; 
+	parameter linea1_endX = 8'd153; 
+	parameter linea2_endX = 8'd173; 
 
-	parameter linea3_endX = 8'd199;
-	parameter linea4_endX = 8'd219;
+	parameter linea3_endX = 8'd198;
+	parameter linea4_endX = 8'd218;
 
-	parameter linea5_endX = 9'd244;
-	parameter linea6_endX = 9'd264;
+	parameter linea5_endX = 9'd243;
+	parameter linea6_endX = 9'd263;
 
 	////////////////////////////////////////////////////////////////////////////////////////
 
@@ -136,7 +136,7 @@ module ModuloVGA
 		always @(posedge CLK)
 		begin 
 	//// PARAMETRAS DE PLANTILLA 
-		if((InicioImagenX > ADDRH) && (ADDRH > FinImagenX) && (InicioImagenY > ADDRV) && (ADDRV > FinImagenY)) Selector = 5'h0;
+		if((InicioImagenX > ADDRH) || (ADDRH > FinImagenX) || (InicioImagenY > ADDRV) || (ADDRV > FinImagenY)) Selector = 5'h0;
 		else Selector = Selector; 
 		if((InicioImagenX < ADDRH) && (ADDRH < FinImagenX) && (InicioImagenY < ADDRV) && (ADDRV < FinImagenY)) Selector = 5'h1;
 		else Selector = Selector; 
