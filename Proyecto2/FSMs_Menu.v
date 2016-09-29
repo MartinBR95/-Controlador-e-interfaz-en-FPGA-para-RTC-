@@ -62,7 +62,7 @@ begin
 	begin
 		EstadoActual <= EstadoSiguiente ;
 		Mod<=Mod_Siguiente;	
-		STW<=IRQ&&Alarma_stop;		
+		STW<=~IRQ&&Alarma_stop;		
 		
 		Bcentro_reg_ant<=Bcentro;			
 		if(~Bcentro_reg_ant && Bcentro)
@@ -145,6 +145,8 @@ end
 reg [2:0] EstadoActualc;
 reg [2:0] EstadoSiguientec;
 reg [7:0] Dir_Siguiente;
+reg inicializacion;
+reg inicializacion_sig;
 //Valores Iniciales y asignacion de estado
 always@ ( posedge CLK, posedge RST )
 begin
@@ -153,12 +155,14 @@ begin
 		Acceso <= 1'b1;
 		EstadoActualc <= 3'd0;
 		Dir <= 7'h02;
+		inicializacion <=1'b0;
 	end
 	else
 	begin
 		Acceso <= Accesonxt;
 		EstadoActualc <= EstadoSiguientec;
 		Dir <= Dir_Siguiente;
+		inicializacion<=inicializacion_sig;
 	end
 end
 
@@ -187,9 +191,18 @@ begin
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente=Dir;
+	inicializacion_sig=1'b0;
 	case(EstadoActualc)
 	3'd0:if(FRW)
-			EstadoSiguientec = 3'd1;
+			if(inicializacion==0)
+			begin
+				EstadoSiguientec = 3'd0;
+				inicializacion_sig=1'b1;
+			end
+			else
+			begin
+				EstadoSiguientec = 3'd1;
+			end
 		else
 			EstadoSiguientec = 3'd0;
 	3'd1:if(Barrido)
@@ -225,7 +238,7 @@ begin
 				Dir_Siguiente=8'h41;
 				EstadoSiguientec=3'd4;
 				end
-			7'h44:if(IRQ)
+			7'h44:if(~IRQ)
 				begin
 					Dir_Siguiente=8'h0;
 					EstadoSiguientec=3'd4;
