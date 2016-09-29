@@ -24,8 +24,8 @@ module ModuloVGA
    //						 CON EL FIN DE QUE LA DIMENSION DE LOS PUNTEROS SEA IGUAL A LA DE LAS MEMORIAS	
 	
    //VALORES QUE CAMBIAN DEPENDIENDO DE LA IMANGEN 
-	//parameter imagen = 16'd39999;	     //En general la plantilla tiene esta cantidad de pixels
-	//parameter ImagenX = 8'd200;	     //su dimension en pixeles X es esta 
+	parameter imagen = 16'd39999;	     //En general la plantilla tiene esta cantidad de pixels
+	parameter ImagenX = 8'd200;	     //su dimension en pixeles X es esta 
 	parameter ImagenY = 8'd200;        //su dimensoon en pixeles Y es esta
 	parameter InicioImagenX = 7'd100;  //Parametro de inicio de la imagen en X
 	parameter InicioImagenY = 7'd100;  //Parametro de inicio de la imagen en Y
@@ -89,7 +89,7 @@ module ModuloVGA
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// MEMORIAS empleadas  ////////////////////////////////////////
 
-//	reg [11:0]PLANTILLA_DATA[0:imagen]; //Memoria donde se almacena los datos de plantilla
+	reg [11:0]PLANTILLA_DATA[0:imagen]; //Memoria donde se almacena los datos de plantilla
 	reg [11:0]NUMERO0_DATA[0:Numeros];  //Memoria donde se almacena los datos de numero 0
 	reg [11:0]NUMERO1_DATA[0:Numeros];  //Memoria donde se almacena los datos de numero 1
 	reg [11:0]NUMERO2_DATA[0:Numeros];  //Memoria donde se almacena los datos de numero 2
@@ -200,7 +200,7 @@ module ModuloVGA
 	
 	initial  //Se leen los datos de los .txt o .list y se pasan a las memorias 
 	begin
-//	$readmemh ("PLANTILLA.txt", PLANTILLA_DATA); //paso de listas txt a memorias 
+	$readmemh ("PLANTILLA.list", PLANTILLA_DATA); //paso de listas txt a memorias 
 	$readmemh ("NUMERO0.list", NUMERO0_DATA );
 	$readmemh ("NUMERO1.list", NUMERO1_DATA );
 	$readmemh ("NUMERO2.list", NUMERO2_DATA );
@@ -211,7 +211,7 @@ module ModuloVGA
 	$readmemh ("NUMERO7.list", NUMERO7_DATA );
 	$readmemh ("NUMERO8.list", NUMERO8_DATA );
 	$readmemh ("NUMERO9.list", NUMERO9_DATA );
-	$readmemh ("ALARMA.txt" , ALARMA_DATA );
+	$readmemh ("ALARMA.list" , ALARMA_DATA );
 	end
 
 	reg  [3:0]Numero_RTC = 4'hF;
@@ -224,23 +224,23 @@ module ModuloVGA
 	always @(*)
 	begin
 		case(Selector)
-		5'h0  : begin Y = InicioImagenY;  X= InicioImagenX; MUL= ImagenY;  end               
-		5'h1  : begin Y = SecFecha_inY; X= linea1_inX; MUL= NumerosY;  end               
-		5'h2  : begin Y = SecFecha_inY; X= linea2_inX; MUL= NumerosY;  end       
-		5'h3  : begin Y = SecFecha_inY; X= linea3_inX; MUL= NumerosY;  end       
-		5'h4  : begin Y = SecFecha_inY; X= linea4_inX; MUL= NumerosY;  end       
-		5'h5  : begin Y = SecFecha_inY; X= linea5_inX; MUL= NumerosY;  end       
-		5'h6  : begin Y = SecFecha_inY; X= linea6_inX; MUL= NumerosY;  end       
-		5'h7  : begin Y =  SecHora_inY; X= linea1_inX; MUL= NumerosY;  end       
-		5'h8  : begin Y =  SecHora_inY; X= linea2_inX; MUL= NumerosY;  end       
-		5'h9  : begin Y =  SecHora_inY; X= linea3_inX; MUL= NumerosY;  end       
-		5'hA  : begin Y =  SecHora_inY; X= linea4_inX; MUL= NumerosY;  end       
-		5'hB  : begin Y =  SecHora_inY; X= linea5_inX; MUL= NumerosY;  end       
-		5'hC  : begin Y =  SecHora_inY; X= linea6_inX; MUL= NumerosY;  end       
-		5'hD  : begin Y = SecTimer_inY; X= linea1_inX; MUL= NumerosY;  end       
-		5'hE  : begin Y = SecTimer_inY; X= linea2_inX; MUL= NumerosY;  end       
-		5'hF  : begin Y = SecTimer_inY; X= linea3_inX; MUL= NumerosY;  end      
-		5'h10 : begin Y = SecTimer_inY; X= linea4_inX; MUL= NumerosY;  end       
+		5'h1 : begin Y = InicioImagenY; X= InicioImagenX; MUL= ImagenY;  end               
+		5'h2  : begin Y = SecFecha_inY; X= linea1_inX; MUL= NumerosY;  end               
+		5'h3  : begin Y = SecFecha_inY; X= linea2_inX; MUL= NumerosY;  end       
+		5'h4  : begin Y = SecFecha_inY; X= linea3_inX; MUL= NumerosY;  end       
+		5'h5  : begin Y = SecFecha_inY; X= linea4_inX; MUL= NumerosY;  end       
+		5'h6  : begin Y = SecFecha_inY; X= linea5_inX; MUL= NumerosY;  end       
+		5'h7  : begin Y = SecFecha_inY; X= linea6_inX; MUL= NumerosY;  end       
+		5'h8  : begin Y =  SecHora_inY; X= linea1_inX; MUL= NumerosY;  end       
+		5'h9  : begin Y =  SecHora_inY; X= linea2_inX; MUL= NumerosY;  end       
+		5'hA  : begin Y =  SecHora_inY; X= linea3_inX; MUL= NumerosY;  end       
+		5'hB  : begin Y =  SecHora_inY; X= linea4_inX; MUL= NumerosY;  end       
+		5'hC  : begin Y =  SecHora_inY; X= linea5_inX; MUL= NumerosY;  end       
+		5'hD  : begin Y =  SecHora_inY; X= linea6_inX; MUL= NumerosY;  end       
+		5'hE  : begin Y = SecTimer_inY; X= linea1_inX; MUL= NumerosY;  end       
+		5'hF  : begin Y = SecTimer_inY; X= linea2_inX; MUL= NumerosY;  end       
+		5'h10 : begin Y = SecTimer_inY; X= linea3_inX; MUL= NumerosY;  end      
+		5'h11 : begin Y = SecTimer_inY; X= linea4_inX; MUL= NumerosY;  end       
 		5'h12 : begin Y = SecTimer_inY; X= linea5_inX; MUL= NumerosY;  end       
 		5'h13 : begin Y = SecTimer_inY; X= linea6_inX; MUL= NumerosY;  end       
 		5'h14 : begin Y = AY_in; X= AX_in; MUL= AlarmaY;   end    
@@ -255,7 +255,7 @@ module ModuloVGA
 	always @(*) 
 	begin 
 		case (Selector)
-		//5'h1  : Numero_RTC = 4'hB;
+		5'h1  : Numero_RTC = 4'hB;
 		5'h2  : Numero_RTC = {DIA_T[7],DIA_T[6],DIA_T[5],DIA_T[4]};               
 		5'h3  : Numero_RTC = {DIA_T[3],DIA_T[2],DIA_T[1],DIA_T[0]};
 		5'h4  : Numero_RTC = {MES_T[7],MES_T[6],MES_T[5],MES_T[4]};
@@ -295,7 +295,7 @@ module ModuloVGA
 		4'h8 : COLOR_IN = NUMERO8_DATA[{Adress}];
 		4'h9 : COLOR_IN = NUMERO9_DATA[{Adress}];
 		4'hA : COLOR_IN = ALARMA_DATA[{Adress}];
-	//	4'hB : COLOR_IN = COLOR_IN = PLANTILLA_DATA[{Adress}];
+		4'hB : COLOR_IN = PLANTILLA_DATA[{Adress}];
 	
 		default COLOR_IN = 12'h000;
 		endcase 
