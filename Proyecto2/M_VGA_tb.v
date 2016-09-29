@@ -40,7 +40,7 @@ reg [7:0]SEGUNDO_T;      //Senal de segundos de la RTC
 reg [7:0]HORAT_T;        //Senal de horas de temporizador de la RTC
 reg [7:0]MINUTOT_T;      //Senal de minutos de temporizador de la RTC
 reg [7:0]SEGUNDOT_T; 	 //Senal de segundos de temporizador de la RTC
-reg ALARMA;
+//reg ALARMA;
 	 
 //Prueba de funcionamiento
 
@@ -54,7 +54,7 @@ ModuloVGA TOP
    HS,				//Sincronizacion horizontal
    VS,				//Sincronizacion vertical
 	DIA_T,         //Senal de dia de la RTC
-	ALARMA,        //Senal de alarma
+//	ALARMA,        //Senal de alarma
 	Video_on,
 	MES_T,         //Senal de mes de la RTC
 	ANO_T,         //Senal de ano de la RTC
@@ -84,7 +84,7 @@ initial
 		  {HORAT_T} <= 8'h00;       //Senal de horas de temporizador de la RTC	
 		  {MINUTOT_T} <= 8'h00;     //Senal de minutos de temporizador de la RTC
 		  {SEGUNDOT_T} <= 8'h00;	  //Senal de segundos de temporizador de la RTC
-		  {ALARMA} <= 1'h1;
+//		  {ALARMA} <= 1'h1;
 		  CLK = 0;
 		  RST = 1;
         
