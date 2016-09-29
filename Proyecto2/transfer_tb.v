@@ -4,7 +4,7 @@
 // Engineer:
 //
 // Create Date:    03:57:31 09/14/2016
-// Design Name:
+// Design Name:    Testbench
 // Module Name:    transfer_tb
 // Project Name:
 // Target Devices:
