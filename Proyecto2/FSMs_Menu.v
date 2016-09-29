@@ -323,7 +323,7 @@ always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
 	begin
-		Punt<=7'h21;		
+		Punt<=7'h20;		
 		Bderecha_reg<= 1'b0;
 		Bderecha_reg_ant<=1'b0;
 		Bizquierda_reg<= 1'b0;
@@ -358,7 +358,7 @@ begin
 	Punt_Siguiente=Punt+Bizquierda_reg - Bderecha_reg;
 	if(Bcentro_reg)
 	begin
-		Punt_Siguiente=7'h21;
+		Punt_Siguiente=7'h20;
 	end
 	else
 	begin
