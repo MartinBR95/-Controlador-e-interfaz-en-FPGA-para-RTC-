@@ -28,7 +28,7 @@ module top(
 
   wire FRW, Mod, Acceso, STW, Numup, Numdown, Alarma, ASend, Send, Fetch;
 
-  FSMs_Menu MasterControl(IRQ,Alarma_stop,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Numup,Numdown,Punt);
+  FSMs_Menu MasterControl(IRQ,Alarma_stop,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Punt);
   transfer RTCControl(Acceso,~Mod,CLK,RST,AD,CS,RD,WR,FRW, ASend, Send, Fetch);
   Multiplexado Memoria(CLK,ASend, Fetch, Send, Punt, Dir, A_D_Bus,Mod, Numup, Numdown);
 

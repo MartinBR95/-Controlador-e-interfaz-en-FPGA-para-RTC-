@@ -31,15 +31,15 @@ module transfer(
 																		//controlar el dispositivo V3023
 																		    //Ventanas de Dato de lectura valido
 	assign tdf = (cycles > 24 & cycles <= 28);
-	assign RValid = (tdf && read) ? 1 : 0;
+	assign RValid = (tdf && read) ? 1'b1 : 1'b0;
 
 	assign taw = (cycles > 4 & cycles <= 7);				//Ventanas de Address valido
 	assign tah = (cycles > 7 & cycles <= 14);
-	assign AValid = (taw | tah) ? 1 : 0;
+	assign AValid = (taw | tah) ? 1'b1 : 1'b0;
 
 	assign tdw = (cycles > 19 & cycles <= 26);			//Ventanas de Dato de escritura valido
 	assign tdh = (cycles > 26 & cycles <= 28);
-	assign WValid = (~read && (tdw || tdh)) ? 1 : 0;
+	assign WValid = (~read && (tdw || tdh)) ? 1'b1 : 1'b0;
 
 
 //assign AValid = ((state == 1 || state == 0) && (tdw | tdh) ? : ;
