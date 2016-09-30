@@ -13,17 +13,11 @@ module RegAno
 reg [7:0]Auxiliar  =  8'd0; //
 
 ////////////////////////////////////////////////
-//////////// SECCION DE ESPERA /////////////////
-reg[19:0]FinEspera = 20'd0; 	//Señal de fin de espera
-reg Espera;				//Señal de espera
-
-////////////////////////////////////////////////
 /////////// SECCION DE BANDERAS ////////////////
 always @(posedge CLK)		//Modificacion de datos
 begin
-	if((UP == 1'b1) && (Espera == 1'b0) && (Modificando == 1'b1)) 	 //Si se incrementa manualmente 
+	if((UP == 1'b1) && (Modificando == 1'b1)) 	 //Si se incrementa manualmente 
 	begin
-	Espera = 1'b1; 
 	case (Auxiliar)
 			8'h09 : Auxiliar = 8'h10; 
 			8'h19 : Auxiliar = 8'h20; 
@@ -39,9 +33,8 @@ begin
 	endcase 
 	end 
 
-	if((UP == 1'b0) && (DOWN == 1'b1) && (Espera == 1'b0) && (Modificando == 1'b1)) //Si se decrementa manualmente
+	if((UP == 1'b0) && (DOWN == 1'b1) && (Modificando == 1'b1)) //Si se decrementa manualmente
 	begin
-	Espera = 1'b1; 
 	case (Auxiliar)
 			8'h00 : Auxiliar = 8'h99; 
 			8'h10 : Auxiliar = 8'h09; 
@@ -57,17 +50,6 @@ begin
 	endcase 
 	end 
 
-	if (Espera == 1) begin							//Si se activa la espera se cuenta
-			if (FinEspera == 20'd1048575)	begin    //Si se llega al final de la cuenta se reinicia los valores iniciales 
-				Espera = 1'b0;
-				FinEspera = 20'd0;
-			end	
-			else begin
-				Espera = Espera;	
-				FinEspera = FinEspera + 1'b1; 
-			end
-		end 
-	
 	if(Modificando == 1'b0 && Actualizar == 1'b1) Auxiliar = DATA_in; //Si se debe actualizar el registro con los datos de entrada
 	else Auxiliar = Auxiliar;
 end
