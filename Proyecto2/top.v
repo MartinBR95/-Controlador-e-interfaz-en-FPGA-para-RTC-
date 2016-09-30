@@ -29,7 +29,7 @@ module top(
   wire [6:0] Punt;
   wire FRW, Mod, Acceso, STW, Numup, Numdown, Alarma, ASend, Send, Fetch;
 
-  FSMs_Menu MasterControl(IRQ,Alarma_stop,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Punt);
+  FSMs_Menu MasterControl(IRQ,Alarma_stop,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Punt);
   transfer RTCControl(Acceso,~Mod,CLK,RST,AD,CS,RD,WR,FRW,ASend,Send,Fetch);
   Multiplexado Memoria(CLK,RST,ASend,Fetch,Send,Punt,Dir,A_D_Bus,Barriba,Babajo,DIA_T,MES_T,ANO_T,HORA_T,MINUTO_T,SEGUNDO_T,HORAT_T,MINUTOT_T,SEGUNDOT_T);
   VGATop_2 GeneradorImagen(Punt,CLK,RST,RGB,HS,VS,DIA_T,ALARMA,MES_T,ANO_T,HORA_T,MINUTO_T,SEGUNDO_T,HORAT_T,MINUTOT_T,SEGUNDOT_T);
