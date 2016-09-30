@@ -46,6 +46,7 @@ wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
 assign Fcount=Dir==8'hf1;//Constante de ultima direccion
 reg Bcentro_reg_ant;
+
 //Valores Iniciales y asignacion de estado
 //////////////////////////////////Maquina de estados Principal//////////////////////
 always @( posedge CLK,posedge RST)
@@ -86,11 +87,14 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
-	Mod_Siguiente=Mod;
+	if((Barriba_reg)||(Babajo_reg)) Mod_Siguiente = 1'b1;
+	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
+	
 	if(FBarrido)AccesoCMD = 1'b1;
 	else AccesoCMD = 1'b0;
+	
 	case(EstadoActual)//distintos estados
 	3'd1:if(FRW)
 		begin
@@ -116,22 +120,11 @@ begin
 	3'd3:if(Fespera)
 		begin
 			Barrido=1'b1;
-			EstadoSiguiente=3'd4;//al terminar la espera se iniciara un nuevo barrido
+			EstadoSiguiente=3'd2;//al terminar la espera se iniciara un nuevo barrido
 		end
 		else
 		begin
 			EstadoSiguiente=3'd3;//se espera a que la maquina de espera termine
-		end
-	3'd4:if(Bcentro_reg|Barriba_reg|Babajo_reg)
-		begin
-			Mod_Siguiente=1'b1;//se ejecuta en caso de que el usuario haya introducido valores nuevos
-			Barrido=1'b1;
-			EstadoSiguiente = 3'd2;
-		end
-		else
-		begin
-			Barrido=1'b1;
-			EstadoSiguiente = 3'd2;//Si el usuario no ha modificado ningun valor se continua con las lecturas
 		end
 	default
 	begin
