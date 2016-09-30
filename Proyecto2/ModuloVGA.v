@@ -1,4 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////////
 module ModuloVGA
 	(
    input  CLK,RST,    		  //Senal de reloj 
@@ -7,8 +6,7 @@ module ModuloVGA
    output VS,					  //Sincronizacion vertical
 	input [7:0]DIA_T,         //Senal de dia de la RTC
 	input ALARMA,             //Senal de alarma
-	output Video_on,
-	input wire [7:0]MES_T,          //Senal de mes de la RTC
+	wire [7:0]MES_T,          //Senal de mes de la RTC
 	input wire [7:0]ANO_T,          //Senal de ano de la RTC
 	input wire [7:0]HORA_T,         //Senal de horas de la RTC
 	input wire [7:0]MINUTO_T,       //Senal de minutos de la RTC 
@@ -16,13 +14,13 @@ module ModuloVGA
 	input wire [7:0]HORAT_T,        //Senal de horas de temporizador de la RTC
 	input wire [7:0]MINUTOT_T,      //Senal de minutos de temporizador de la RTC
 	input wire [7:0]SEGUNDOT_T, 	  //Senal de segundos de temporizador de la RTC
-	output [9:0]DIR
+	output [4:0] SelectorOut
 	);
-	/////////////DATOS DE PLANTILLA////////////////
-	
+
+
 	//NOTA IMPORTANTE: SI LA CANTIDAD DE BITS CAMBIA EN LA IMAGEN O LOS NUMEROS, SE DEBE CAMBIAR LOS PUNTEROS TAMBIEN
    //						 CON EL FIN DE QUE LA DIMENSION DE LOS PUNTEROS SEA IGUAL A LA DE LAS MEMORIAS	
-	
+	 
    //VALORES QUE CAMBIAN DEPENDIENDO DE LA IMANGEN 
 	parameter imagen = 16'd39999;	     //En general la plantilla tiene esta cantidad de pixels
 	parameter ImagenX = 8'd200;	     //su dimension en pixeles X es esta 
@@ -84,7 +82,7 @@ module ModuloVGA
 	wire[9:0]ADDRV;
 	wire[9:0]ADDRH;
 	
-	sync Sincronia(CLK, RST, HS, VS, Video_on, ADDRH, ADDRV);  //Sincronizacion para la VGA		
+	sync Sincronia(CLK, RST, HS, VS, ADDRH, ADDRV);  //Sincronizacion para la VGA		
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// MEMORIAS empleadas  ////////////////////////////////////////
@@ -216,11 +214,10 @@ module ModuloVGA
 
 	reg  [3:0]Numero_RTC = 4'hF;
 	
-	wire [15:0]Adress;
+	wire [15:0]Adress1;
 	reg  [8:0]Y   = 9'h1FF;
 	reg  [8:0]X   = 9'h1FF;
-	reg  [8:0]MUL = 9'h1FF;
-
+	reg  [8:0]MUL = 9'h1FF; 
 	always @(*)
 	begin
 		case(Selector)
@@ -249,12 +246,17 @@ module ModuloVGA
 		endcase 
 	end
 
-	assign Adress = (ADDRV - Y) + (ADDRH - X)*MUL; //Establecimieto de puntero para memoria de plantilla 	
+
+	assign Adress1 = (ADDRV - Y) + (ADDRH - X)*MUL; //Establecimieto de puntero para memoria de plantilla 	
+	
+	reg [15:0]Adress;
+	always @(posedge CLK) Adress = Adress1;
 
 	// seleccion de entradas del RTC 	
-	always @(*) 
+	always @(posedge CLK) 
 	begin 
 		case (Selector)
+		5'h0  : Numero_RTC = 4'hF;
 		5'h1  : Numero_RTC = 4'hB;
 		5'h2  : Numero_RTC = {DIA_T[7],DIA_T[6],DIA_T[5],DIA_T[4]};               
 		5'h3  : Numero_RTC = {DIA_T[3],DIA_T[2],DIA_T[1],DIA_T[0]};
@@ -301,7 +303,6 @@ module ModuloVGA
 		endcase 
 	end
 	
+	assign SelectorOut = Selector;
 	assign COLOR_OUT = COLOR_IN;	
-	assign DIR = ADDRH;
-
 endmodule 
