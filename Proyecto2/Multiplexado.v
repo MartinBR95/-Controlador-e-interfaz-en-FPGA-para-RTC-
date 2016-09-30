@@ -46,19 +46,19 @@ begin
 	if (RST)	begin
 		UP_Reg <= 1'b0;
 		UP_Reg_anterior <=1'b0;
-		
+
 		DOWN_Reg <= 1'b0;
 		DOWN_Reg_anterior <=1'b0;
 	end
-	
+
 	else begin
-		UP_Reg_anterior <= UP;			
+		UP_Reg_anterior <= UP;
 		if(~UP_Reg_anterior && UP) UP_Reg<=1'b1;
-		else  UP_Reg<=1'b0; 
-		
-		DOWN_Reg_anterior <= DOWN;			
+		else  UP_Reg<=1'b0;
+
+		DOWN_Reg_anterior <= DOWN;
 		if(~DOWN_Reg_anterior && DOWN) DOWN_Reg<=1'b1;
-		else DOWN_Reg<=1'b0;		
+		else DOWN_Reg<=1'b0;
 	end
 end
 
@@ -136,19 +136,29 @@ RegSeg   R_SegT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], Multiplex, S
 ////////////////////////////////////////////////
 ////////// DATOS HACAI LA RTC //////////////////
 reg[7:0]DATA_out;
-reg inicializacion = 1'h0; 
+reg inicializacion;
+reg BEnv_Data_ant;
 
 
 always @(posedge CLK, posedge RST) //Seleccion de datos que pueden ser enviados a escribir a la RTC
 begin
 	if (RST == 1'b1) inicializacion <= 1'h0;
-	
+
 	else begin
+	BEnv_Data_ant <= BEnv_Data;
+	if(BEnv_Data == 1'b0 && BEnv_Data_ant == 1'b1) inicializacion <= 1'b1;
+	else inicializacion <= inicializacion; 
 	case (ADRESS) //El dato depende del lugar donde el puntero de la RTC se encuentre
 		8'h00 : DATA_out <= 8'h04;
-		8'h02 : begin if(inicializacion == 1'h0) begin DATA_out <= 8'h10; inicializacion <= 1'b1;end 
-				  else begin DATA_out <= 8'h00; inicializacion <= inicializacion; end end 
-		
+		8'h02 : begin if(inicializacion == 1'h0) begin
+		 					DATA_out <= 8'h10;
+						end
+				  	else
+						begin
+							DATA_out <= 8'h00;
+						end
+					end
+
 		8'h26 : DATA_out <= Ano;
 		8'h25 : DATA_out <= Mes;
 		8'h24 : DATA_out <= Dia;
@@ -158,9 +168,9 @@ begin
 		8'h43 : DATA_out <= HoraT;
 		8'h42 : DATA_out <= MinutosT;
 		8'h41 : DATA_out <= SegundosT;
-		
+
 		default DATA_out <= 8'hFF;
-	endcase end 
+	endcase end
 end
 
 ////////////////////////////////////////////////
