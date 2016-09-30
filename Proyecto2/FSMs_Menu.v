@@ -22,7 +22,7 @@ module FSMs_Menu (IRQ,Alarma_stop,Timmer_ON,Barriba,Babajo,Bderecha,Bizquierda,B
 
 input wire CLK,Alarma_stop,IRQ,Barriba,Timmer_ON,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
-//output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
+//output reg CMD; //Indicador de que se debe habilitar la direcciÃ³n de comando F0 para transferir los datos de la RAM al RTC
 output reg Acceso,Mod; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
@@ -105,7 +105,7 @@ begin
 		begin
 			EstadoSiguiente=3'd1;//se espera a que se termine la inicializacion
 		end
-	3'd2:if(FBarrido && (Mod_Siguiente == 0'b0))
+	3'd2:if(FBarrido && (Mod_Siguiente == 1'b0))
 		begin
 			Espera=1'b1;//en caso de terminar el barrido de memoria se inicia la maquina de estados de espera
 			EstadoSiguiente=3'd3;
@@ -183,7 +183,7 @@ begin
 	end
 end
 
-reg [2:0] cnt;   //Contador para limitar el tiempo de una señal
+reg [2:0] cnt;   //Contador para limitar el tiempo de una seÃ±al
 always @(posedge CLK) begin
 	if(RST) begin
 		cnt <= 1'b0;
