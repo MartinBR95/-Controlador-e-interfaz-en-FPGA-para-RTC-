@@ -37,14 +37,19 @@ NET "WR" IOSTANDARD = LVCMOS33;
 
 
 
-NET "A_D_Bus[7]" LOC = G14;
-NET "A_D_Bus[6]" LOC = P15;
-NET "A_D_Bus[5]" LOC = V11;
-NET "A_D_Bus[4]" LOC = V15;
-NET "A_D_Bus[3]" LOC = K16;
-NET "A_D_Bus[2]" LOC = R16;
-NET "A_D_Bus[1]" LOC = T9;
-NET "A_D_Bus[0]" LOC = U11;
+NET "A_D_Bus[7]" LOC = B13;
+NET "A_D_Bus[6]" LOC = F14;
+NET "A_D_Bus[5]" LOC = D17;
+NET "A_D_Bus[4]" LOC = E17;
+NET "RD" LOC = G13;
+NET "WR" LOC = C17;
+
+NET "A_D_Bus[0]" LOC = G14;
+NET "A_D_Bus[1]" LOC = P15;
+NET "A_D_Bus[2]" LOC = V11;
+NET "A_D_Bus[3]" LOC = V15;
+NET "AD" LOC = K16;
+ 
 NET "RGB[3]" LOC = D8;
 NET "RGB[2]" LOC = D7;
 NET "RGB[1]" LOC = C7;
@@ -57,7 +62,7 @@ NET "RGB[11]" LOC = A4;
 NET "RGB[10]" LOC = C5;
 NET "RGB[9]" LOC = B4;
 NET "RGB[8]" LOC = A3;
-NET "AD" LOC = B13;
+
 NET "ALARMA" LOC = P4;
 NET "Alarma_stop" LOC = P3;
 NET "Babajo" LOC = V10;
@@ -69,10 +74,8 @@ NET "CLK" LOC = E3;
 NET "CS" LOC = F14;
 NET "HS" LOC = B11;
 NET "IRQ" LOC = E18;
-NET "RD" LOC = D17;
 NET "RST" LOC = U9;
 NET "VS" LOC = B12;
-NET "WR" LOC = E17;
 
 # PlanAhead Generated IO constraints 
 
