@@ -145,7 +145,7 @@ begin
 	
 	else begin
 	case (ADRESS) //El dato depende del lugar donde el puntero de la RTC se encuentre
-		8'h02 : DATA_out <= 8'h04;
+		8'h00 : DATA_out <= 8'h04;
 		8'h02 : begin if(inicializacion == 1'h0) begin DATA_out <= 8'h10; inicializacion <= 1'b1;end 
 				  else begin DATA_out <= 8'h00; inicializacion <= inicializacion; end end 
 		
