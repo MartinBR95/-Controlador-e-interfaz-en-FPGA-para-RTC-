@@ -19,9 +19,9 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-module FSMs_Menu (IRQ,Alarma_stop,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Punt);
+module FSMs_Menu (IRQ,Alarma_stop,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Punt);
 
-input wire CLK,Alarma_stop,IRQ,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
+input wire CLK,Alarma_stop,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
 //output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
 output reg Acceso,Mod,STW; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
@@ -122,7 +122,7 @@ begin
 		begin
 			EstadoSiguiente=3'd3;//se espera a que la maquina de espera termine
 		end
-	3'd4:if(Bcentro_reg)
+	3'd4:if(Bcentro_reg|Barriba_reg|Babajo_reg)
 		begin
 			Mod_Siguiente=1'b1;//se ejecuta en caso de que el usuario haya introducido valores nuevos
 			Barrido=1'b1;
@@ -331,9 +331,13 @@ end
 
 /////////////////////////////////////Maquina de puntero///////////////////////////
 reg Bderecha_reg;
+reg Barriba_reg;
+reg Babajo_reg;
 reg Bderecha_reg_ant;//Valor anterior se usa para detectar el flanco
 reg Bizquierda_reg;
 reg Bizquierda_reg_ant;//Valor anterior se usa para detectar el flanco
+reg Barriba_reg_ant;
+reg Babajo_reg_ant;
 always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
@@ -365,13 +369,33 @@ begin
 		begin
 			Bizquierda_reg<=1'b0;
 		end
+
+		Barriba_reg_ant<=Barriba;
+		if(~Barriba_reg_ant && Barriba)
+		begin
+			Barriba_reg<=1'b1;
+		end
+		else
+		begin
+			Barriba_reg<=1'b0;
+		end
+
+		Babajo_reg_ant<=Babajo;
+		if(~Babajo_reg_ant && Babajo)
+		begin
+			Babajo_reg<=1'b1;
+		end
+		else
+		begin
+			Babajo_reg<=1'b0;
+		end
 	end
 end
 
 always @(*)
 begin
 	Punt_Siguiente=Punt+Bizquierda_reg - Bderecha_reg;
-	if(Bcentro_reg)
+	if(Bcentro_reg|Barriba_reg|Babajo_reg)
 	begin
 		Punt_Siguiente=7'h20;
 	end
