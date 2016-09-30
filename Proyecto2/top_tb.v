@@ -41,27 +41,28 @@ module top_tb;
 	wire WR;
 	wire AD;
 	wire [7:0] A_D_Bus;
-	wire [7:0] Dir;
-	wire [6:0] Punt;
+	wire [11:0] RGB;
 
 	// Instantiate the Unit Under Test (UUT)
 	top uut (
 		.IRQ(IRQ),
+		.Bderecha(Bderecha),
 		.Barriba(Barriba),
 		.Babajo(Babajo),
-		.Bderecha(Bderecha),
 		.Bizquierda(Bizquierda),
 		.Bcentro(Bcentro),
 		.RST(RST),
 		.CLK(CLK),
 		.Alarma_stop(Alarma_stop),
+		.ALARMA(ALARMA),
 		.CS(CS),
 		.RD(RD),
 		.WR(WR),
 		.AD(AD),
+		.HS(HS),
+		.VS(VS),
 		.A_D_Bus(A_D_Bus),
-		.Dir(Dir),
-		.Punt(Punt)
+		.RGB(RGB)
 	);
 
 	localparam  T = 10;
@@ -88,24 +89,23 @@ module top_tb;
 		// Wait 100 ns for global reset to finish
 		#100;
 		RST = 0;
-		wait(Dir==7'h44);
+		#1000;
 		Bcentro=1'b1;
 		//estado 3
 		@(negedge CLK);
 		Bderecha<=1;
+		#100;
 		@(negedge CLK);
 		Bderecha<=0;
 		//estado 4, falso
 		//estado 2,
-		wait(Dir==7'h44);
+		#5000;
 		Bcentro=1'b0;
-		#50000;
+		#5000;
 		IRQ<=1'b1;
-		//estado 3
-		wait(Dir==8'hf1)
-		@(negedge CLK);
+		#5000;
 		IRQ<=1'b0;
-		@(negedge CLK);
+		#5000;
 		$stop;
 
 
