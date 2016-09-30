@@ -148,8 +148,10 @@ begin
 	BEnv_Data_ant <= BEnv_Data;
 	if(BEnv_Data == 1'b0 && BEnv_Data_ant == 1'b1) inicializacion <= 1'b1;
 	else inicializacion <= inicializacion; 
+
 	case (ADRESS) //El dato depende del lugar donde el puntero de la RTC se encuentre
-		8'h00 : DATA_out <= 8'h04;
+		8'h00 : DATA_out <= 8'h08;
+		8'h01 : DATA_out <= 8'h00;
 		8'h02 : begin if(inicializacion == 1'h0) begin
 		 					DATA_out <= 8'h10;
 						end
