@@ -151,7 +151,7 @@ begin
 
 	case (ADRESS) //El dato depende del lugar donde el puntero de la RTC se encuentre
 		8'h00 : DATA_out <= 8'h08;  //timeron
-		8'h01 : DATA_out <= 8'h00;	//flagdown 
+		8'h01 : DATA_out <= 8'h04;	//flagdown 
 		8'h02 : begin if(inicializacion == 1'h0) begin
 		 					DATA_out <= 8'h10;
 						end
@@ -167,9 +167,9 @@ begin
 		8'h23 : DATA_out <= Hora;
 		8'h22 : DATA_out <= Minutos;
 		8'h21 : DATA_out <= Segundos;
-		8'h43 : DATA_out <= 5'd23 - HoraT;
-		8'h42 : DATA_out <= 6'd59 - MinutosT;
-		8'h41 : DATA_out <= 6'd59 - SegundosT;
+		8'h43 : DATA_out <= HoraT;
+		8'h42 : DATA_out <= MinutosT;
+		8'h41 : DATA_out <= SegundosT;
 
 		default DATA_out <= 8'hFF;
 	endcase end

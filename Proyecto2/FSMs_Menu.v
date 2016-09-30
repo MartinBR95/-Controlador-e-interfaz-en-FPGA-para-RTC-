@@ -61,7 +61,7 @@ begin
 	end
 	else
 	begin
-		EstadoActual <= EstadoSiguiente ;
+		EstadoActual <= EstadoSiguiente;
 		Mod<=Mod_Siguiente;
 		STW<=~IRQ&&Alarma_stop;
 
@@ -105,12 +105,19 @@ begin
 		begin
 			EstadoSiguiente=3'd1;//se espera a que se termine la inicializacion
 		end
-	3'd2:if(FBarrido)
+	3'd2:if(FBarrido && (Mod_Siguiente == 0'b0))
 		begin
 			Espera=1'b1;//en caso de terminar el barrido de memoria se inicia la maquina de estados de espera
 			EstadoSiguiente=3'd3;
 			Mod_Siguiente=1'b0;
 		end
+		
+		if(FBarrido && Mod_Siguiente)
+		begin
+			Espera=1'b1;//en caso de terminar el barrido de memoria se inicia la maquina de estados de espera
+			EstadoSiguiente=3'd2;
+		end 
+		
 		else
 		begin
 			Barrido=1'b1;//Se mantiene la se?al de barrido, y se espera a la finalizacion de la maquina de cuenta
@@ -246,13 +253,13 @@ begin
 			7'h01:if(STW)
 			begin
 				Dir_Siguiente=Dir;
-				EstadoSiguien1tec=3'd4;
+				EstadoSiguientec=3'd4;
 			end
-			else
-				Dir_Siguiente=8'h21;
-				EstadoSiguien1tec=3'd4;
-			begin
-			end
+			else begin
+				Dir_Siguiente = 8'h21;
+				EstadoSiguientec = 3'd4;
+			end 
+			
 			7'h02:
 				begin
 				Dir_Siguiente=8'hf0;
@@ -263,10 +270,11 @@ begin
 				Dir_Siguiente=8'h41;
 				EstadoSiguientec=3'd4;
 				end
-			7'h44:if(Timmer_ON_reg)
+			7'h44:
+				if(Timmer_ON_reg)
 				begin
 					Dir_Siguiente=8'h00;
-					EstadoSiguien1tec=3'd4;
+					EstadoSiguientec=3'd4;
 					Timmer_ON_reg_sig=1'b0;
 				end
 				else
@@ -312,7 +320,9 @@ reg [1:0] EstadoActuale;
 reg [1:0] EstadoSiguientee;
 reg [7:0] cuenta_espera_sig;
 //Valores Iniciales y asignacion de estado
-always@ ( posedge CLK, posedge RST )
+
+
+always @(posedge CLK, posedge RST)
 begin
 	if (RST)
 	begin
@@ -324,11 +334,6 @@ begin
 		cuenta_espera <= cuenta_espera_sig;
 		EstadoActuale <= EstadoSiguientee;
 	end
-end
-
-
-always @(*)
-begin
 	cuenta_espera_sig = cuenta_espera;
 	Fespera=1'b0;
 	EstadoSiguientee=2'd1;
@@ -434,11 +439,11 @@ begin
 	else
 	begin
 		case(Punt)
-			7'h27:Punt_Siguiente=7'h41;//saltos de puntero
-			7'h44:Punt_Siguiente=7'h21;
+			7'h27:Punt_Siguiente=7'h41; //saltos de puntero
+			7'h45:Punt_Siguiente=7'h21;
 			7'h20:Punt_Siguiente=7'h43;
 			7'h40:Punt_Siguiente=7'h26;
-			/*7'h18:Punt_Siguiente=7'h21;*/
+  			//7'h18:Punt_Siguiente=7'h21;
 		default
 		begin
 			Punt_Siguiente=Punt + Bizquierda_reg - Bderecha_reg;
