@@ -49,11 +49,11 @@ module ModuloVGA
 	
 	//posiciones de los numeros en la plantilla (NO EN LA VGA)
 	//pocision en y 
-	parameter SecFecha_inY = 8'd120;
+	parameter SecFecha_inY = 8'd126;
 	parameter SecHora_inY  = 8'd185;
 	parameter SecTimer_inY = 8'd245;
 
-	parameter SecFecha_endY = 8'd152;           //hay tres subclases para los numeros, la fecha, la hora y el cronometro
+	parameter SecFecha_endY = 8'd155;           //hay tres subclases para los numeros, la fecha, la hora y el cronometro
 	parameter SecHora_endY  = 9'd215;
 	parameter SecTimer_endY = 9'd275;
 
