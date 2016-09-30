@@ -191,7 +191,7 @@ begin
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente=Dir;
-	inicializacion_sig=inicializacion;
+	inicializacion_sig=inicializaciont ;
 	case(EstadoActualc)
 	3'd0:if(FRW) begin
 			Accesonxt = 1'b1;
