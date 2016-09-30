@@ -165,9 +165,9 @@ begin
 		8'h23 : DATA_out <= Hora;
 		8'h22 : DATA_out <= Minutos;
 		8'h21 : DATA_out <= Segundos;
-		8'h43 : DATA_out <= HoraT;
-		8'h42 : DATA_out <= MinutosT;
-		8'h41 : DATA_out <= SegundosT;
+		8'h43 : DATA_out <= 5'd23 - HoraT;
+		8'h42 : DATA_out <= 6'd59 - MinutosT;
+		8'h41 : DATA_out <= 6'd59 - SegundosT;
 
 		default DATA_out <= 8'hFF;
 	endcase end
