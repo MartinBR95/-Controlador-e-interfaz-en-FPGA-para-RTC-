@@ -43,31 +43,31 @@ ModuloVGA VGA
 	always @(*)
 	begin
 		case(Puntero)
-			8'h24 : begin if(((Selector == 8'h3)||(Selector == 8'h2))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//dia
+			8'h24 : begin if(((Selector == 8'h3)||(Selector == 8'h2))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//dia
 							  else AUX = COLOR_OUT2; end
 
-			8'h25 : begin if(((Selector == 8'h5)||(Selector == 8'h4))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//mes
+			8'h25 : begin if(((Selector == 8'h5)||(Selector == 8'h4))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//mes
 							  else AUX = COLOR_OUT2; end
 
-			8'h26 : begin if(((Selector == 8'h7)||(Selector == 8'h6))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//ano
+			8'h26 : begin if(((Selector == 8'h7)||(Selector == 8'h6))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//ano
 							  else AUX = COLOR_OUT2; end
 
-			8'h23 : begin if(((Selector == 8'h9)||(Selector == 8'h8))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//hora
+			8'h23 : begin if(((Selector == 8'h9)||(Selector == 8'h8))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//hora
 							  else AUX = COLOR_OUT2; end
 
-			8'h22 : begin if(((Selector == 8'hB)||(Selector == 8'hA))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//min
+			8'h22 : begin if(((Selector == 8'hB)||(Selector == 8'hA))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//min
 							  else AUX = COLOR_OUT2; end
 
-			8'h21 : begin if(((Selector == 8'hD)||(Selector == 8'hC))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//seg
+			8'h21 : begin if(((Selector == 8'hD)||(Selector == 8'hC))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//seg
 							  else AUX = COLOR_OUT2; end
 
-			8'h43 : begin if(((Selector == 8'hF)||(Selector == 8'hE))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF;	//horat
+			8'h43 : begin if(((Selector == 8'hF)||(Selector == 8'hE))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF;	//horat
 							  else AUX = COLOR_OUT2; end
 
-			8'h42 : begin if(((Selector == 8'h11)||(Selector == 8'h10))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF; //mint
+			8'h42 : begin if(((Selector == 8'h11)||(Selector == 8'h10))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF; //mint
 							  else AUX = COLOR_OUT2; end
 
-			8'h41 : begin if(((Selector == 8'h12)||(Selector == 8'h13))&& COLOR_OUT2 ~= 12'h000) AUX = 12'hFFF; //Segt
+			8'h41 : begin if(((Selector == 8'h12)||(Selector == 8'h13))&& COLOR_OUT2 != 12'h000) AUX = 12'hFFF; //Segt
 							  else AUX = COLOR_OUT2; end
 
 		default AUX = COLOR_OUT2;
