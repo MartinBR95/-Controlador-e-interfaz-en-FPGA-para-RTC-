@@ -215,10 +215,11 @@ module ModuloVGA
 	reg  [3:0]Numero_RTC = 4'hF;
 
 	wire [15:0]Adress1;
-	reg  [8:0]Y   = 9'h1FF;
-	reg  [8:0]X   = 9'h1FF;
-	reg  [8:0]MUL = 9'h1FF;
-	always @(*)
+	reg  [8:0]Y   = 9'h1FF; //Resta en Y 
+	reg  [8:0]X   = 9'h1FF; //Resta en X
+	reg  [8:0]MUL = 9'h1FF; //Multiplica por parametro
+	
+	always @(*) //Dependiendo de el lugar de selector se escogen los paramentros a operar
 	begin
 		case(Selector)
 		5'h1 : begin Y = InicioImagenY; X= InicioImagenX; MUL= ImagenY;  end
@@ -246,9 +247,11 @@ module ModuloVGA
 		endcase
 	end
 
-
+	//OPERADOR//
 	assign Adress1 = (ADDRV - Y) + (ADDRH - X)*MUL; //Establecimieto de puntero para memoria de plantilla
-
+	//////////////////////
+	
+	
 	reg [15:0]Adress;
 	always @(posedge CLK) Adress = Adress1;
 

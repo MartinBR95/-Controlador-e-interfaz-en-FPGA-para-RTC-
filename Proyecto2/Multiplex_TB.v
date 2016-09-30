@@ -96,7 +96,7 @@ module Multiplex_TB;
 		Mod = 1'd1;
 		UP = 1'd1;
 		DOWN = 1'd0;
-
+ 
 		#100;
 		BEnv_Adress = 1'd1;
 		BRes_Data = 1'd0;

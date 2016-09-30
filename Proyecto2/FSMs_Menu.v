@@ -1,4 +1,3 @@
-`timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company:
 // Engineer:
@@ -19,12 +18,12 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-module FSMs_Menu (IRQ,Alarma_stop,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,STW,CLK,Dir,Punt);
+module FSMs_Menu (IRQ,Alarma_stop,Timmer_ON,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,CLK,Dir,Punt);
 
-input wire CLK,Alarma_stop,IRQ,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
+input wire CLK,Alarma_stop,IRQ,Barriba,Timmer_ON,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
-//output reg CMD; //Indicador de que se debe habilitar la direcciÃ³n de comando F0 para transferir los datos de la RAM al RTC
-output reg Acceso,Mod,STW; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
+//output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
+output reg Acceso,Mod; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
 localparam [7:0]TiempoEspera=8'd3;
@@ -34,13 +33,14 @@ reg [2:0] EstadoSiguiente;
 reg Mod_Siguiente;
 reg Numup_Siguiente;
 reg Numdown_Siguiente;
+reg STW;
 //Registros Internos
 reg Bcentro_reg;
 reg Barrido; //Indica que se debe recorrer la memoria
 reg FBarrido; //Proviene de la maquina de Cuenta e indica que se ha terminado de recorrer la memoria
 reg Espera; //Indica a la maquina de estado que debe realizar un ciclo de espera
 reg [7:0] cuenta_espera;
-reg Accesonxt, AccesoCMD; //Variable para manejar los valores de la salida de Acceso en la lï¿½gica combinacional
+reg Accesonxt, AccesoCMD; //Variable para manejar los valores de la salida de Acceso en la l?gica combinacional
 reg Fespera;//La maquina de estado de espera indica que termino la espera
 wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
@@ -87,7 +87,7 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
-	if((Barriba_reg)||(Babajo_reg)) Mod_Siguiente = 1'b1;
+	if((Barriba_reg)||(Babajo_reg)||(Dir==8'h00)||(Dir==8'h01)) Mod_Siguiente = 1'b1;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
@@ -113,7 +113,7 @@ begin
 		end
 		else
 		begin
-			Barrido=1'b1;//Se mantiene la seï¿½al de barrido, y se espera a la finalizacion de la maquina de cuenta
+			Barrido=1'b1;//Se mantiene la se?al de barrido, y se espera a la finalizacion de la maquina de cuenta
 			EstadoSiguiente=3'd2;
 		end
 
@@ -140,6 +140,9 @@ reg [2:0] EstadoSiguientec;
 reg [7:0] Dir_Siguiente;
 reg inicializacion;
 reg inicializacion_sig;
+reg Timmer_ON_reg;
+reg Timmer_ON_reg_ant;
+reg Timmer_ON_reg_sig;
 //Valores Iniciales y asignacion de estado
 always@ ( posedge CLK, posedge RST )
 begin
@@ -149,6 +152,9 @@ begin
 		EstadoActualc <= 3'd0;
 		Dir <= 7'h02;
 		inicializacion <=1'b0;
+		
+		Timmer_ON_reg<=1'b0;
+		Timmer_ON_reg_ant<=1'b0;		
 	end
 	else
 	begin
@@ -156,10 +162,21 @@ begin
 		EstadoActualc <= EstadoSiguientec;
 		Dir <= Dir_Siguiente;
 		inicializacion<=inicializacion_sig;
+		
+		Timmer_ON_reg_ant<=Timmer_ON;
+		if(~Timmer_ON_reg_ant && Timmer_ON)
+		begin
+			Timmer_ON_reg<=1'b1;
+		end
+		else
+		begin
+			Timmer_ON_reg<=Timmer_ON_reg_sig;
+		end
+		
 	end
 end
 
-reg [2:0] cnt;   //Contador para limitar el tiempo de una seÃ±al
+reg [2:0] cnt;   //Contador para limitar el tiempo de una señal
 always @(posedge CLK) begin
 	if(RST) begin
 		cnt <= 1'b0;
@@ -181,6 +198,7 @@ begin
 		if(AccesoCMD) Accesonxt = 1'b1;
 		else Accesonxt = Acceso;
 	end
+	Timmer_ON_reg_sig=Timmer_ON_reg;
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente=Dir;
@@ -199,7 +217,9 @@ begin
 			end
 		end
 		else
+		begin
 			EstadoSiguientec = 3'd0;
+		end
 	3'd1:if(Barrido)
 		begin
 			EstadoSiguientec=3'd2;
@@ -223,7 +243,17 @@ begin
 		end
 
 	3'd3:case(Dir)
-			7'h1:
+			7'h01:if(STW)
+			begin
+				Dir_Siguiente=Dir;
+				EstadoSiguien1tec=3'd4;
+			end
+			else
+				Dir_Siguiente=8'h21;
+				EstadoSiguien1tec=3'd4;
+			begin
+			end
+			7'h02:
 				begin
 				Dir_Siguiente=8'hf0;
 				EstadoSiguientec=3'd4;
@@ -233,15 +263,24 @@ begin
 				Dir_Siguiente=8'h41;
 				EstadoSiguientec=3'd4;
 				end
-			7'h44:if(~IRQ)
+			7'h44:if(Timmer_ON_reg)
 				begin
-					Dir_Siguiente=8'h0;
-					EstadoSiguientec=3'd4;
+					Dir_Siguiente=8'h00;
+					EstadoSiguien1tec=3'd4;
+					Timmer_ON_reg_sig=1'b0;
 				end
 				else
 				begin
-					Dir_Siguiente=8'hf0;
-					EstadoSiguientec=3'd4;
+					if(STW)
+					begin
+						Dir_Siguiente=8'h01;
+						EstadoSiguientec=3'd4;
+					end
+					else
+					begin
+						Dir_Siguiente=8'hf0;
+						EstadoSiguientec=3'd4;
+					end
 				end
 			default
 			begin
@@ -388,9 +427,9 @@ end
 always @(*)
 begin
 	Punt_Siguiente=Punt+Bizquierda_reg - Bderecha_reg;
-	if(Bcentro_reg|Barriba_reg|Babajo_reg)
+	if(1'b0/*Bcentro_reg*/)
 	begin
-		Punt_Siguiente=7'h20;
+		Punt_Siguiente=7'h19;
 	end
 	else
 	begin
@@ -399,6 +438,7 @@ begin
 			7'h44:Punt_Siguiente=7'h21;
 			7'h20:Punt_Siguiente=7'h43;
 			7'h40:Punt_Siguiente=7'h26;
+			/*7'h18:Punt_Siguiente=7'h21;*/
 		default
 		begin
 			Punt_Siguiente=Punt + Bizquierda_reg - Bderecha_reg;
@@ -408,4 +448,4 @@ begin
 end
 
 
-endmodule
+endmodule 

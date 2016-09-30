@@ -1,5 +1,5 @@
 module VGATop_2(
-	input  [7:0]Puntero,
+	input  [6:0]Puntero,
 	input  CLK,RST,    		  //Senal de reloj
    output [11:0] COLOR_OUT,  //bits de color hacia la VGA
    output HS,					  //Sincronizacion horizontal
