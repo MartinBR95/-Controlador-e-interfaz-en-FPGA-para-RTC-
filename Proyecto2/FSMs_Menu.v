@@ -61,10 +61,10 @@ begin
 	else
 	begin
 		EstadoActual <= EstadoSiguiente ;
-		Mod<=Mod_Siguiente;	
-		STW<=~IRQ&&Alarma_stop;		
-		
-		Bcentro_reg_ant<=Bcentro;			
+		Mod<=Mod_Siguiente;
+		STW<=~IRQ&&Alarma_stop;
+
+		Bcentro_reg_ant<=Bcentro;
 		if(~Bcentro_reg_ant && Bcentro)
 		begin
 			Bcentro_reg<=1'b1;
@@ -73,13 +73,13 @@ begin
 		begin
 			if(EstadoActual==3'd4)
 			begin
-				Bcentro_reg<=1'b0;	
+				Bcentro_reg<=1'b0;
 			end
 			else
 			begin
 				Bcentro_reg<=Bcentro_reg;
 			end
-		end		
+		end
 	end
 end
 
@@ -191,9 +191,10 @@ begin
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente=Dir;
-	inicializacion_sig=1'b0;
+	inicializacion_sig=inicializacion;
 	case(EstadoActualc)
-	3'd0:if(FRW)
+	3'd0:if(FRW) begin
+			Accesonxt = 1'b1;
 			if(inicializacion==0)
 			begin
 				EstadoSiguientec = 3'd0;
@@ -203,6 +204,7 @@ begin
 			begin
 				EstadoSiguientec = 3'd1;
 			end
+		end
 		else
 			EstadoSiguientec = 3'd0;
 	3'd1:if(Barrido)
@@ -336,7 +338,7 @@ always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
 	begin
-		Punt<=7'h20;		
+		Punt<=7'h20;
 		Bderecha_reg<= 1'b0;
 		Bderecha_reg_ant<=1'b0;
 		Bizquierda_reg<= 1'b0;
@@ -345,23 +347,23 @@ begin
 	else
 	begin
 		Punt<=Punt_Siguiente;
-		Bderecha_reg_ant<=Bderecha;			
+		Bderecha_reg_ant<=Bderecha;
 		if(~Bderecha_reg_ant && Bderecha)
 		begin
 			Bderecha_reg<=1'b1;
 		end
 		else
 		begin
-			Bderecha_reg<=1'b0;		
+			Bderecha_reg<=1'b0;
 		end
-		Bizquierda_reg_ant<=Bizquierda;			
+		Bizquierda_reg_ant<=Bizquierda;
 		if(~Bizquierda_reg_ant && Bizquierda)
 		begin
 			Bizquierda_reg<=1'b1;
 		end
 		else
 		begin
-			Bizquierda_reg<=1'b0;		
+			Bizquierda_reg<=1'b0;
 		end
 	end
 end
