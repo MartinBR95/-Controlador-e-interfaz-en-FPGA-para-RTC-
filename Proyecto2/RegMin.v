@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module RegMin
 	(
-	input CLK, 				//Reloj general del circuito
+	input CLK, RST,					//Reloj general del circuito
 	input UP,  				//Señal de incremento
 	input DOWN,				//Señal de decremento
 	input Modificando,	//Señal de modificacion 
@@ -14,8 +14,10 @@ reg [7:0]Auxiliar  =  8'd0; //
 
 ///////////////////////////////////////////////
 /////////// SECCION DE BANDERAS ////////////////
-always @(posedge CLK)		//Modificacion de datos
+always @(posedge CLK, posedge RST)		//Modificacion de datos
 begin
+	if(RST == 1'b1) Auxiliar = 8'h22;
+	else begin
 	if(UP == 1'b1  && Modificando == 1'b1) 	 //Si se incrementa manualmente 
 	begin
 	case (Auxiliar)
@@ -43,7 +45,7 @@ begin
 	end 
 
 	if(Modificando == 1'b0 && Actualizar == 1'b1) Auxiliar = DATA_in; //Si se debe actualizar el registro con los datos de entrada
-	else Auxiliar = Auxiliar;
+	else Auxiliar = Auxiliar; end
 end
 
 assign DATA_out = Auxiliar; 

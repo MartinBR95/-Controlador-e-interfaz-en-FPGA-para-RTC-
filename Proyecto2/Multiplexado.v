@@ -119,17 +119,17 @@ end
 
 ////////////////////////////////////////////////
 //////////// SECCION DE REGISTROS //////////////
-RegAno   R_Ano (CLK, UP_Reg, DOWN_Reg, Mod2[0], actualizar[0], Multiplex, Ano); //Ano
-RegMes   R_Mes (CLK, UP_Reg, DOWN_Reg, Mod2[1], actualizar[1], Multiplex, Mes); //Mes
-RegDias  R_Dia (CLK, UP_Reg, DOWN_Reg, Mod2[2], actualizar[2], Multiplex, Dia); //Dia
+RegAno   R_Ano (CLK,RST,  UP_Reg, DOWN_Reg, Mod2[0], actualizar[0], Multiplex, Ano); //Ano
+RegMes   R_Mes (CLK,RST,  UP_Reg, DOWN_Reg, Mod2[1], actualizar[1], Multiplex, Mes); //Mes
+RegDias  R_Dia (CLK,RST,  UP_Reg, DOWN_Reg, Mod2[2], actualizar[2], Multiplex, Dia); //Dia
 
-RegHoras R_Hora(CLK, UP_Reg, DOWN_Reg, Mod2[3], actualizar[3], Multiplex, Hora);      //Hora
-RegMin   R_Mins(CLK, UP_Reg, DOWN_Reg, Mod2[4], actualizar[4], Multiplex, Minutos);   //Minutos
-RegSeg   R_Segs(CLK, UP_Reg, DOWN_Reg, Mod2[5], actualizar[5], Multiplex, Segundos);  //Segundos
+RegHoras R_Hora(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[3], actualizar[3], Multiplex, Hora);      //Hora
+RegMin   R_Mins(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[4], actualizar[4], Multiplex, Minutos);   //Minutos
+RegSeg   R_Segs(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[5], actualizar[5], Multiplex, Segundos);  //Segundos
 
-RegHoras R_HorT(CLK, UP_Reg, DOWN_Reg, Mod2[6], actualizar[6], Multiplex, HoraT);     //Horas de timer
-RegMin   R_MinT(CLK, UP_Reg, DOWN_Reg, Mod2[7], actualizar[7], Multiplex, MinutosT);  //Minutos de timer
-RegSeg   R_SegT(CLK, UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], Multiplex, SegundosT); //Segundos de timer
+RegHoras R_HorT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[6], actualizar[6], Multiplex, HoraT);     //Horas de timer
+RegMin   R_MinT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[7], actualizar[7], Multiplex, MinutosT);  //Minutos de timer
+RegSeg   R_SegT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], Multiplex, SegundosT); //Segundos de timer
 
 
 
