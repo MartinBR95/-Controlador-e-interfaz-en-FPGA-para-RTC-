@@ -100,7 +100,14 @@ always @(*)
 begin
 
 		case(Dir)
-		8'h21:Mod_Barrido_sig=2'b01;
+		8'h21:if(Mod==1'b1)
+			begin
+				Mod_Barrido_sig=2'b01;
+			end
+			else
+			begin
+				Mod_Barrido_sig=Mod;
+			end
 		8'hf0:if(Mod_Barrido==2'b01)
 				begin
 					Mod_Barrido_sig=2'b10;
