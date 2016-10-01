@@ -22,7 +22,7 @@ module FSMs_Menu (IRQ,Alarma_stop,Timmer_ON,Barriba,Babajo,Bderecha,Bizquierda,B
 
 input wire CLK,Alarma_stop,IRQ,Barriba,Timmer_ON,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
-//output reg CMD; //Indicador de que se debe habilitar la dirección de comando F0 para transferir los datos de la RAM al RTC
+//output reg CMD; //Indicador de que se debe habilitar la direccin de comando F0 para transferir los datos de la RAM al RTC
 output reg Acceso,Mod; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
@@ -46,10 +46,19 @@ wire Fcount;//Variable que indica el fin de la cuenta de direcciones
 reg [6:0] Punt_Siguiente;//variable a asignar a puntero en el ciclo de relog siguiente
 assign Fcount=Dir==8'hf1;//Constante de ultima direccion
 reg Bcentro_reg_ant;
+reg Bderecha_reg;
+reg Barriba_reg;
+reg Babajo_reg;
+reg Bderecha_reg_ant;//Valor anterior se usa para detectar el flanco
+reg Bizquierda_reg;
+reg Bizquierda_reg_ant;//Valor anterior se usa para detectar el flanco
+reg Barriba_reg_ant;
+reg Babajo_reg_ant;
 
 //Valores Iniciales y asignacion de estado
 //////////////////////////////////Maquina de estados Principal//////////////////////
 reg [1:0] Mod_Barrido;
+reg [1:0] Mod_Barrido_sig;
 always @( posedge CLK,posedge RST)
 begin
 	if (RST)
@@ -63,26 +72,10 @@ begin
 	end
 	else
 	begin
+		Mod_Barrido<=Mod_Barrido_sig;
 		EstadoActual <= EstadoSiguiente ;
 		Mod<=Mod_Siguiente;
 		STW<=~IRQ&&Alarma_stop;
-		case(dir)
-		8'h21:Mod_Barrido<=2'b01;
-		8'hf0:if(Mod_Barrido==2'b01)
-				begin
-				Mod_Barrido<=2'b10;
-				end
-				else
-				begin
-				Mod_Barrido<=Mod_Barrido;
-				end
-		default
-		begin
-			Mod_Barrido<=Mod_Barrido;
-		end
-				
-				
-				
 		Bcentro_reg_ant<=Bcentro;
 		if(~Bcentro_reg_ant && Bcentro)
 		begin
@@ -105,14 +98,31 @@ end
 //Logica Combinacional de siguiente estado y logica de salida
 always @(*)
 begin
+
+		case(Dir)
+		8'h21:Mod_Barrido_sig=2'b01;
+		8'hf0:if(Mod_Barrido==2'b01)
+				begin
+					Mod_Barrido_sig=2'b10;
+				end
+				else
+				begin
+					Mod_Barrido_sig=Mod_Barrido;
+				end
+		default
+		begin
+			Mod_Barrido_sig=Mod_Barrido;
+		end
+		endcase
+
 	if((Barriba_reg)||(Babajo_reg)||(Dir==8'h00)||(Dir==8'h01)) Mod_Siguiente = 1'b1;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
-	
+
 	if(FBarrido)AccesoCMD = 1'b1;
 	else AccesoCMD = 1'b0;
-	
+
 	case(EstadoActual)//distintos estados
 	3'd1:if(FRW)
 		begin
@@ -127,13 +137,14 @@ begin
 		begin
 			Espera=1'b1;//en caso de terminar el barrido de memoria se inicia la maquina de estados de espera
 			EstadoSiguiente=3'd3;
-			if(Mod_barrido==2'b10)
+			if(Mod_Barrido==2'b10)
 			begin
 				Mod_Siguiente=1'b0;
+				Mod_Barrido_sig=2'b00;
 			end
 			else
 			begin
-				Mod_siguiente=Mod;
+				Mod_Siguiente=Mod;
 			end
 		end
 		else
@@ -177,9 +188,9 @@ begin
 		EstadoActualc <= 3'd0;
 		Dir <= 7'h02;
 		inicializacion <=1'b0;
-		
+
 		Timmer_ON_reg<=1'b0;
-		Timmer_ON_reg_ant<=1'b0;		
+		Timmer_ON_reg_ant<=1'b0;
 	end
 	else
 	begin
@@ -187,7 +198,7 @@ begin
 		EstadoActualc <= EstadoSiguientec;
 		Dir <= Dir_Siguiente;
 		inicializacion<=inicializacion_sig;
-		
+
 		Timmer_ON_reg_ant<=Timmer_ON;
 		if(~Timmer_ON_reg_ant && Timmer_ON)
 		begin
@@ -197,11 +208,11 @@ begin
 		begin
 			Timmer_ON_reg<=Timmer_ON_reg_sig;
 		end
-		
+
 	end
 end
 
-reg [2:0] cnt;   //Contador para limitar el tiempo de una señal
+reg [2:0] cnt;   //Contador para limitar el tiempo de una seal
 always @(posedge CLK) begin
 	if(RST) begin
 		cnt <= 1'b0;
@@ -268,7 +279,7 @@ begin
 		end
 
 	3'd3:case(Dir)
-			7'h01:if(STW)
+			/*7'h01:if(STW)
 			begin
 				Dir_Siguiente=Dir;
 				EstadoSiguientec=3'd4;
@@ -276,8 +287,8 @@ begin
 			else begin
 				Dir_Siguiente = 8'h21;
 				EstadoSiguientec = 3'd4;
-			end 
-			
+			end*/
+
 			7'h02:
 				begin
 				Dir_Siguiente=8'hf0;
@@ -388,14 +399,7 @@ end
 
 
 /////////////////////////////////////Maquina de puntero///////////////////////////
-reg Bderecha_reg;
-reg Barriba_reg;
-reg Babajo_reg;
-reg Bderecha_reg_ant;//Valor anterior se usa para detectar el flanco
-reg Bizquierda_reg;
-reg Bizquierda_reg_ant;//Valor anterior se usa para detectar el flanco
-reg Barriba_reg_ant;
-reg Babajo_reg_ant;
+
 always@ ( posedge CLK, posedge RST )
 begin
 	if (RST)
@@ -474,4 +478,4 @@ begin
 end
 
 
-endmodule 
+endmodule
