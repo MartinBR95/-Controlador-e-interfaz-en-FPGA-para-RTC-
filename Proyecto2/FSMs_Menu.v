@@ -122,7 +122,7 @@ begin
 		end
 		endcase
 
-	if((Barriba_reg)||(Babajo_reg)||(Dir==8'h00)||(Dir==8'h01)) Mod_Siguiente = 1'b1;
+	if((Barriba_reg)||(Babajo_reg)||(Dir==8'h00)||(Dir==8'h01)||(~IRQ)) Mod_Siguiente = 1'b1;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
@@ -285,46 +285,40 @@ begin
 			EstadoSiguientec=3'd2;
 		end
 
-	3'd3:case(Dir)
-			/*7'h01:if(STW)
-			begin
-				Dir_Siguiente=Dir;
-				EstadoSiguientec=3'd4;
-			end
-			else begin
-				Dir_Siguiente = 8'h21;
-				EstadoSiguientec = 3'd4;
-			end*/
-
+	3'd3:case(Dir)	
+			7'h01:
+				if(Alarma_stop||Timmer_ON_reg)
+				begin
+					EstadoSiguientec=3'd4;
+					Timmer_ON_reg_sig=1'b0;
+				end
+				else
+				begin
+					Dir_Siguiente=8'hf0;
+					EstadoSiguientec=3'd4;					
+				end		
+			
 			7'h02:
 				begin
 				Dir_Siguiente=8'hf0;
 				EstadoSiguientec=3'd4;
 				end
+				
 			7'h27:
 				begin
 				Dir_Siguiente=8'h41;
 				EstadoSiguientec=3'd4;
 				end
 			7'h44:
-				if(Timmer_ON_reg)
+				if((Timmer_ON_reg)||(Alarma_stop)||(~IRQ))
 				begin
 					Dir_Siguiente=8'h00;
-					EstadoSiguientec=3'd4;
-					Timmer_ON_reg_sig=1'b0;
+					EstadoSiguientec=3'd4;					
 				end
 				else
 				begin
-					if(STW)
-					begin
-						Dir_Siguiente=8'h01;
-						EstadoSiguientec=3'd4;
-					end
-					else
-					begin
-						Dir_Siguiente=8'hf0;
-						EstadoSiguientec=3'd4;
-					end
+					Dir_Siguiente=8'hf0;
+					EstadoSiguientec=3'd4;
 				end
 			default
 			begin

@@ -33,9 +33,8 @@ module top_tb;
 	reg Bcentro;
 	reg RST;
 	reg CLK;
-
+	reg Alarma_stop;
 	// Outputs
-	wire Alarma_stop;
 	wire CS;
 	wire RD;
 	wire WR;
@@ -54,7 +53,6 @@ module top_tb;
 		.RST(RST),
 		.CLK(CLK),
 		.Alarma_stop(Alarma_stop),
-		.ALARMA(ALARMA),
 		.CS(CS),
 		.RD(RD),
 		.WR(WR),
@@ -77,7 +75,8 @@ module top_tb;
 
 	initial begin
 		// Initialize Inputs
-		IRQ = 0;
+		Alarma_stop=0;
+		IRQ = 1;
 		Barriba = 0;
 		Babajo = 0;
 		Bderecha = 0;
@@ -90,7 +89,7 @@ module top_tb;
 		#100;
 		RST = 0;
 		#1000;
-		Bcentro=1'b1;
+		
 		//estado 3
 		@(negedge CLK);
 		Bderecha<=1;
@@ -100,11 +99,12 @@ module top_tb;
 		//estado 4, falso
 		//estado 2,
 		#5000;
-		Bcentro=1'b0;
-		#5000;
-		IRQ<=1'b1;
+		Bcentro=1'b1;
 		#5000;
 		IRQ<=1'b0;
+		#5000;
+		IRQ<=1'b1;
+		Bcentro=1'b0;
 		#5000;
 		$stop;
 
