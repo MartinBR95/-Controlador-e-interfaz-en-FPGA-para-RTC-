@@ -188,7 +188,7 @@ module ModuloVGA
 		else Selector = Selector;
 
 	//// PARAMETROS DE ALARMA
-		if((AX_in < ADDRH) && (ADDRH < AX_end) && (AY_in < ADDRV) && (ADDRV < AY_end && ALARMA)) Selector = 5'h14;
+		if((AX_in < ADDRH) && (ADDRH < AX_end) && (AY_in < ADDRV) && (ADDRV < AY_end) && (ALARMA == 1'b0)) Selector = 5'h14;
 		else Selector = Selector;
 	end
 
