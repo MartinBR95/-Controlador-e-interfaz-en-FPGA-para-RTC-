@@ -118,6 +118,11 @@ begin
 	else actualizar = 9'b000000000;
 end
 
+wire [7:0] Multiplex_ajusteH, Multiplex_ajusteM, Multiplex_ajusteS;
+BCDsub hor_in(Multiplex_ajusteH,8'h23,Multiplex);
+BCDsub min_in(Multiplex_ajusteM,8'h59,Multiplex);
+BCDsub seg_in(Multiplex_ajusteS,8'h59,Multiplex);
+
 ////////////////////////////////////////////////
 //////////// SECCION DE REGISTROS //////////////
 RegAno   R_Ano (CLK,RST,  UP_Reg, DOWN_Reg, Mod2[0], actualizar[0], Multiplex, Ano); //Ano
@@ -128,17 +133,20 @@ RegHoras R_Hora(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[3], actualizar[3], Multiplex, H
 RegMin   R_Mins(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[4], actualizar[4], Multiplex, Minutos);   //Minutos
 RegSeg   R_Segs(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[5], actualizar[5], Multiplex, Segundos);  //Segundos
 
-RegHoras R_HorT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[6], actualizar[6], Multiplex, HoraT);     //Horas de timer
-RegMin   R_MinT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[7], actualizar[7], Multiplex, MinutosT);  //Minutos de timer
-RegSeg   R_SegT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], Multiplex, SegundosT); //Segundos de timer
-
-
+RegHoras R_HorT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[6], actualizar[6], Multiplex_ajusteH, HoraT);     //Horas de timer
+RegMin   R_MinT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[7], actualizar[7], Multiplex_ajusteM, MinutosT);  //Minutos de timer
+RegSeg   R_SegT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], Multiplex_ajusteS, SegundosT); //Segundos de timer
 
 ////////////////////////////////////////////////
 ////////// DATOS HACAI LA RTC //////////////////
 reg[7:0]DATA_out;
 reg inicializacion;
 reg BEnv_Data_ant;
+
+wire [7:0] HoraT_out, MinutosT_out, SegundosT_out;  //Registros para el valor ajustado de salida al RTC
+BCDsub hor_out(HoraT_out,8'h23,HoraT);
+BCDsub min_out(MinutosT_out,8'h59,MinutosT);
+BCDsub seg_out(SegundosT_out,8'h59,SegundosT);
 
 
 always @(posedge CLK, posedge RST) //Seleccion de datos que pueden ser enviados a escribir a la RTC
@@ -148,13 +156,13 @@ begin
 	else begin
 	BEnv_Data_ant <= BEnv_Data;
 	if(BEnv_Data == 1'b0 && BEnv_Data_ant == 1'b1) inicializacion <= 1'b1;
-	else inicializacion <= inicializacion; 
+	else inicializacion <= inicializacion;
 
 	case (ADRESS) //El dato depende del lugar donde el puntero de la RTC se encuentre
 		8'h00 : if((~IRQ)||Alarma_stop)
 				begin
 				DATA_out <= 8'h00; //Timeroff
-				end 
+				end
 				else
 				begin
 				DATA_out <= 8'h08;  //timeron

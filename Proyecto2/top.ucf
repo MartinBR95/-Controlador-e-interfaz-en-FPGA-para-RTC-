@@ -47,7 +47,7 @@ NET "A_D_Bus[1]" LOC = D17;
 NET "A_D_Bus[0]" LOC = E17;
 NET "AD" LOC = G13;
 NET "IRQ" LOC = E18;
- 
+NET "IRQ"Pullup;
 NET "RGB[3]" LOC = D8;
 NET "RGB[2]" LOC = D7;
 NET "RGB[1]" LOC = C7;
