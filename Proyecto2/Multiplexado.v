@@ -148,13 +148,13 @@ begin
 	else begin
 	BEnv_Data_ant <= BEnv_Data;
 	if(BEnv_Data == 1'b0 && BEnv_Data_ant == 1'b1) inicializacion <= 1'b1;
-	else inicializacion <= inicializacion; 
+	else inicializacion <= inicializacion;
 
 	case (ADRESS) //El dato depende del lugar donde el puntero de la RTC se encuentre
 		8'h00 : if((~IRQ)||Alarma_stop)
 				begin
 				DATA_out <= 8'h00; //Timeroff
-				end 
+				end
 				else
 				begin
 				DATA_out <= 8'h08;  //timeron

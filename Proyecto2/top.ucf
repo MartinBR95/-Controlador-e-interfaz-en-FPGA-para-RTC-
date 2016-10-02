@@ -1,4 +1,4 @@
-NET "Timmer_ON" IOSTANDARD = LVCMOS33;
+NET "Timer_ON" IOSTANDARD = LVCMOS33;
 NET "A_D_Bus[7]" IOSTANDARD = LVCMOS33;
 NET "A_D_Bus[6]" IOSTANDARD = LVCMOS33;
 NET "A_D_Bus[5]" IOSTANDARD = LVCMOS33;
@@ -66,7 +66,7 @@ NET "CLK2" LOC = D18;
 NET "Alarma_stop" LOC = P3;
 NET "Babajo" LOC = V10;
 NET "Barriba" LOC = F15;
-NET "Timmer_ON" LOC = E16;
+NET "Timer_ON" LOC = E16;
 NET "Bderecha" LOC = R10;
 NET "Bizquierda" LOC = T16;
 NET "CLK" LOC = E3;

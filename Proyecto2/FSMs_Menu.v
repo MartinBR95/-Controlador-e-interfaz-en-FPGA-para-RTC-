@@ -18,12 +18,12 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
-module FSMs_Menu (IRQ,Alarma_stop,Timmer_ON,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod,CLK,Dir,Punt);
+module FSMs_Menu (IRQ,Alarma_stop,Timer_ON,Barriba,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW,Acceso,Mod_out,CLK,Dir,Punt);
 
-input wire CLK,Alarma_stop,IRQ,Barriba,Timmer_ON,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
+input wire CLK,Alarma_stop,IRQ,Barriba,Timer_ON,Babajo,Bderecha,Bizquierda,Bcentro,RST,FRW; //IRQ: interrupcion del RTC para temporizador,FRW:finalizo lectura/escritura
 output reg [7:0] Dir; //Direccion de memoria del rtc al que se apunta
 //output reg CMD; //Indicador de que se debe habilitar la direccin de comando F0 para transferir los datos de la RAM al RTC
-output reg Acceso,Mod; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
+output reg Acceso; //Acceso: a control RTC, Mod: modificacion del RTC, Alarma:Apagar alarma,Num++/Num--:aumentar/disminuir valor contenido en la direccion actual
 output reg [6:0] Punt;//Es un puntero que guarda la direccion donde se estan editando los valores
 //////////////////////////////////Maquina de Estados Principal///////////////////////////////////////////////////
 localparam [7:0]TiempoEspera=8'd3;
@@ -33,7 +33,7 @@ reg [2:0] EstadoSiguiente;
 reg Mod_Siguiente;
 reg Numup_Siguiente;
 reg Numdown_Siguiente;
-reg STW;
+output wire Mod_out;
 //Registros Internos
 reg Bcentro_reg;
 reg Barrido; //Indica que se debe recorrer la memoria
@@ -54,7 +54,8 @@ reg Bizquierda_reg;
 reg Bizquierda_reg_ant;//Valor anterior se usa para detectar el flanco
 reg Barriba_reg_ant;
 reg Babajo_reg_ant;
-
+reg Mod;
+assign Mod_out =(Mod)||(Dir==8'h00)||(Dir==8'h01);
 //Valores Iniciales y asignacion de estado
 //////////////////////////////////Maquina de estados Principal//////////////////////
 reg [1:0] Mod_Barrido;
@@ -74,8 +75,7 @@ begin
 	begin
 		Mod_Barrido<=Mod_Barrido_sig;
 		EstadoActual <= EstadoSiguiente ;
-		Mod<=Mod_Siguiente;
-		STW<=~IRQ&&Alarma_stop;
+		Mod<=(Mod_Siguiente);
 		Bcentro_reg_ant<=Bcentro;
 		if(~Bcentro_reg_ant && Bcentro)
 		begin
@@ -122,7 +122,7 @@ begin
 		end
 		endcase
 
-	if((Barriba_reg)||(Babajo_reg)||(Dir==8'h00)||(Dir==8'h01)||(~IRQ)) Mod_Siguiente = 1'b1;
+	if((Barriba_reg)||(Babajo_reg)) Mod_Siguiente = 1'b1;
 	else Mod_Siguiente = Mod;
 	Espera=1'b0;
 	Barrido=1'b0;
@@ -183,9 +183,9 @@ reg [2:0] EstadoSiguientec;
 reg [7:0] Dir_Siguiente;
 reg inicializacion;
 reg inicializacion_sig;
-reg Timmer_ON_reg;
-reg Timmer_ON_reg_ant;
-reg Timmer_ON_reg_sig;
+reg Timer_ON_reg;
+reg Timer_ON_reg_ant;
+reg Timer_ON_reg_sig;
 //Valores Iniciales y asignacion de estado
 always@ ( posedge CLK, posedge RST )
 begin
@@ -196,8 +196,8 @@ begin
 		Dir <= 7'h02;
 		inicializacion <=1'b0;
 
-		Timmer_ON_reg<=1'b0;
-		Timmer_ON_reg_ant<=1'b0;
+		Timer_ON_reg<=1'b0;
+		Timer_ON_reg_ant<=1'b0;
 	end
 	else
 	begin
@@ -206,14 +206,14 @@ begin
 		Dir <= Dir_Siguiente;
 		inicializacion<=inicializacion_sig;
 
-		Timmer_ON_reg_ant<=Timmer_ON;
-		if(~Timmer_ON_reg_ant && Timmer_ON)
+		Timer_ON_reg_ant<=Timer_ON;
+		if(~Timer_ON_reg_ant && Timer_ON)
 		begin
-			Timmer_ON_reg<=1'b1;
+			Timer_ON_reg<=1'b1;
 		end
 		else
 		begin
-			Timmer_ON_reg<=Timmer_ON_reg_sig;
+			Timer_ON_reg<=Timer_ON_reg_sig;
 		end
 
 	end
@@ -241,7 +241,7 @@ begin
 		if(AccesoCMD) Accesonxt = 1'b1;
 		else Accesonxt = Acceso;
 	end
-	Timmer_ON_reg_sig=Timmer_ON_reg;
+	Timer_ON_reg_sig=Timer_ON_reg;
 	FBarrido=1'b0;
 	EstadoSiguientec = 3'd1;
 	Dir_Siguiente=Dir;
@@ -285,35 +285,35 @@ begin
 			EstadoSiguientec=3'd2;
 		end
 
-	3'd3:case(Dir)	
+	3'd3:case(Dir)
 			7'h01:
-				if(Alarma_stop||Timmer_ON_reg)
+				if(Alarma_stop||Timer_ON_reg)
 				begin
 					EstadoSiguientec=3'd4;
-					Timmer_ON_reg_sig=1'b0;
+					Timer_ON_reg_sig=1'b0;
 				end
 				else
 				begin
 					Dir_Siguiente=8'hf0;
-					EstadoSiguientec=3'd4;					
-				end		
-			
+					EstadoSiguientec=3'd4;
+				end
+
 			7'h02:
 				begin
 				Dir_Siguiente=8'hf0;
 				EstadoSiguientec=3'd4;
 				end
-				
+
 			7'h27:
 				begin
 				Dir_Siguiente=8'h41;
 				EstadoSiguientec=3'd4;
 				end
 			7'h44:
-				if((Timmer_ON_reg)||(Alarma_stop)||(~IRQ))
+				if((Timer_ON_reg)||(Alarma_stop)||(~IRQ))
 				begin
 					Dir_Siguiente=8'h00;
-					EstadoSiguientec=3'd4;					
+					EstadoSiguientec=3'd4;
 				end
 				else
 				begin
