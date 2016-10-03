@@ -130,9 +130,9 @@ assign Condicion23 = {(HoraT == 8'h23) && (MinutosT == 8'h59) && (SegundosT == 8
 
 wire [7:0] T1,T2,T3; //T1 para horas T2 para minutos y T3 para segundos
 	
-assign T1 =  (Condicion23) ? 8'h00 : HoraT; //Si se cumple la condicion se envian 00
-assign T2 =  (Condicion23) ? 8'h00 : MinutosT;
-assign T3 =  (Condicion23) ? 8'h00 : SegundosT;
+assign T1 =  (Condicion23) ? 8'h00 : Multiplex_ajusteH; //Si se cumple la condicion se envian 00
+assign T2 =  (Condicion23) ? 8'h00 : Multiplex_ajusteM;
+assign T3 =  (Condicion23) ? 8'h00 : Multiplex_ajusteS;
 
 
 ////////////////////////////////////////////////
