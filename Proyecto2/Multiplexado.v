@@ -183,9 +183,9 @@ begin
 		8'h23 : DATA_out <= Hora;
 		8'h22 : DATA_out <= Minutos;
 		8'h21 : DATA_out <= Segundos;
-		8'h43 : DATA_out <= HoraT;
-		8'h42 : DATA_out <= MinutosT;
-		8'h41 : DATA_out <= SegundosT;
+		8'h43 : DATA_out <= HoraT_out;
+		8'h42 : DATA_out <= MinutosT_out;
+		8'h41 : DATA_out <= SegundosT_out;
 
 		default DATA_out <= 8'hFF;
 	endcase end
@@ -200,9 +200,9 @@ assign Aout   = Ano;
 assign Hout   = Hora;
 assign HTout  = HoraT;
 assign Miout  = Minutos;
-assign Sout   = Segundos;
-assign MiTout = MinutosT;
-assign STout  = SegundosT;
+assign Sout   = Segundos_out;
+assign MiTout = MinutosT_out;
+assign STout  = SegundosT_out;
 
 ////////////////////////////////////////////////
 /////////////// SECCION DE I/0 /////////////////
