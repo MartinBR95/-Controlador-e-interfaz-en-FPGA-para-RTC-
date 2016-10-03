@@ -22,8 +22,8 @@ module ModuloVGA
    //						 CON EL FIN DE QUE LA DIMENSION DE LOS PUNTEROS SEA IGUAL A LA DE LAS MEMORIAS
 
    //VALORES QUE CAMBIAN DEPENDIENDO DE LA IMANGEN
-	//parameter imagen = 16'd39999;	     //En general la plantilla tiene esta cantidad de pixels
-	//parameter ImagenX = 8'd200;	     //su dimension en pixeles X es esta
+	parameter imagen = 16'd39999;	     //En general la plantilla tiene esta cantidad de pixels
+	parameter ImagenX = 8'd200;	     //su dimension en pixeles X es esta
 	parameter ImagenY = 8'd200;        //su dimensoon en pixeles Y es esta
 	parameter InicioImagenX = 7'd100;  //Parametro de inicio de la imagen en X
 	parameter InicioImagenY = 7'd100;  //Parametro de inicio de la imagen en Y
@@ -87,7 +87,7 @@ module ModuloVGA
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////// MEMORIAS empleadas  ////////////////////////////////////////
 
-	//reg [11:0]PLANTILLA_DATA[0:imagen]; //Memoria donde se almacena los datos de plantilla
+	reg [11:0]PLANTILLA_DATA[0:imagen]; //Memoria donde se almacena los datos de plantilla
 	reg [11:0]NUMERO0_DATA[0:Numeros];  //Memoria donde se almacena los datos de numero 0
 	reg [11:0]NUMERO1_DATA[0:Numeros];  //Memoria donde se almacena los datos de numero 1
 	reg [11:0]NUMERO2_DATA[0:Numeros];  //Memoria donde se almacena los datos de numero 2
@@ -198,7 +198,7 @@ module ModuloVGA
 
 	initial  //Se leen los datos de los .txt o .list y se pasan a las memorias
 	begin
-	//$readmemh ("PLANTILLA.list", PLANTILLA_DATA); //paso de listas txt a memorias
+	$readmemh ("PLANTILLA.list", PLANTILLA_DATA); //paso de listas txt a memorias
 	$readmemh ("NUMERO0.list", NUMERO0_DATA );
 	$readmemh ("NUMERO1.list", NUMERO1_DATA );
 	$readmemh ("NUMERO2.list", NUMERO2_DATA );
@@ -260,7 +260,7 @@ module ModuloVGA
 	begin
 		case (Selector)
 		5'h0  : Numero_RTC = 4'hF;
-	//	5'h1  : Numero_RTC = 4'hB;
+		5'h1  : Numero_RTC = 4'hB;
 		5'h2  : Numero_RTC = {DIA_T[7],DIA_T[6],DIA_T[5],DIA_T[4]};
 		5'h3  : Numero_RTC = {DIA_T[3],DIA_T[2],DIA_T[1],DIA_T[0]};
 		5'h4  : Numero_RTC = {MES_T[7],MES_T[6],MES_T[5],MES_T[4]};
@@ -300,7 +300,7 @@ module ModuloVGA
 		4'h8 : COLOR_IN = NUMERO8_DATA[{Adress}];
 		4'h9 : COLOR_IN = NUMERO9_DATA[{Adress}];
 		4'hA : COLOR_IN = ALARMA_DATA[{Adress}];
-		//4'hB : COLOR_IN = PLANTILLA_DATA[{Adress}];
+		4'hB : COLOR_IN = PLANTILLA_DATA[{Adress}];
 
 		default COLOR_IN = 12'h000;
 		endcase
