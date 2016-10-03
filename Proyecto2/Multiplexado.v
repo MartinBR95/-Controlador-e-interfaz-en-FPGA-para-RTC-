@@ -126,13 +126,13 @@ BCDsub seg_in(Multiplex_ajusteS,8'h59,Multiplex);
 //AJUSTE 
 // Condicion para cuando se tiene la alarma encendida 
 wire Condicion23;    //Condicion si se ha llegado al final de la alarma 	
-assign Condicion23 = {(Multiplex_ajusteH == 8'h23) && (Multiplex_ajusteM == 8'h59) && (Multiplex_ajusteS == 8'h59)};
+assign Condicion23 = {(HoraT == 8'h23) && (MinutosT == 8'h59) && (SegundosT == 8'h59)};
 
 wire [7:0] T1,T2,T3; //T1 para horas T2 para minutos y T3 para segundos
 	
-assign T1 =  (Condicion23) ? 8'h00 : Multiplex_ajusteH; //Si se cumple la condicion se envian 00
-assign T2 =  (Condicion23) ? 8'h00 : Multiplex_ajusteM;
-assign T3 =  (Condicion23) ? 8'h00 : Multiplex_ajusteS;
+assign T1 =  (Condicion23) ? 8'h00 : HoraT; //Si se cumple la condicion se envian 00
+assign T2 =  (Condicion23) ? 8'h00 : MinutosT;
+assign T3 =  (Condicion23) ? 8'h00 : SegundosT;
 
 
 ////////////////////////////////////////////////
