@@ -122,6 +122,18 @@ wire [7:0] Multiplex_ajusteH, Multiplex_ajusteM, Multiplex_ajusteS;
 BCDsub hor_in(Multiplex_ajusteH,8'h23,Multiplex);
 BCDsub min_in(Multiplex_ajusteM,8'h59,Multiplex);
 BCDsub seg_in(Multiplex_ajusteS,8'h59,Multiplex);
+	
+//AJUSTE 
+// Condicion para cuando se tiene la alarma encendida 
+wire Condicion23;    //Condicion si se ha llegado al final de la alarma 	
+assign Condicion23 = {(Multiplex_ajusteH == 8'h23) && (Multiplex_ajusteM == 8'h59) && (Multiplex_ajusteS == 8'h59)};
+
+wire [7:0] T1,T2,T3; //T1 para horas T2 para minutos y T3 para segundos
+	
+assign T1 =  (Condicion23) ? 8'h00 : Multiplex_ajusteH; //Si se cumple la condicion se envian 00
+assign T2 =  (Condicion23) ? 8'h00 : Multiplex_ajusteM;
+assign T3 =  (Condicion23) ? 8'h00 : Multiplex_ajusteS;
+
 
 ////////////////////////////////////////////////
 //////////// SECCION DE REGISTROS //////////////
@@ -133,9 +145,9 @@ RegHoras R_Hora(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[3], actualizar[3], Multiplex, H
 RegMin   R_Mins(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[4], actualizar[4], Multiplex, Minutos);   //Minutos
 RegSeg   R_Segs(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[5], actualizar[5], Multiplex, Segundos);  //Segundos
 
-RegHoras R_HorT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[6], actualizar[6], Multiplex_ajusteH, HoraT);     //Horas de timer
-RegMin   R_MinT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[7], actualizar[7], Multiplex_ajusteM, MinutosT);  //Minutos de timer
-RegSeg   R_SegT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], Multiplex_ajusteS, SegundosT); //Segundos de timer
+RegHoras R_HorT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[6], actualizar[6], T1, HoraT);     //Horas de timer
+RegMin   R_MinT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[7], actualizar[7], T2, MinutosT);  //Minutos de timer
+RegSeg   R_SegT(CLK,RST,  UP_Reg, DOWN_Reg, Mod2[8], actualizar[8], T3, SegundosT); //Segundos de timer
 
 ////////////////////////////////////////////////
 ////////// DATOS HACAI LA RTC //////////////////
