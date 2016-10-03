@@ -198,11 +198,11 @@ assign Dout   = Dia;  //Si se esta modificando se asigna
 assign Mout   = Mes;
 assign Aout   = Ano;
 assign Hout   = Hora;
-assign HTout  = HoraT;
 assign Miout  = Minutos;
 assign Sout   = Segundos;
+assign HTout  = HoraT;
 assign MiTout = MinutosT;
-assign STout  = Segundos;
+assign STout  = SegundosT;
 
 ////////////////////////////////////////////////
 /////////////// SECCION DE I/0 /////////////////
