@@ -68,7 +68,6 @@ begin
 		Mod<=1'b1;
 		Bcentro_reg<=1'b0;
 		Bcentro_reg_ant<=1'b0;
-		STW<=1'b0;
 		Mod_Barrido<=2'b00;
 	end
 	else
