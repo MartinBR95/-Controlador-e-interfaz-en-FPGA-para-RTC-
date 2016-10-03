@@ -200,9 +200,9 @@ assign Aout   = Ano;
 assign Hout   = Hora;
 assign HTout  = HoraT;
 assign Miout  = Minutos;
-assign Sout   = Segundos_out;
-assign MiTout = MinutosT_out;
-assign STout  = SegundosT_out;
+assign Sout   = Segundos;
+assign MiTout = MinutosT;
+assign STout  = Segundos;
 
 ////////////////////////////////////////////////
 /////////////// SECCION DE I/0 /////////////////
