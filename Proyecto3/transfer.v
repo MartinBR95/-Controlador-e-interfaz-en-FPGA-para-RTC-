@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module transfer(
-	input wire Acceso, read, clk, reset,    				//Entradas del módulo
+	input wire access, read, clk, reset,    				//Entradas del módulo
 	output wire AD, CS, RD, WR, FRW, AValid, WValid, RValid         				//Salidas de control del RTC, en lógica negativa, donde AD es ~A/D para abreviar
    );
 
@@ -14,6 +14,25 @@ module transfer(
 	assign RD = RDr;
 	assign WR = WRr;
 
+	reg Acceso, Acceso_prev, Acceso_nxt;
+
+	always @(posedge clk)begin
+		if(reset) begin
+			Acceso_prev <= 1'b0;
+		end
+		else begin
+			Acceso_prev <= Acceso_nxt;
+			if(Acceso_nxt == 1'b1 && Acceso_prev == 1'b0) Acceso <= Acceso_nxt;
+			else begin
+				if (cycles == 3'h3) Acceso <= ~Acceso;
+				else Acceso <= Acceso;
+			end
+		end
+	end
+
+	always @(*) begin
+		Acceso_nxt = access;
+	end
 
 	reg [2:0] timer;
 	wire leido, escrito;
@@ -38,7 +57,7 @@ module transfer(
 	assign AValid = (taw | tah) ? 1'b1 : 1'b0;
 
 	assign tdw = (cycles > 19 & cycles <= 26);			//Ventanas de Dato de escritura valido
-	assign tdh = (cycles > 26 & cycles <= 28);
+	assign tdh = (cycles > 25 & cycles <= 28);
 	assign WValid = (~read && (tdw || tdh)) ? 1'b1 : 1'b0;
 
 

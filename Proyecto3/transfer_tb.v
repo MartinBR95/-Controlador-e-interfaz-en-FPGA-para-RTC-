@@ -21,7 +21,7 @@
 module transfer_tb;
 	reg clk, reset, read, access;
 
-	wire AD, CS, RD, WR, FRW;
+	wire AD, CS, RD, WR, FRW, AValid, WValid, RValid;
 
 	always begin
 		clk <= ~clk;
@@ -35,17 +35,15 @@ module transfer_tb;
 		reset <= 0;
 		read <= 1;
 		access <= 1;
-		#40;
+		#400;
 		access <= 0;
-		#320;
+		#10;
 		read <= 0;
 		access <= 1;
-		#50;
-		access <= 0;
 		#1000;
 		$stop;
 	end
 
-	transfer rtc(access, read, clk, reset, AD, CS, RD, WR, FRW);
+	transfer rtc(access, read, clk, reset, AD, CS, RD, WR, FRW, AValid, WValid, RValid);
 
 endmodule
