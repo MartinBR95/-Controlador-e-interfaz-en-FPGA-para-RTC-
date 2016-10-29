@@ -1,0 +1,464 @@
+; *****************************************************************************************************************************
+; \navGrpBegin "Directives"
+; *****************************************************************************************************************************
+	; *************************************************************************************************************************
+	; !!! The set directives overwrites the configuration dialog settings !!!
+	; *************************************************************************************************************************
+
+	; *************************************************************************************************************************
+	;  \navSep "Editor config"
+	; *************************************************************************************************************************
+		#set editor::tabIndent,							4
+
+	; *************************************************************************************************************************
+	; \navSep "Xilinx PicoBlaze core configuration"
+	; *************************************************************************************************************************
+		#ifDef proc::xPblze6
+	
+			#set proc::xPblze6::scrpdSize,				64						; [64, 128, 256]
+;			#set proc::xPblze6::scrpdioDev,				ioDev::yourDev
+			#set proc::xPblze6::intVector,				1023					; [0 to 4095]
+			#set proc::xPblze6::clkFreq,				100000000					; in Hz
+			
+		#elseIf proc::xPblze3
+	
+;			#set proc::XPblze3::scrpdioDev,				ioDev::yourDev
+			#set proc::XPblze3::clkFreq,				100000000					; in Hz
+		#endIf
+		
+	; *************************************************************************************************************************
+	;  \navSep "Instruction memory config"
+	; *************************************************************************************************************************
+		#set instmem::pageSize,							1024
+		#set instmem::pageCount,						1
+;		#set instmem::sharedMemLocation,				hiMem					; [ hiMem, loMem ]
+
+	; *************************************************************************************************************************
+	;  \navSep "ioDevice for instruction memory"
+	; *************************************************************************************************************************
+		#set ioDev::page0::en,							true					; [ true | false ]
+		#set ioDev::page0::type,						mem						; [ mem | fifo | reg ]
+		#set ioDev::page0::size,						1024					; Multiple of 2
+		#set ioDev::page0::baseAddr,					0x00
+		#set ioDev::page0::simEn,						false					; Enabling IO device in simulator
+; 		#set ioDev::page0::simAccessMode,				rd						; [ rdWr, rd, wr ]
+	
+		#set ioDev::page0::initValue,					0x00000					; Initial value
+	
+;		#set ioDev::page0::value,						0x33, 0x44, 0x55
+;		#set ioDev::page0::value,						0x10: 0x33, 0x44, 0x55
+;		#set ioDev::page0::value,						0x01: 0x33
+;		#set ioDev::page0::value,						0x02: 0x44
+; 		#set ioDev::page0::value,						append: 0x33, 0x44, 0x55
+; 		#set ioDev::page0::value,						append: 0x66, 0x77, 0x88
+
+		#set ioDev::page0::value,						instMem
+;		#set ioDev::page0::value,						instMem[page0]
+;		#set ioDev::page0::value,						instMem[0..1023]
+;		#set ioDev::page0::value,						instMem[page0][7..0]
+;		#set ioDev::page0::value,						instMem[0..1023][7..0]
+;		#set ioDev::page0::value,						instMem[1023..0]
+	
+	
+;		#set ioDev::page0::vhdlEn,						true					; Enable/disable vhdl output
+;		#set ioDev::page0::vhdlEntityName,				"vhdlPblzeRom"			; VHDL entity name
+;		#set ioDev::page0::vhdlTmplFile,				"tmpl.vhd"				; VHDL template file
+;		#set ioDev::page0::vhdlTargetFile,				"out.vhd"				; VHDL target file
+	
+		#set ioDev::page0::verilogEn,					true					; Enable/disable verilog output
+		#set ioDev::page0::verilogEntityName,			"verilogPblzeRom"		; VHDL entity name
+		#set ioDev::page0::verilogTmplFile,				"ROM_form.v"					; VHDL template file
+		#set ioDev::page0::verilogTargetFile,			"program_rom .v"					; VHDL target file
+	
+		#set ioDev::page0::hexEn,						true					; Enable/disable hex output
+		#set ioDev::page0::hexTargetFile,				"program_rom.hex"		; Hex target file
+	
+;		#set ioDev::page0::memEn,						true					; Enable/disable mem output
+;		#set ioDev::page0::memTargetFile,				"out.mem"				; Mem target file
+;		#set ioDev::page0::memGapStuffing,				true					; Mem gap stuffing enable: [ true | false ]
+
+	; *************************************************************************************************************************
+	; \navSep "rxFIFO"
+	;
+	; Setting up a small FIFO for simulation purposes.
+	; *************************************************************************************************************************
+	
+		; rxFIFO data
+		#set ioDev::rxFIFO::en,					true					; [ true | false ]
+		#set ioDev::rxFIFO::type,				fifo					; [ mem | fifo | reg ]
+		#set ioDev::rxFIFO::size,				32						; Multiple of 2
+		#set ioDev::rxFIFO::baseAddr,			0x20
+		#set ioDev::rxFIFO::simEn,				true					; Enabling IO device in simulator
+		#set ioDev::rxFIFO::simAccessMode,		rd						; [ rdWr, rd, wr ]
+	
+		#set ioDev::rxFIFO::initValue,			0x00000					; Initial value
+
+		#set ioDev::rxFIFO::value,				append: 0x01, 0x89, 0x8d, 0x8a, 0xe7, 0xc0, 0xa0, 0x04
+		#set ioDev::rxFIFO::value,				append: 0x01, 0x88, 0x77, 0x66, 0x55, 0x44, 0x33, 0x04
+
+	; *************************************************************************************************************************
+	; \navHw "Register renaming"
+	; *************************************************************************************************************************
+		#equ reg_work, 			sF
+	
+	; *************************************************************************************************************************
+	; \navHw "Port addresses"
+	; *************************************************************************************************************************
+		#equ busAddr_intReg,	0x01
+		#equ busAddr_dbg,		0xFF
+	
+; *****************************************************************************************************************************
+; \navGrpEnd
+; \navGrpBegin "Sources"
+; *****************************************************************************************************************************
+
+; *****************************************************************************************************************************
+; Main function
+; *****************************************************************************************************************************
+	
+;Definicion de puertos y direcciones de memoria
+;Memoria	
+		#EQU Mem_00, 0;
+		#EQU Mem_01, 1;
+;Puertos del control VGA
+		#EQU Po_seg, 2;
+		#EQU Mem_seg, 2;
+		#EQU Po_min, 3;
+		#EQU Mem_min, 3;
+		#EQU Po_hor, 4;
+		#EQU Mem_hor, 4;
+		#EQU Po_dia, 5;
+		#EQU Mem_dia, 5;
+		#EQU Po_mes, 6;
+		#EQU Mem_mes, 6;
+		#EQU Po_anio, 7;
+		#EQU Mem_anio, 7;
+		#EQU Po_tseg, 8;
+		#EQU Mem_tseg, 8;
+		#EQU Po_tmin, 9;
+		#EQU Mem_tmin, 9;
+		#EQU Po_thor, 10;
+		#EQU Mem_thor, 10;
+		#EQU Po_Punt,14;
+		
+		;
+		#EQU Mem_dir_00,12
+		#EQU Mem_dir_01,13
+		#EQU Mem_dir_seg,14
+		#EQU Mem_dir_min,15
+		#EQU Mem_dir_hor,16
+		#EQU Mem_dir_dia,17
+		#EQU Mem_dir_mes,18
+		#EQU Mem_dir_anio,19
+		#EQU Mem_dir_tseg,20
+		#EQU Mem_dir_tmin,21
+		#EQU Mem_dir_thor,22
+		#EQU Mem_dir_F0,23
+		
+		
+		#EQU Mem_dir_Pseg,24
+		#EQU Mem_dir_Pmin,25
+		#EQU Mem_dir_Phor,26
+		#EQU Mem_dir_Pdia,27
+		#EQU Mem_dir_Pmes,28
+		#EQU Mem_dir_Panio,29
+		#EQU Mem_dir_Ptseg,30
+		#EQU Mem_dir_Ptmin,31
+		#EQU Mem_dir_Pthor,32
+
+;Puertos control RTC		
+		#EQU Pi_Ctrl_rtc,1; 0000 00 IRQ,FRW activos = 0000 0011
+		#EQU Po_cmd,13; Comando a rtc en formato 0000 00,Acceso,Mod
+		#EQU Pi_Dato_rtc,2; valores de entrada del rtc
+		#EQU Po_Dato_rtc,15
+;Puertos teclado
+		#EQU Pi_teclado,3; formato[0,0,arriba,abajo,derecha,izquierda,Timer_ON,Alarma_Stop]
+;Puertos compartidos
+		#EQU Po_Dir 12;
+;Datos internos
+		#EQU Mem_F0 11;
+main:
+			
+;******************************************************************************************************************************
+;inicializacion
+inicializacion:
+;Valores iniciales
+	LOAD s0,0x04;valor para bajar la bandera de IRQ
+	WRMEM s0,Mem_01;guarda en memoria el valor inicial
+	
+	;Valores de las direcciones
+	LOAD sF,0x01
+	WRMEM sF,Mem_dir_01
+	LOAD sF,0x21
+	WRMEM sF,Mem_dir_seg
+	WRMEM sF,Mem_dir_Pseg
+	LOAD sF,0x22
+	WRMEM sF,Mem_dir_min
+	WRMEM sF,Mem_dir_Pmin
+	LOAD sF,0x23
+	WRMEM sF,Mem_dir_hor
+	WRMEM sF,Mem_dir_Phor
+	LOAD sF,0x24
+	WRMEM sF,Mem_dir_dia
+	WRMEM sF,Mem_dir_Pdia
+	LOAD sF,0x25
+	WRMEM sF,Mem_dir_mes
+	WRMEM sF,Mem_dir_Pmes
+	LOAD sF,0x26
+	WRMEM sF,Mem_dir_anio
+	WRMEM sF,Mem_dir_Panio
+	LOAD sF,0x41
+	WRMEM sF,Mem_dir_tseg
+	LOAD sF,0x42
+	WRMEM sF,Mem_dir_tmin
+	LOAD sF,0x43
+	WRMEM sF,Mem_dir_thor
+	LOAD sF,0xF0
+	WRMEM sF,Mem_dir_F0
+	LOAD s0,0xF0;dato a enviar en la direccion F0
+	WRMEM s0,Mem_F0;	
+		
+	;Valores iniciales del rtc	
+	LOAD s0,0x01;carga en el registro el valor inicial
+	WRMEM s0,Mem_seg;guarda en memoria el valor inicial
+	WRMEM s0,Mem_min;guarda en memoria el valor inicial
+	WRMEM s0,Mem_hor;guarda en memoria el valor inicial
+	WRMEM s0,Mem_dia;guarda en memoria el valor inicial
+	WRMEM s0,Mem_mes;guarda en memoria el valor inicial
+	WRMEM s0,Mem_anio;guarda en memoria el valor inicial
+	WRMEM s0,Mem_tseg;guarda en memoria el valor inicial
+	WRMEM s0,Mem_tmin;guarda en memoria el valor inicial
+	WRMEM s0,Mem_thor;guarda en memoria el valor inicial	
+
+	LOAD s0,0x02;
+	WRPRT s0, Po_Dir;Direccion de inicializacion
+	LOAD s2,0x10;primer valor de inicializacion
+	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2 
+	LOAD s0,0x21
+	WRPRT s0, Po_Punt ;se envia el valor del puntero
+	LOAD sD,b00000011
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
+		
+	;se confirma la inicializacion?
+	RDPRT  s0, Pi_Ctrl_rtc
+	AND s0,b00000001;se aplica una mascara
+	SUB s0,0;con el objetivo de activar la bandera Z
+	JUMP Z,inicializacion
+	AND sD,b00000001
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
+	
+inicializacion2:	
+	LOAD sD,b00000011
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
+	LOAD s2,0x00;primer valor de inicializacion
+	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2	
+	;se confirma la inicializacion?
+	NOP
+	RDPRT  s0, Pi_Ctrl_rtc
+	AND s0,b00000001;se aplica una mascara
+	SUB s0,0;con el o0bjetivo de activar la bandera Z
+	JUMP Z,inicializacion2	
+	
+	
+	;Inicializacion confirmada
+	LOAD s0,0x21
+	WRPRT s0, Po_Dir ;se envia la direccion de segundos
+	LOAD sE,Mem_dir_Pseg;
+	LOAD s3,2;se asigna el registro que apunta a los valores de memoria
+	LOAD sF,Mem_dir_seg;direccion inicial correspondiente a segundos(0x21)
+	AND sD,b00000001
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
+	LOAD s6,1
+	JUMP Fin_inic
+	
+Fin_inic:
+
+	RDPRT s0,Pi_teclado;se ingresara los cambios del puntero
+	LOAD s1,s0;se respalda el valor de entrada del teclado
+	AND s1,b00000100;se enmascara el valor de la tecla izquierda
+	SR0 s1;se desplaza para usarlo
+	SR0 s1;
+	ADD sE,s1;se incrementa el valor del puntero
+	LOAD s1,s0;se respalda el valor de entrada del teclado
+	AND s1,b00001000;se enmascara el valor de la tecla izquierda
+	SR0 s1;se desplaza para usarlo
+	SR0 s1;
+	SUB sE,s1;se incrementa el valor del puntero
+	
+	LOAD s1,sE;se respalda sE
+	SUB s1,23;
+	JUMP Z,Pjump_thor
+	
+	LOAD s1,sE;se respalda sE
+	SUB s1,33;
+	JUMP Z,Pjump_tseg;
+
+	RDPRT s0,Pi_teclado;se ingresara los cambios del puntero
+	LOAD s1,s0;se respalda el valor de entrada del teclado
+	AND s1,b00100000;se enmascara el valor de la tecla izquierda
+	SUB s1,b00100000
+	JUMP NZ,Abajo	
+	LOAD sD,b00000011
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial 
+	RDMEM s1,(sE);se lee el valor anterior del rtc
+	ADD s1,1;se añade 1
+	WRMEM s1,(sE)
+	
+Abajo:
+	LOAD s1,s0;se respalda el valor de entrada del teclado
+	AND s1,b00010000;se enmascara el valor de la tecla izquierda
+	SUB s1,b00010000
+	JUMP NZ,Retorno_puntero	
+	LOAD sD,b00000011
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial 
+	RDMEM s1,(sE);se lee el valor anterior del rtc
+	SUB s1,1;se resta 1
+	WRMEM s1,(sE)
+
+Retorno_puntero:
+	RDMEM s1,(sE);se enviara el puntero
+	WRPRT s1,Po_Punt;
+;Entradas IRQ
+	RDPRT  s4,Pi_Ctrl_rtc; entrada de IRQ
+;Entradas teclado
+	RDPRT s5,Pi_teclado
+	JUMP Control_Entradas;se revisara que acciones se deben hacer segun las entradas
+	
+Barrido_Memoria:
+;Escritura de direccion
+	RDMEM s0,(sF);Se lee de memoria el valor anterior de la direccion	
+	WRPRT s0,Po_Dir;se pone en el puerto de direccion = dir+1
+	OR sD,b00000010
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
+;Salida de dato
+	RDMEM s2,(s3);se guarda el dato de memoria en s2
+	AND s6,s6;se identifica si el dato a enviarse va hacia el rtc
+	JUMP NZ,Dato_out_rtc;;el dato se debe enviar al rtc
+	WRPRT s2,(s3);sw pone en el puerto s3 el dato s2
+Dato_rtc_enviado:	
+;Se confirma la lectura/escritura del RTC
+	RDPRT  s1, Pi_Ctrl_rtc;espera confirmacion de Lectura/escritura en la direccion vijente 
+	AND s1,b00000001;se aplica una mascara
+	SUB s1,b00000000
+	JUMP Z,Fin_inic;Se espera por FRW	
+	
+;Entrada de dato desde el RTC
+	LOAD s8,s0;se respalda s0
+	SUB s8,0x00
+	JUMP Z,No_Entrada;No se lee de la direccion 00		
+	SUB s0,0x01;se compara la direccion
+	JUMP Z,Dir01;No se lee de la direccion 01
+	LOAD s0,b00000010
+	WRPRT s0,Po_cmd
+	RDPRT s1,Pi_Dato_rtc;se lee un valor desde el RTC
+	WRMEM s1,(s3) ;se guarda el dato de entrada
+		
+Dir01:
+	LOAD s6,0x00;el siguiente valor no se envia al rtc
+	LOAD sD,b00000000
+	JUMP Z,Reiniciar_Barrido;	
+No_Entrada:
+	ADD sF,1;se hace dir+1
+	ADD s3,1;se hace dir+1
+	AND sD,b00000001
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
+	LOAD s9,sF;se respalda sF
+	;SUB s9,13;direccion 1?
+	;ADD s0,s9;se comprueba que ya se escribieron las direcciones 0 y 1
+
+	
+Continua_Barrido:	
+DirF0:
+	LOAD s0,sF;se respalda el valor de sF
+	SUB s0,24;compara
+	JUMP NZ,Fin_inic; en caso de no tener que saltar pasa a la siguiente comparacion	
+	LOAD sF,Mem_dir_seg;carga en el registro la direccion de salto a comando
+	LOAD s6,0x00;los siguientes datos ya no van al RTC
+	LOAD s3,Mem_seg;se reinicia el puntero de memoria
+	LOAD sD,b00000000
+	WRPRT sD,Po_cmd; FIN BARRIDO DE ESCRITURA
+	LOAD s6,0
+	JUMP Fin_inic
+
+Reiniciar_Barrido:	
+	LOAD sF,Mem_dir_seg;carga en el registro la direccion de salto
+	LOAD s6,0x00;en caso de haber enviado dato al rtc de baja la bandera de "envio a rtc"
+	LOAD s3,Mem_seg;se alinea el puntero de direccion de memoria
+	JUMP Continua_Barrido;
+
+Control_Entradas:
+	;Aqui iria lo que se hace al oprimir las teclas de arriba,abajo,izquierda,derecha(dependen del puntero)
+	;se deberia hacer una etiqueta aparte para el control del puntero	
+	
+	AND s4,b00000010;se filtra el valor de IRQ
+	LOAD s0,s4
+	SUB s0,b00000000;se confirma IRQ	
+	JUMP Z,Temporizador;Condicion suficiente para direcciones de temporizador
+	AND s5,b00000011;se filtra Timer_ON y Alarma_Stop
+	LOAD s0,s5;se copia para no perder el valor en s5(luego se ocupa)
+	SUB s0,b00000000;
+	JUMP NZ,Temporizador	
+	;continua entradas
+	JUMP Barrido_Memoria	
+	
+Temporizador:
+	LOAD sD,b00000011
+	LOAD s6,0x01;control de dato de salida a rtc
+	LOAD s0,0x04;valor a enviar a la direccion 1
+	WRMEM s0,Mem_01
+	LOAD sF,Mem_dir_00;Se salta a la direccion 0x00
+	LOAD s3,0;se alinea el puntero de direccion de memoria
+	LOAD s0,b00000000;
+	WRMEM s0,Mem_00;Se envia el comando de apagar la alarma
+
+	LOAD s0,s5;se copia para no modificar
+	AND s0,b00000001; se filtra Alarma_stop
+	LOAD s7,s0; en caso de Alarma_stop pasa a la direccion 1
+
+	OR s5,s4;
+	SUB s5,b00000010
+	JUMP Z,Encender_Alarma;
+	JUMP Barrido_Memoria	
+		
+Encender_Alarma:
+	LOAD s0,0x08;
+	WRMEM s0,Mem_00;Se envia el comando de encender la alarma
+	LOAD s7,0x01;se baja la bandera de IRQ
+JUMP Barrido_Memoria
+
+Dato_out_rtc:
+
+
+	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2
+	JUMP Dato_rtc_enviado
+
+Pjump_thor:
+	LOAD sE,Mem_dir_Pthor;
+	JUMP Retorno_puntero;
+	
+Pjump_tseg:
+	LOAD sE,Mem_dir_Pseg;
+	JUMP Retorno_puntero;
+;******************************************************************************************************************************
+JUMP	Fin_inic
+
+	
+; *****************************************************************************************************************************
+; Interrupt service routine
+; *****************************************************************************************************************************
+isr:
+
+					rdPrt	reg_work,	busAddr_intReg
+					wrPrt	reg_work,	busAddr_dbg
+
+					
+					; Do your staff here
+					
+					retI	enable
+
+					#org	addr,		0x3FF
+					jump	isr
+					
+; *****************************************************************************************************************************
+; \navGrpEnd
+; *****************************************************************************************************************************

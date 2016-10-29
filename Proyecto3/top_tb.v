@@ -20,6 +20,7 @@ top uut(clk,reset,IRQ,AD,RD,WR,CS,bus,RGB);
   initial begin
     reset = 1;
     clk = 0;
+    IRQ = 1;
     #100;
     reset = 0;
     #10000;
