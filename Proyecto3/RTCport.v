@@ -1,8 +1,10 @@
 
 module RTCport(
   //Entradas y salidas conectadas al picoblaze y sincronía
-  input clk, rst, Limpiar, WR_Di, WR_Dir, WR_Stat,
-  input [1:0] SEL,
+  input clk, rst,
+  input read_strobe,
+  input write_strobe,
+  input [7:0] port_id,
   input [7:0] data_in,
   output reg [7:0] data_out,
   //Entradas y salidas conectadas al RTC
@@ -11,41 +13,63 @@ module RTCport(
   inout [7:0] bus
   );
 
-  reg [7:0] Direccion, D_i, D_o, Status, Status2;
+  parameter RTC_Dir = 8'd12;
+  parameter RTC_Ctrl_in = 8'd13;
+  parameter RTC_Ctrl_out = 8'd1;
+  parameter RTC_Data_in = 8'd15;
+  parameter RTC_Data_out = 8'd2;
+
+  reg [7:0] Ctrl_rtc_in, Ctrl_rtc_out, Direccion, Dato_in, Dato_out;//registros de variables de control
   wire Fetch, Send, Address, FRW;
+  reg read_strobe_ant, read_strobe_reg;
 
   always @(posedge clk) begin
 
-    Status2[1] <= IRQ;
+      read_strobe_reg <= read_strobe;
+      read_strobe_ant <= read_strobe_reg;
 
-    if(rst)begin
-      Status <= 8'h00;
-      Status2<= 8'h00;
+      if(rst) begin
+        Ctrl_rtc_in = 0; Ctrl_rtc_out = 0; Direccion = 0; Dato_out = 0; Dato_in = 0;
+      end
+
+      if(write_strobe)begin
+        case(port_id)
+          RTC_Dir: Direccion <= data_in;
+          RTC_Data_in: Dato_in <= data_in;
+          RTC_Ctrl_in: Ctrl_rtc_in <= data_in;
+          default begin
+            Dato_in <= Dato_in;
+            Ctrl_rtc_in <= Ctrl_rtc_in;
+            Direccion <= Direccion;
+          end
+        endcase
+      end
+
+end
+
+  always @(posedge clk) begin
+    Ctrl_rtc_out[1] <= IRQ;
+    if (read_strobe_ant && ~read_strobe_reg && (port_id == RTC_Ctrl_out)) Ctrl_rtc_out[0] <= 1'b0;
+    else begin
+      if (FRW) Ctrl_rtc_out[0] <= 1'b1;
+      else Ctrl_rtc_out <= Ctrl_rtc_out;
     end
-
-    if (WR_Di) D_i <= data_in;
-    if (WR_Dir) Direccion <= data_in;
-    if (WR_Stat) Status <= data_in;
-
-    if (Fetch) D_o <= bus;
-    if (FRW) Status2[0] <= 1;
-    if (Limpiar) begin
-      Status2[0] <= 0;
-    end
-
   end
 
-  always @(*) begin
 
-    data_out = Status;
-    if (SEL[0]) data_out = Status2;
-    if (SEL[1]) data_out = D_o;
-
+  always @ ( * ) begin
+    case(port_id)
+      RTC_Data_out: data_out <= Dato_out;
+      RTC_Ctrl_out: data_out <= Ctrl_rtc_out;
+      default data_out <= data_out;
+    endcase
   end
 
-  transfer control(Status[1],~Status[0],clk,rst,AD,CS,RD,WR,FRW, Address, Send, Fetch);
+  assign bus = (Address) ? Direccion : (Send) ? Dato_in : 8'bz;
 
-  assign bus = (Address) ? Direccion : (Send) ? D_i : 8'bz;
+  transfer control(Ctrl_rtc_in[1],~Ctrl_rtc_in[0],clk,rst,AD,CS,RD,WR,FRW,Address, Send, Fetch);
+
+
 
 
 endmodule

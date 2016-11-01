@@ -4,23 +4,38 @@ module top_tb;
 
 parameter T = 10;
 
+// Inputs
 reg clk, reset,IRQ;
-wire AD, RD, WR, CS;
-wire [7:0] bus;
 reg [7:0] ps2_code;
-wire [11:0] RGB;
+// Outputs
+wire CS;
+wire RD;
+wire WR;
+wire AD;
+wire [7:0] A_D_Bus;
+wire [7:0] Segundos;
+
+top uut(
+  .clk(clk),
+  .reset(reset),
+  .IRQ(IRQ),
+  .bus(A_D_Bus),
+  .AD(AD),.WR(WR),.CS(CS),.RD(RD),
+  .Segundos(Segundos)
+//  .ps2_code(ps2_code)
+  );
 
 always begin
   clk = ~clk;
   #(T/2);
 end
 
-top uut(clk,reset,IRQ,AD,RD,WR,CS,bus,RGB);
+
 
   initial begin
     reset = 1;
     clk = 0;
-    IRQ = 1;
+    IRQ = 0;
     #100;
     reset = 0;
     #10000;

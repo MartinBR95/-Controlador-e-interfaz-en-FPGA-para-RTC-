@@ -22,14 +22,17 @@ module top(
   input clk,reset,IRQ,
   output wire AD,RD,WR,CS,HS,VS,
   inout [7:0] bus,
-  output [11:0] RGB,
-  output reg [7:0] Segundos
+  output reg [7:0] Segundos,
+  //Pruebas
+  output wire	[7:0] address2
+  //,output wire	[7:0] instruction2
   );
 
+  //assign instruction2[7:0] =instruction[7:0];
 //Definición de identificadores de puertos, debe coincidir con los valores en el código de ensamblador
   parameter RTC_Dir =              8'd12;
-  parameter RTC_Status =           8'd13;
-  parameter RTC_Status2 =           8'd1;
+  parameter RTC_Ctrl_in =          8'd13;
+  parameter RTC_Ctrl_out =          8'd1;
   parameter RTC_Data_in =          8'd15;
   parameter RTC_Data_out =          8'd2;
   parameter DirInicial =            5'd2;    //Este no es un numero de puerto como tal, pero los puertos siguientes dependen de este parametro
@@ -50,9 +53,9 @@ module top(
   wire	[11:0]	address;
   wire	[17:0]	instruction;
   wire			bram_enable;
-  wire	[7:0]		port_id;
-  wire	[7:0]		out_port;
-  reg	[7:0]		in_port;
+  wire	[7:0]	port_id;
+  wire	[7:0]	out_port;
+  reg	[7:0]	in_port;
   wire			write_strobe;
   wire			k_write_strobe;
   wire			read_strobe;
@@ -60,16 +63,23 @@ module top(
   wire			interrupt_ack;
   wire			kcpsm6_sleep;         //See note above
   wire			kcpsm6_reset;         //See note above
-
   wire			rdl;
-
   wire			int_request;
+  reg  [7:0] teclado = 8'h00;
+  wire [7:0] rtc_port;
 
-  kcpsm6 #(
+  //Pruebas
+  assign address2[7:0] =address[7:0];
+
+//////////////////////////////////////////Procesador/////////////////////////////////
+  kcpsm6
+  #(
   .interrupt_vector	(12'h3FF),
   .scratch_pad_memory_size(64),
-  .hwbuild		(8'h00))
-  processor (
+  .hwbuild		(8'h00)
+  )
+  processor
+  (
   .address 		(address),
   .instruction 	(instruction),
   .bram_enable 	(bram_enable),
@@ -81,123 +91,57 @@ module top(
   .in_port 		(in_port),
   .interrupt 		(interrupt),
   .interrupt_ack 	(interrupt_ack),
-  .reset 		(kcpsm6_reset),
-  .sleep		(kcpsm6_sleep),
-  .clk 			(clk));
+  .reset 			(kcpsm6_reset),
+  .sleep			(kcpsm6_sleep),
+  .clk 			(clk)
+  );
 
-  hexrom progra(    		       	//Name to match your PSM file
+  assign kcpsm6_sleep = 1'b0;
+  assign kcpsm6_reset = reset | rdl;
+
+//////////////////////////////////////////   RTC   //////////////////////////////////////////
+
+      RTCport #(
+			.RTC_Dir (RTC_Dir),
+			.RTC_Ctrl_in (RTC_Ctrl_in),
+			.RTC_Ctrl_out (RTC_Ctrl_out),
+			.RTC_Data_in (RTC_Data_in),
+			.RTC_Data_out (RTC_Data_out)
+			)
+
+		RTC(
+		    //Puertos internos
+		    .clk(clk),.rst(reset),
+		    .data_in(out_port),.data_out(rtc_port),.port_id (port_id),
+		    .read_strobe(read_strobe),.write_strobe(write_strobe),
+		    //Salidas al dispositivo externo RTC
+		    .IRQ(IRQ),//La señal IRQ proveniente del RTC viene con lógica negativa, acá se utiliza su valor negado para trabajarlo en positiva
+		    .AD(AD),.CS(CS),.RD(RD),.WR(WR),
+		    .bus(bus)
+			);
+
+//////////////////////////////////////////ROM////////////////////////////////////////
+  hexrom progra(
   .rdl 			(rdl),
   .enable 		(bram_enable),
   .address 		(address),
   .instruction 	(instruction),
   .clk 			(clk));
 
-  /*
-   verilogPblzeRom  #(
-  .C_FAMILY		   ("7S"),   	//Family 'S6' or 'V6'
-  .C_RAM_SIZE_KWORDS	(1),  	//Program size '1', '2' or '4'
-  .C_JTAG_LOADER_ENABLE	(0))
-  program_rom (    				//Name to match your PSM file
-  .rdl 			(kcpsm6_reset),
-  .enable 		(bram_enable),
-  .address 		(address),
-  .instruction 	(instruction),
-  .clk 			(clk));
-  */
-
-  assign kcpsm6_sleep = 1'b0;
-  assign kcpsm6_reset = reset | rdl;
-
-//DEFINIR HABILITADORES DE PUERTOS Y UTILIZAR EL CASE PARA DECODIFICARLOS
-//Señales para habilitar/deshabilitar puertos de escritura en el RTC
-  reg EN_RTC_Di, EN_RTC_Dir, EN_RTC_Stat;
-//Señales para seleccionar entrada de datos desde el RTC
-  reg [1:0] SEL_RTC;
-  wire [7:0] out_rtc;
-
-  always @(*) begin
-
-    EN_RTC_Di = 1'b0;
-    EN_RTC_Dir = 1'b0;
-    EN_RTC_Stat = 1'b0;
-	 Segundos = 8'hAD;
-
-    if (write_strobe) begin
-
-		case(port_id)
-      //Escrituras en puertos de RTC
-        RTC_Data_in:
-          EN_RTC_Di = 1'b1;
-        RTC_Dir:
-          EN_RTC_Dir = 1'b1;
-        RTC_Status:
-          EN_RTC_Stat = 1'b1;
-
-////////Escrituras en puertos de VGA
-		  VGA_seg: Segundos = out_port;
-/*
-		VGA_min:
-      VGA_hor:
-      VGA_dia:
-      VGA_mes:
-      VGA_anio:
-      VGA_tseg:
-      VGA_tmin:
-      VGA_thor:
-      VGA_Alarma:
-      VGA_Punt:
-  */
-      endcase
-    end
-  end
-
-  reg read, read_nxt, Limpiar;
-  reg [7:0] teclado = 8'h00;
+//////////////////////////////////////////Control Entradas Picoblaze////////////////////////////////////
 
   always @ (posedge clk)
   begin
-      read <= read_nxt;
-      case (port_id[1:0])
-
-        //En estos dos primeros casos se seleccionan datos provenientes del puerto RTC
-        //SEL_RTC es una señal que el puerto RTC utiliza para seleccionar sus datos de salida
-        RTC_Status2:begin
-          in_port <= out_rtc;
-          SEL_RTC <= 2'b01;
-        end
-        RTC_Data_out:begin
-          in_port <= out_rtc;
-          SEL_RTC <= 2'b10;
-        end
-
-        ps2_data:
-          in_port <= teclado;
-
-        default : in_port <= 8'bXXXXXXXX ;
-
-      endcase
-
+    case (port_id)
+    	ps2_data:		in_port <= teclado;
+    	RTC_Dir:		in_port<= rtc_port;
+    	RTC_Ctrl_out:	in_port<= rtc_port;
+    	//RTC_Ctrl_out:	in_port<= {5'b00000,1'b1,FRW_P};
+    	RTC_Data_out:	in_port<= rtc_port;
+    	default : in_port <= 8'b00000000 ;
+    endcase
+  	if(port_id==VGA_seg)Segundos<=out_port;
   end
 
-
-  always @(*) begin
-    read_nxt = read_strobe;
-    if(read_nxt==0 && read==1 && port_id == 1) Limpiar = 1'b1;
-    else Limpiar = 1'b0;
-  end
-
-
-
-  RTCport RTC (
-    //Puertos internos
-    .clk(clk),.rst(reset),.Limpiar(Limpiar),
-    .WR_Di(EN_RTC_Di),.WR_Dir(EN_RTC_Dir),.WR_Stat(EN_RTC_Stat),
-    .SEL(SEL_RTC),
-    .data_in(out_port),.data_out(out_rtc),
-    //Salidas al dispositivo externo RTC
-    .IRQ(IRQ),//La señal IRQ proveniente del RTC viene con lógica negativa, acá se utiliza su valor negado para trabajarlo en positiva
-    .AD(AD),.CS(CS),.RD(RD),.WR(WR),
-    .bus(bus)
-    );
 
 endmodule

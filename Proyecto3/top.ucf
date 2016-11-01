@@ -6,6 +6,17 @@ NET "bus[3]" IOSTANDARD = LVCMOS33;
 NET "bus[2]" IOSTANDARD = LVCMOS33;
 NET "bus[1]" IOSTANDARD = LVCMOS33;
 NET "bus[0]" IOSTANDARD = LVCMOS33;
+
+NET "bus[7]" LOC = G14;
+NET "bus[6]" LOC = P15;
+NET "bus[5]" LOC = V11;
+NET "bus[4]" LOC = V15;
+NET "bus[3]" LOC = B13;
+NET "bus[2]" LOC = F14;
+NET "bus[1]" LOC = D17;
+NET "bus[0]" LOC = E17;
+
+
 NET "Segundos[7]" IOSTANDARD = LVCMOS33;
 NET "Segundos[6]" IOSTANDARD = LVCMOS33;
 NET "Segundos[5]" IOSTANDARD = LVCMOS33;
@@ -14,6 +25,59 @@ NET "Segundos[3]" IOSTANDARD = LVCMOS33;
 NET "Segundos[2]" IOSTANDARD = LVCMOS33;
 NET "Segundos[1]" IOSTANDARD = LVCMOS33;
 NET "Segundos[0]" IOSTANDARD = LVCMOS33;
+
+NET "Segundos[7]" LOC =U6;
+NET "Segundos[6]" LOC =U7;
+NET "Segundos[5]" LOC =T4;
+NET "Segundos[4]" LOC =T5;
+NET "Segundos[3]" LOC =T6;
+NET "Segundos[2]" LOC =R8;
+NET "Segundos[1]" LOC =V9;
+NET "Segundos[0]" LOC =T8;
+
+
+////////////////Puertos de Prueba////////////////////
+NET "address2[0]" IOSTANDARD = LVCMOS33;
+NET "address2[1]" IOSTANDARD = LVCMOS33;
+NET "address2[2]" IOSTANDARD = LVCMOS33;
+NET "address2[3]" IOSTANDARD = LVCMOS33;
+NET "address2[4]" IOSTANDARD = LVCMOS33;
+NET "address2[5]" IOSTANDARD = LVCMOS33;
+NET "address2[6]" IOSTANDARD = LVCMOS33;
+NET "address2[7]" IOSTANDARD = LVCMOS33;
+
+NET "address2[0]" LOC = V4;
+NET "address2[1]" LOC = U3;
+NET "address2[2]" LOC = V1;
+NET "address2[3]" LOC = R1;
+NET "address2[4]" LOC = P5;
+NET "address2[5]" LOC = U1;
+NET "address2[6]" LOC = R2;
+NET "address2[7]" LOC = P2;
+
+//NET "instruction2[0]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[1]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[2]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[3]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[4]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[5]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[6]" IOSTANDARD = LVCMOS33;
+//NET "instruction2[7]" IOSTANDARD = LVCMOS33;
+
+//NET "instruction2[7]" LOC = U6;
+//NET "instruction2[6]" LOC = U7;
+//NET "instruction2[5]" LOC = T4;
+//NET "instruction2[4]" LOC = T5;
+//NET "instruction2[3]" LOC = T6;
+//NET "instruction2[2]" LOC = R8;
+//NET "instruction2[1]" LOC = V9;
+//NET "instruction2[0]" LOC = T8;
+
+//NET "FRW_P" IOSTANDARD = LVCMOS33;
+//NET "FRW_P" LOC = T16;
+///////////////////////////////////////////////////
+
+
 
 NET "AD" IOSTANDARD = LVCMOS33;
 NET "clk" IOSTANDARD = LVCMOS33;
@@ -25,30 +89,14 @@ NET "reset" IOSTANDARD = LVCMOS33;
 NET "VS" IOSTANDARD = LVCMOS33;
 NET "WR" IOSTANDARD = LVCMOS33;
 
-NET "bus[7]" LOC = G14;
-NET "bus[6]" LOC = P15;
-NET "bus[5]" LOC = V11;
-NET "bus[4]" LOC = V15;
-NET "bus[3]" LOC = B13;
-NET "bus[2]" LOC = F14;
-NET "bus[1]" LOC = D17;
-NET "bus[0]" LOC = E17;
-
-NET "Segundos[7]" LOC =U6;
-NET "Segundos[6]" LOC =U7;
-NET "Segundos[5]" LOC =T4;
-NET "Segundos[4]" LOC =T5;
-NET "Segundos[3]" LOC =T6;
-NET "Segundos[2]" LOC =R8;
-NET "Segundos[1]" LOC =V9;
-NET "Segundos[0]" LOC =T8;
-
 NET "RD" LOC = K16;
 NET "WR" LOC = R16;
 NET "CS" LOC = T9;
 NET "AD" LOC = G13;
 
 NET "IRQ" LOC = E18;
-NET "IRQ" Pullup;
+NET "IRQ" PULLUP;
 NET "clk" LOC = E3;
+//NET "clk" LOC = E16;
+//NET "clk" CLOCK_DEDICATED_ROUTE = FALSE;
 NET "reset" LOC = U9;
