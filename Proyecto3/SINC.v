@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 //////////////////////////////////////////////////////////////////////////////////
 module SINC(input clk, rst, output wire hsync, vsync, output wire [9:0] px_X,output wire [9:0] px_Y);
 

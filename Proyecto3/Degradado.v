@@ -65,7 +65,7 @@ module Degradado(
 					end
 				else 
 					begin 
-					if(FONDO == 12'h000) begin FONDO = FONDO; Bajada = 1'b0; end
+					if(FONDO == 12'h005) begin FONDO = FONDO; Bajada = 1'b0; end
 					else 
 						begin 					
 						if (FONDO > 12'h0FF)begin    FONDO[11:8] = FONDO[11:8] - 1'h1; Bajada = Bajada; end 
