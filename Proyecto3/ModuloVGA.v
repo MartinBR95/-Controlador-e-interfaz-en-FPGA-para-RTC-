@@ -74,8 +74,41 @@ module ModuloVGA
 	localparam Columna_6_in  = 9'd320;
 	localparam Columna_6_off = 9'd351;	
 	
+	//PLANTILLAS HORAS
+	localparam PLANT_HORA = 13'd6649;
+	localparam PH_D_X = 8'd133; 
+	localparam PH_D_Y = 6'd50;
+
+	localparam PH_X_in  = 8'd159;
+	localparam PH_X_off = 9'd306;
+	
+	localparam PH_Y_in  = 7'd112;
+	localparam PH_Y_off = 8'd191;
+	
+	//PLANTILLAS FECHA
+	localparam PLANT_FECHA = 13'd7349;
+	localparam PF_D_X = 8'd147; 
+	localparam PF_D_Y = 6'd50;
+
+	localparam PF_X_in  = 8'd159;
+	localparam PF_X_off = 9'd306;
+	
+	localparam PF_Y_in  = 4'd13;
+	localparam PF_Y_off = 6'd62;
+	
+	//PLANTILLAS TIMER
+	localparam PLANT_TIMER = 13'd7149;
+	localparam PT_D_X = 8'd143; 
+	localparam PT_D_Y = 6'd50;
+
+	localparam PT_X_in  = 8'd159;
+	localparam PT_X_off = 9'd306;
+	
+	localparam PT_Y_in  = 9'd269;
+	localparam PT_Y_off = 9'd319;
+	
 	//Flechas  
-	//localparam FLECHAS   = 13'd6599;
+	localparam FLECHAS   = 13'd6599;
 	localparam FLE_D_X   = 7'd100; 
 	localparam FLE_D_Y   = 7'd66;
 
@@ -97,7 +130,6 @@ module ModuloVGA
 	localparam AL_Y_off = 9'd408;
 
 	//Plantilla
-	//localparam PLANTILLA  = 10'd625;
 	localparam PL_D_X    = 5'd25;
 	localparam PL_D_Y    = 5'd25;
 
@@ -111,16 +143,20 @@ module ModuloVGA
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// SELECCION DE MEMORIAS EMPLEADAS /////////////////////////////
 	
-	//reg [11:0]FLECHAS_DATA[0:FLECHAS]; //Memoria donde se almacena los datos de plantilla
+	reg [11:0]FLECHAS_DATA[0:FLECHAS]; //Memoria donde se almacena los datos de plantilla
 	reg [11:0]ALARMA_DATA[0:ALARM];   //Memoria donde se almacena los datos de plantilla
-	//reg [11:0]PLANTILLA_DATA[0:PLANTILLA]; 
-	
+	reg [11:0]FEHA_DATA[0:PLANT_FECHA];
+	reg [11:0]HORA_DATA[0:PLANT_HORA];
+	reg [11:0]TIMER_DATA[0:PLANT_TIMER];
 	
 	initial  //Se leen los datos de los .txt o .list y se pasan a las memorias
 	begin
-	//$readmemh ("FLECHAS.list",FLECHAS_DATA  ); //paso de listas txt a memorias
-	$readmemh ("ALARMA.list" ,ALARMA_DATA   );
-	//$readmemh ("PLANTILLA.list" ,PLANTILLA_DATA);	
+	$readmemh ("FLECHAS.list",FLECHAS_DATA); //paso de listas txt a memorias
+	$readmemh ("ALARMA.list" ,ALARMA_DATA );
+	$readmemh ("FECHA.list"  ,FEHA_DATA   );
+	$readmemh ("HORA.list"   ,HORA_DATA   );
+	$readmemh ("TIMER.list"  ,TIMER_DATA  );
+
 	end
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -139,6 +175,7 @@ module ModuloVGA
 	wire HT1_ON,HT2_ON;
 	wire MT1_ON,MT2_ON;	
 	wire ST1_ON,ST2_ON;	
+	wire PUNTOS,SLASH,LINEA_DIV;
 	
 	assign A1_ON  = (Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_1_in <= ADDRH) && (ADDRH <= Columna_1_off);
 	assign A2_ON  = (Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_2_in <= ADDRH) && (ADDRH <= Columna_2_off);
@@ -160,6 +197,20 @@ module ModuloVGA
 	assign MT2_ON = (Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_4_in <= ADDRH) && (ADDRH <= Columna_4_off);
 	assign ST1_ON = (Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_5_in <= ADDRH) && (ADDRH <= Columna_5_off);
 	assign ST2_ON = (Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_6_in <= ADDRH) && (ADDRH <= Columna_6_off);
+		
+		
+	///////
+	
+	assign PUNTOS = ((Hora_Y_in  <= ADDRV) && (ADDRV  <= Hora_Y_off) && (Columna_1_off <= ADDRH) && (ADDRH <= Columna_2_in))||
+						 ((Hora_Y_in  <= ADDRV) && (ADDRV  <= Hora_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in))||						 
+						 ((Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_1_off <= ADDRH) && (ADDRH <= Columna_2_in))||
+						 ((Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in));
+
+	assign SLASH  = ((Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_1_off <= ADDRH) && (ADDRH <= Columna_2_in))||
+						 ((Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in));
+	
+	assign LINEA_DIV = (9'd384 <= ADDRH) && (ADDRH <= 10'd416);
+	
 	///////
 		
 	//Imagenes
@@ -176,7 +227,16 @@ module ModuloVGA
 	
 	assign PLANTILLA_ON  = (PL_Y_in <= ADDRV) && (ADDRV <= PL_Y_off) && (PL_X_in <= ADDRH) && (ADDRH <= PL_X_off);	
 	assign PLANTILLA_OFF = (PL_Y_in > ADDRV)  || (ADDRV >  PL_Y_off) || (PL_X_in >  ADDRH) || (ADDRH >  PL_X_off);	
+
 	///////
+	wire P_FECHA;
+	wire P_TIMER;
+	wire P_HORA;
+	
+	assign P_FECHA = (ADDRV >= PF_Y_in) && (PF_Y_off >= ADDRV) && (ADDRV >= PF_X_in) && (PF_X_off >= ADDRV);
+	assign P_TIMER = (ADDRV >= PH_Y_in) && (PH_Y_off >= ADDRV) && (ADDRV >= PH_X_in) && (PH_X_off >= ADDRV);
+	assign P_HORA  = (ADDRV >= PT_Y_in) && (PT_Y_off >= ADDRV) && (ADDRV >= PT_X_in) && (PT_X_off >= ADDRV);	
+	
 
 	reg [4:0]Selector = 5'd0;
 	always @(posedge CLK)
@@ -247,6 +307,24 @@ module ModuloVGA
 		if(AL_ON)  Selector = 5'd21;
 		else Selector = Selector;
 		
+		if(SLASH) Selector = 5'd22;
+		else Selector = Selector;
+		
+		if(PUNTOS) Selector = 5'd23;
+		else Selector = Selector;		
+		
+		if(P_FECHA) Selector = 5'd24;
+		else Selector = Selector;		
+		
+		if(P_HORA) Selector = 5'd25;
+		else Selector = Selector;		
+
+		if(P_TIMER) Selector = 5'd26;
+		else Selector = Selector;		
+		
+		if(LINEA_DIV) Selector = 5'd27;
+		else Selector = Selector;		
+		
 	end 
 
 	assign SelecOUT = Selector;
@@ -279,6 +357,11 @@ module ModuloVGA
 		5'd18 : rom = SEGT[3:0] ;
 		5'd19 : rom = SEGT[7:4] ;
 		
+		5'd22  : rom = 4'h0;
+		5'd23  : rom = 4'h1;
+		
+		5'd27  : rom = 4'h2;
+		
 		default rom = 4'h0;
 		endcase 
 	end 
@@ -290,13 +373,15 @@ module ModuloVGA
 	assign direccion_data = {ADDRH[4], ADDRH[3], ADDRH[2], ADDRH[1]};
 	
 	wire [11:0]NUMEROS;
+	wire [11:0]COSAS;
 	
 	Memoria_Numeros NUMEROS_MEM (direccion,rom, NUMEROS, direccion_data,CLK,RST,ADDRV); 
+	MEMORIA_SP      PUNTOS_SLAS (direccion,rom, COSAS  , direccion_data);
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //Imagnes cargadas 
 
-	wire [9:0]Adress1;
+	wire [12:0]Adress1;
 	reg  [9:0]Y   = 9'h1FF; //Resta en Y 
 	reg  [9:0]X   = 9'h1FF; //Resta en X
 	reg  [9:0]MUL = 9'h1FF; //Multiplica por parametro
@@ -304,10 +389,12 @@ module ModuloVGA
 	always @(*) //Dependiendo de el lugar de selector se escogen los paramentros a operar
 	begin
 		case(Selector)
-    //5'd1  : begin Y = PL_Y_in ; X = PL_X_in ; MUL = PL_D_Y ;  end
-		5'd20 : begin Y = FLE_Y_in; X = FLE_X_in; MUL = FLE_D_Y;  end
-		5'd21 : begin Y = AL_Y_in ; X = AL_X_in ; MUL = AL_D_Y ;  end
-
+		5'd20 : begin Y = FLE_Y_in; X = FLE_X_in; MUL = FLE_D_Y; end
+		5'd21 : begin Y = AL_Y_in ; X = AL_X_in ; MUL = AL_D_Y ; end
+		5'd24 : begin Y = PF_Y_in ; X = PF_X_in ; MUL = PF_D_Y ; end
+		5'd25 : begin Y = PH_Y_in ; X = PH_X_in ; MUL = PH_D_Y ; end
+		5'd26 : begin Y = PT_Y_in ; X = PT_X_in ; MUL = PT_D_Y ; end
+		
 		default begin Y = PL_Y_in ; X= PL_X_in; MUL= PL_D_Y; end
 		endcase
 	end
@@ -317,7 +404,7 @@ module ModuloVGA
 	assign Adress1 = (ADDRV - Y) + (ADDRH - X)*MUL; //Establecimieto de puntero para memoria de plantilla
 	//////////////////////
 	
-	reg [9:0]Adress;
+	reg [12:0]Adress;
 	always @(posedge CLK) Adress = Adress1;
 
 
@@ -327,9 +414,8 @@ module ModuloVGA
 	always @(posedge CLK)
 	begin	
 		case (Selector)	
-		
-		//5'd1  : COLOR_OUT = ;
-		5'd2  : COLOR_OUT = NUMEROS;
+
+		5'd2  : COLOR_OUT = NUMEROS; 
 		5'd3  : COLOR_OUT = NUMEROS;
 		5'd4  : COLOR_OUT = NUMEROS;
 		5'd5  : COLOR_OUT = NUMEROS;
@@ -350,8 +436,18 @@ module ModuloVGA
 		5'd18 : COLOR_OUT = NUMEROS;
 		5'd19 : COLOR_OUT = NUMEROS;
 		
-	 //5'd20 : COLOR_OUT = FLECHAS_DATA[{Adress}];
-		5'd21 : COLOR_OUT =  ALARMA_DATA[{Adress}];
+	   5'd20 : COLOR_OUT = FLECHAS_DATA[{Adress}];
+		5'd21 : COLOR_OUT = ALARMA_DATA[{Adress}];
+		
+		5'd22  : COLOR_OUT = COSAS;
+		5'd23  : COLOR_OUT = COSAS;
+		
+		5'd24 : COLOR_OUT = FEHA_DATA[{Adress}];
+		5'd25 : COLOR_OUT = HORA_DATA[{Adress}];
+		
+		5'd26 : COLOR_OUT = TIMER_DATA[{Adress}];
+
+		5'd27 : COLOR_OUT = COSAS;
 		
 		default COLOR_OUT = 12'h000;
 		endcase

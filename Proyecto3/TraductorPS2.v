@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /////////////////////////////////////////////////////////////////////////////////
-module TraductorPS2(DATA_IN,ps2c,Reloj,RST,DATA_OUT,S_DATA);
+module TraductorPS2(DATA_IN,ps2c,Reloj,RST,DATA_OUT,S_DATA,DATA_REG_ANTERIOR,DATA_REG);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@ input  Reloj,RST;              		//Reloj del circuito (100MHz)
 input  ps2c;    				      	//Reloj del teclado 
 input  DATA_IN;   			   		//Datos del teclado (son de tipo serial)
 output reg [7:0]DATA_OUT;	         //Datos de salida 
-output reg S_DATA;						//Indica se se puede o no leer el dato que se encuentra en los registros de salida 
+input S_DATA;						//Indica se se puede o no leer el dato que se encuentra en los registros de salida 
 
 //EL  teclado trabaja en base a los negedges del puerto CLK
 reg ON = 1'h0; 			       //El protocolo posee un bit de inicio (Primer negedge del protocolo) y un bit de cierre (ultimo negedge del protocolo)
@@ -143,10 +143,10 @@ wire Paridad_OK; //Define si la paridad es correcta o no
 Paridad P_OK (Reloj, DATA_P, Paridad, Paridad_OK); //Comprobador de paridad
      
 //////////////////////////////////////////////////////////
-reg [7:0]DATA_REG = 8'h00;          	       //Se crea el registro de almacenamiento de ultimo dato
-reg [7:0]DATA_REG_ANTERIOR = 8'h00; 			 //Se crea el registro de almacenamiento de ultimo dato 
-reg [7:0]DATA_REG_ANTERIOR_ANTERIOR1 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
-reg [7:0]DATA_REG_ANTERIOR_ANTERIOR2 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
+output reg[7:0]DATA_REG = 8'h00;          	       //Se crea el registro de almacenamiento de ultimo dato
+output reg[7:0]DATA_REG_ANTERIOR = 8'h00; 			 //Se crea el registro de almacenamiento de ultimo dato 
+reg[7:0]DATA_REG_ANTERIOR_ANTERIOR1 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
+reg[7:0]DATA_REG_ANTERIOR_ANTERIOR2 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
 
 always @(posedge Reloj)
 begin 
@@ -226,14 +226,16 @@ begin
 end
 //////
 
-reg S_DATA_ON;
 //////
 always @(posedge Reloj)
 begin 
-	if(SEND_Reg == 1'b1) begin DATA_OUT <= DATA_REG; S_DATA_ON <= 1'b1; end  	//Si se recibe la señal "F0H" se envia el dato a salida 
-	else begin DATA_OUT <= DATA_OUT; S_DATA_ON <= 1'b0; end
+	if (S_DATA) DATA_OUT <= 8'h00;
+	else
+	begin
+		if(SEND_Reg == 1'b1) begin DATA_OUT <= DATA_REG;  end  	//Si se recibe la señal "F0H" se envia el dato a salida 
+		else begin DATA_OUT <= DATA_OUT; end
+	end 
 end 
 //////
 
-always @(posedge Reloj) S_DATA = S_DATA_ON;
 endmodule 
