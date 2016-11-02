@@ -7,6 +7,7 @@ parameter T = 10;
 // Inputs
 reg clk, reset,IRQ;
 reg [7:0] ps2_code;
+reg sec;
 // Outputs
 wire CS;
 wire RD;
@@ -14,6 +15,7 @@ wire WR;
 wire AD;
 wire [7:0] A_D_Bus;
 wire [7:0] Segundos;
+
 
 top uut(
   .clk(clk),
@@ -35,10 +37,12 @@ end
   initial begin
     reset = 1;
     clk = 0;
-    IRQ = 0;
+    IRQ = 1 ;
     #100;
     reset = 0;
-    #10000;
+    IRQ = 1;
+    #6630;
+    sec = 8'h09;
     $stop;
   end
 
