@@ -58,43 +58,45 @@ module ModuloVGA
 	//Parametros en X
 	localparam Columna_1_in  = 7'd95 ;
 	localparam Columna_1_off = 8'd127;
-
+	
 	localparam Columna_2_in  = 8'd128;
 	localparam Columna_2_off = 8'd159;
-
+	
 	localparam Columna_3_in  = 8'd191;
 	localparam Columna_3_off = 8'd223;	
-
+	
 	localparam Columna_4_in  = 8'd224;
 	localparam Columna_4_off = 8'd255;	
-
+	
 	localparam Columna_5_in  = 9'd287;
 	localparam Columna_5_off = 9'd319;	
 	
 	localparam Columna_6_in  = 9'd320;
 	localparam Columna_6_off = 9'd351;	
 	
-	//PLANTILLAS HORAS
-	localparam PLANT_HORA = 13'd6649;
-	localparam PH_D_X = 8'd133; 
-	localparam PH_D_Y = 6'd50;
-
-	localparam PH_X_in  = 8'd159;
-	localparam PH_X_off = 9'd306;
-	
-	localparam PH_Y_in  = 7'd112;
-	localparam PH_Y_off = 8'd191;
 	
 	//PLANTILLAS FECHA
 	localparam PLANT_FECHA = 13'd7349;
 	localparam PF_D_X = 8'd147; 
 	localparam PF_D_Y = 6'd50;
-
+	
 	localparam PF_X_in  = 8'd159;
 	localparam PF_X_off = 9'd306;
 	
 	localparam PF_Y_in  = 4'd13;
-	localparam PF_Y_off = 6'd62;
+	localparam PF_Y_off = 6'd63;
+	
+	
+	//PLANTILLAS HORAS
+	localparam PLANT_HORA = 13'd6649;
+	localparam PH_D_X = 8'd133; 
+	localparam PH_D_Y = 6'd50; 
+	
+	localparam PH_X_in  = 8'd159;
+	localparam PH_X_off = 9'd292;
+	
+	localparam PH_Y_in  = 8'd141;
+	localparam PH_Y_off = 8'd191;
 	
 	//PLANTILLAS TIMER
 	localparam PLANT_TIMER = 13'd7149;
@@ -102,7 +104,7 @@ module ModuloVGA
 	localparam PT_D_Y = 6'd50;
 
 	localparam PT_X_in  = 8'd159;
-	localparam PT_X_off = 9'd306;
+	localparam PT_X_off = 9'd302;
 	
 	localparam PT_Y_in  = 9'd269;
 	localparam PT_Y_off = 9'd319;
@@ -112,8 +114,8 @@ module ModuloVGA
 	localparam FLE_D_X   = 7'd100; 
 	localparam FLE_D_Y   = 7'd66;
 
-	localparam FLE_X_in  = 10'd400;
-	localparam FLE_X_off = 10'd500;
+	localparam FLE_X_in  = 10'd460;
+	localparam FLE_X_off = 10'd560;
 	
 	localparam FLE_Y_in  = 6'd63;
 	localparam FLE_Y_off = 8'd129;
@@ -201,12 +203,12 @@ module ModuloVGA
 		
 	///////
 	
-	assign PUNTOS = ((Hora_Y_in  <= ADDRV) && (ADDRV  <= Hora_Y_off) && (Columna_1_off <= ADDRH) && (ADDRH <= Columna_2_in))||
+	assign PUNTOS = ((Hora_Y_in  <= ADDRV) && (ADDRV  <= Hora_Y_off) && (Columna_4_off <= ADDRH) && (ADDRH <= Columna_5_in))||
 						 ((Hora_Y_in  <= ADDRV) && (ADDRV  <= Hora_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in))||						 
-						 ((Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_1_off <= ADDRH) && (ADDRH <= Columna_2_in))||
-						 ((Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in));
+						 ((Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in))||
+						 ((Timer_Y_in <= ADDRV) && (ADDRV <= Timer_Y_off) && (Columna_4_off <= ADDRH) && (ADDRH <= Columna_5_in));
 
-	assign SLASH  = ((Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_1_off <= ADDRH) && (ADDRH <= Columna_2_in))||
+	assign SLASH  = ((Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_4_off <= ADDRH) && (ADDRH <= Columna_5_in))||
 						 ((Fecha_Y_in <= ADDRV) && (ADDRV <= Fecha_Y_off) && (Columna_2_off <= ADDRH) && (ADDRH <= Columna_3_in));
 	
 	assign LINEA_DIV = (9'd384 <= ADDRH) && (ADDRH <= 10'd416);
@@ -233,9 +235,9 @@ module ModuloVGA
 	wire P_TIMER;
 	wire P_HORA;
 	
-	assign P_FECHA = (ADDRV >= PF_Y_in) && (PF_Y_off >= ADDRV) && (ADDRV >= PF_X_in) && (PF_X_off >= ADDRV);
-	assign P_TIMER = (ADDRV >= PH_Y_in) && (PH_Y_off >= ADDRV) && (ADDRV >= PH_X_in) && (PH_X_off >= ADDRV);
-	assign P_HORA  = (ADDRV >= PT_Y_in) && (PT_Y_off >= ADDRV) && (ADDRV >= PT_X_in) && (PT_X_off >= ADDRV);	
+	assign P_FECHA = (PF_Y_in <= ADDRV) && (PF_Y_off >= ADDRV) && (ADDRH >= PF_X_in) && (PF_X_off >= ADDRH);
+	assign P_HORA  = (PH_Y_in <= ADDRV) && (PH_Y_off >= ADDRV) && (ADDRH >= PH_X_in) && (PH_X_off >= ADDRH);
+	assign P_TIMER = (PT_Y_in <= ADDRV) && (PT_Y_off >= ADDRV) && (ADDRH >= PT_X_in) && (PT_X_off >= ADDRH);	
 	
 
 	reg [4:0]Selector = 5'd0;

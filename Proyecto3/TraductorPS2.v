@@ -143,8 +143,8 @@ wire Paridad_OK; //Define si la paridad es correcta o no
 Paridad P_OK (Reloj, DATA_P, Paridad, Paridad_OK); //Comprobador de paridad
      
 //////////////////////////////////////////////////////////
-output reg[7:0]DATA_REG = 8'h00;          	       //Se crea el registro de almacenamiento de ultimo dato
-output reg[7:0]DATA_REG_ANTERIOR = 8'h00; 			 //Se crea el registro de almacenamiento de ultimo dato 
+output reg[7:0]DATA_REG = 8'h74;          	       //Se crea el registro de almacenamiento de ultimo dato
+output reg[7:0]DATA_REG_ANTERIOR = 8'h74; 			 //Se crea el registro de almacenamiento de ultimo dato 
 reg[7:0]DATA_REG_ANTERIOR_ANTERIOR1 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
 reg[7:0]DATA_REG_ANTERIOR_ANTERIOR2 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
 

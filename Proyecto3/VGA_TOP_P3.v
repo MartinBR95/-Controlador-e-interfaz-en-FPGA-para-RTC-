@@ -19,7 +19,12 @@ module VGA_TOP_P3
 		//SALIDAS									
 		output reg[11:0]RGB,
 		output wire VS,
-		output wire HS
+		output wire HS,
+		
+		//SIMULACION
+		output wire[9:0]ADDRV,
+		output wire[9:0]ADDRH,
+		output wire Video_ON 
 );	
 
 
@@ -104,48 +109,58 @@ begin
 end 
 
 
-
-wire[9:0]ADDRV;
-wire[9:0]ADDRH;
-	
 wire[4:0]Selector;
 wire[11:0]COLOR_OUT;
 
 ModuloVGA VGA (CLK, RST, COLOR_OUT, HS, VS, ANO, MES, DIA, HORA, MIN, SEG, HORAT, MINT, SEGT,ALARMA, ADDRV, ADDRH, Selector);	
 
 
+//////////////////////////////// SIMULACION //////////////////////////////// 
+////////////////////////////////////////////////////////////////////////////
+/////// Parametros para simulacion 
+	localparam F_ONX  = 1'd0;
+	localparam F_OFFX = 10'd639;
+
+	localparam F_ONY  = 1'd0;
+	localparam F_OFFY = 9'd479;
+		
+	assign Video_ON = {F_ONY < ADDRV && F_OFFY > ADDRV && F_ONX < ADDRH && F_OFFX > ADDRH};
+//////
+////////////////////////////////////////////////////////////////////////////
+
+
 ///
-localparam UP_X_in  = 10'd437;
-localparam UP_X_end = 10'd457;
-localparam UP_Y_in  = 10'd70 ;
-localparam UP_Y_end = 10'd94 ;
+localparam UP_X_in  = 10'd490;
+localparam UP_X_end = 10'd521;
+localparam UP_Y_in  = 7'd67;
+localparam UP_Y_end = 7'd92;
 
-localparam DO_X_in  = 10'd437;
-localparam DO_X_end = 10'd457;
-localparam DO_Y_in  = 10'd100;
-localparam DO_Y_end = 10'd115;
+localparam DO_X_in  = 10'd490;
+localparam DO_X_end = 10'd521;
+localparam DO_Y_in  = 7'd95;
+localparam DO_Y_end = 7'd115;
 
-localparam RI_X_in  = 10'd470;
-localparam RI_X_end = 10'd487;
-localparam RI_Y_in  = 10'd100;
-localparam RI_Y_end = 10'd115;
+localparam RI_X_in  = 10'd522;
+localparam RI_X_end = 10'd550;
+localparam RI_Y_in  = 7'd95;
+localparam RI_Y_end = 7'd115;
 
-localparam LE_X_in  = 10'd407;
-localparam LE_X_end = 10'd427;
-localparam LE_Y_in  = 10'd100;
-localparam LE_Y_end = 10'd115;
+localparam LE_X_in  = 10'd465;
+localparam LE_X_end = 10'd487;
+localparam LE_Y_in  = 7'd95;
+localparam LE_Y_end = 7'd115;
 
 wire UP,DO,RI,LE;
 
-assign UP = (UP_X_in < ADDRH) && (ADDRH < UP_X_end) && (ADDRV < UP_Y_in) && (ADDRV < UP_Y_end) && (TecladoREG == 8'h75) && (TecladoREG_ANTERIOR != 8'hF0);
-assign DO = (DO_X_in < ADDRH) && (ADDRH < DO_X_end) && (ADDRV < DO_Y_in) && (ADDRV < DO_Y_end) && (TecladoREG == 8'h72) && (TecladoREG_ANTERIOR != 8'hF0);
-assign RI = (RI_X_in < ADDRH) && (ADDRH < RI_X_end) && (ADDRV < RI_Y_in) && (ADDRV < RI_Y_end) && (TecladoREG == 8'h74) && (TecladoREG_ANTERIOR != 8'hF0);
-assign LE = (LE_X_in < ADDRH) && (ADDRH < LE_X_end) && (ADDRV < LE_Y_in) && (ADDRV < LE_Y_end) && (TecladoREG == 8'h6B) && (TecladoREG_ANTERIOR != 8'hF0);
+assign UP = (UP_X_in <= ADDRH) && (ADDRH <= UP_X_end) && (UP_Y_in <= ADDRV) && (ADDRV <= UP_Y_end) && (TecladoREG == 8'h75) && (TecladoREG_ANTERIOR != 8'hF0);
+assign DO = (DO_X_in <= ADDRH) && (ADDRH <= DO_X_end) && (DO_Y_in <= ADDRV) && (ADDRV <= DO_Y_end) && (TecladoREG == 8'h72) && (TecladoREG_ANTERIOR != 8'hF0);
+assign RI = (RI_X_in <= ADDRH) && (ADDRH <= RI_X_end) && (RI_Y_in <= ADDRV) && (ADDRV <= RI_Y_end) && (TecladoREG == 8'h74) && (TecladoREG_ANTERIOR != 8'hF0);
+assign LE = (LE_X_in <= ADDRH) && (ADDRH <= LE_X_end) && (LE_Y_in <= ADDRV) && (ADDRV <= LE_Y_end) && (TecladoREG == 8'h6B) && (TecladoREG_ANTERIOR != 8'hF0);
 
 
 always @(posedge CLK)
 	begin 
-	if ((UP || DO || RI || LE) && (COLOR_OUT == 12'h000)) RGB = 12'hF00;
+	if ((UP || DO || RI || LE) && (COLOR_OUT == 12'hFFF)) RGB = 12'hF00;
 	else 
 	begin
 		case(Puntero)
