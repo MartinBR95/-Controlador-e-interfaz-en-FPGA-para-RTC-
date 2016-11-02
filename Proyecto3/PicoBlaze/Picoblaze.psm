@@ -353,10 +353,7 @@ Dato_rtc_enviado:
 	RDPRT s1,Pi_Dato_rtc;se lee un valor desde el RTC
 	WRMEM s1,(s3) ;se guarda el dato de entrada
 		
-Dir01:
-	LOAD s6,0x00;el siguiente valor no se envia al rtc
-	LOAD sD,b00000000
-	JUMP Z,Reiniciar_Barrido;	
+	
 No_Entrada:
 	ADD sF,1;se hace dir+1
 	ADD s3,1;se hace dir+1
@@ -377,7 +374,7 @@ DirF0:
 	LOAD s3,Mem_seg;se reinicia el puntero de memoria
 	LOAD sD,b00000000
 	WRPRT sD,Po_cmd; FIN BARRIDO DE ESCRITURA
-	LOAD s6,0
+	LOAD s6,0	
 	JUMP Fin_inic
 
 Reiniciar_Barrido:	
@@ -438,7 +435,12 @@ Pjump_thor:
 	
 Pjump_tseg:
 	LOAD sE,Mem_dir_Pseg;
-	JUMP Retorno_puntero;
+	JUMP Retorno_puntero;	
+	
+Dir01:
+	LOAD s6,0x00;el siguiente valor no se envia al rtc
+	LOAD sD,b00000000
+	JUMP Z,Reiniciar_Barrido;
 ;******************************************************************************************************************************
 JUMP	Fin_inic
 
