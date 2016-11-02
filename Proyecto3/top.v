@@ -132,6 +132,7 @@ module top(
 
   always @ (posedge clk)
   begin
+    if(reset) Segundos = 8'h66;
     case (port_id)
     	ps2_data:		in_port <= teclado;
     	RTC_Dir:		in_port<= rtc_port;
@@ -140,7 +141,8 @@ module top(
     	RTC_Data_out:	in_port<= rtc_port;
     	default : in_port <= 8'b00000000 ;
     endcase
-  	if(port_id==VGA_seg)Segundos<=out_port;
+  	if(port_id==VGA_seg && write_strobe)Segundos<=out_port;
+    else Segundos <= Segundos;
   end
 
 
