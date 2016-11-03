@@ -24,7 +24,8 @@ module top(
   inout [7:0] bus,
   output reg [7:0] Segundos,
   //Pruebas
-  output wire	[7:0] address2
+  output wire	[7:0] address2,
+  output wire [11:0] RGB
   //,output wire	[7:0] instruction2
   );
 
@@ -119,6 +120,43 @@ module top(
 		    .AD(AD),.CS(CS),.RD(RD),.WR(WR),
 		    .bus(bus)
 			);
+
+//////////////////////////////////////////   VGA y TECLADO  //////////////////////////////////////////
+
+    Conexion_CONTROL_VGA_TECLADO Perifericos
+    (
+        //input wire[7:0]TecladoREG,
+    		//input wire[7:0]TecladoREG_ANTERIOR,
+
+    		/////////////////////////////
+    		//ENTRADA
+    		.RST(reset),
+    		.CLK(clk),
+    		.ALARMA(~IRQ),
+
+    		//SE�ALES PROBENIENTES DEL CONTROL
+    		.WRITE_STROBE(write_strobe),            //Se�al de actualizar registro
+    		.POR_ID(port_id),              //Donde escribo
+    		.OUT_PORT(out_port),            //Datos de entrada
+
+    		/////////////////////////////
+    		//SALIDAS
+    		.RGB(RGB),
+    		.VS(VS),
+    		.HS(HS),
+
+        .ps2c(),
+        .DATA_IN(),
+        .DATA_OUT_TEC(),
+        .SOLICITUD(),
+        .TecladoREG_ANTERIOR(),
+        .TecladoREG()
+
+    		//SIMULACION
+/*    		.ADDRV(),
+    		.ADDRH(),
+    		.Video_ON() */
+    );
 
 //////////////////////////////////////////ROM////////////////////////////////////////
   hexrom progra(
