@@ -29,7 +29,7 @@ module RTCport(
       read_strobe_ant <= read_strobe_reg;
 
       if(rst) begin
-        Ctrl_rtc_in = 0; Ctrl_rtc_out = 0; Direccion = 0; Dato_out = 0; Dato_in = 0;
+        Ctrl_rtc_in <= 0; Direccion <= 0; Dato_in <= 0;
       end
 
       if(write_strobe)begin
@@ -48,20 +48,26 @@ module RTCport(
 end
 
   always @(posedge clk) begin
-    Ctrl_rtc_out[1] <= IRQ;
-    if (read_strobe_ant && ~read_strobe_reg && (port_id == RTC_Ctrl_out)) Ctrl_rtc_out[0] <= 1'b0;
+	  if(rst) begin
+		  Ctrl_rtc_out <= 0; Dato_out <= 0;
+    end
     else begin
-      if (FRW) Ctrl_rtc_out[0] <= 1'b1;
-      else Ctrl_rtc_out <= Ctrl_rtc_out;
+      Ctrl_rtc_out[1] <= IRQ;
+      if (read_strobe_ant && ~read_strobe_reg && (port_id == RTC_Ctrl_out)) Ctrl_rtc_out[0] <= 1'b0;
+      else begin
+        if (FRW) Ctrl_rtc_out[0] <= 1'b1;
+        else Ctrl_rtc_out <= Ctrl_rtc_out;
+        if(Fetch) Dato_out <= bus;
+        else Dato_out <= Dato_out;
+      end
     end
   end
-
 
   always @ ( * ) begin
     case(port_id)
       RTC_Data_out: data_out <= Dato_out;
       RTC_Ctrl_out: data_out <= Ctrl_rtc_out;
-      default data_out <= data_out;
+      default data_out <= Dato_out;
     endcase
   end
 

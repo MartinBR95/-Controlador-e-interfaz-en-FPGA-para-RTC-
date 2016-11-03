@@ -130,10 +130,8 @@ module top(
 
 //////////////////////////////////////////Control Entradas Picoblaze////////////////////////////////////
 
-  always @ (posedge clk)
-  begin
-    if(reset) Segundos = 8'h66;
-    case (port_id)
+	always @(*)begin
+		case (port_id)
     	ps2_data:		in_port <= teclado;
     	RTC_Dir:		in_port<= rtc_port;
     	RTC_Ctrl_out:	in_port<= rtc_port;
@@ -141,6 +139,12 @@ module top(
     	RTC_Data_out:	in_port<= rtc_port;
     	default : in_port <= 8'b00000000 ;
     endcase
+
+	end
+
+  always @ (posedge clk)
+  begin
+    if(reset) Segundos <= 8'h66;
   	if(port_id==VGA_seg && write_strobe)Segundos<=out_port;
     else Segundos <= Segundos;
   end
