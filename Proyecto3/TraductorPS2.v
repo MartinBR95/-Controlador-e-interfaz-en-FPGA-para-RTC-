@@ -21,9 +21,9 @@ lo que el usuario desea ejecutar. Conta de 3 secciones:
 input  Reloj,RST;              		//Reloj del circuito (100MHz)
 input  ps2c;    				      	//Reloj del teclado 
 input  DATA_IN;   			   		//Datos del teclado (son de tipo serial)
-output reg [7:0]DATA_OUT;	         //Datos de salida 
+output reg [7:0]OUT_DEC;	         //Datos de salida 
 input S_DATA;						//Indica se se puede o no leer el dato que se encuentra en los registros de salida 
-
+reg [7:0]DATA_OUT;
 //EL  teclado trabaja en base a los negedges del puerto CLK
 reg ON = 1'h0; 			       //El protocolo posee un bit de inicio (Primer negedge del protocolo) y un bit de cierre (ultimo negedge del protocolo)
 wire Paridad;  			 //Asi mismo el protocolo posee un bit de paridad (impar)
@@ -224,12 +224,30 @@ begin
 		else  SEND_Reg <= 1'b0;
 	end
 end
+
 //////
+reg S_DATA_reg;
+reg S_DATA_anterior;
+
+always@ (posedge Reloj, posedge RST)              //Detector de flanco para enviar datos 
+begin
+	if (RST)	begin
+		S_DATA_reg <= 1'b0;
+		S_DATA_anterior <= 1'b0;
+	end
+
+	else begin
+		S_DATA_anterior <= S_DATA;
+		if(S_DATA_anterior && ~S_DATA) S_DATA_reg <= 1'b1;
+		else  S_DATA_reg <= 1'b0;
+	end
+end
+
 
 //////
 always @(posedge Reloj)
 begin 
-	if (S_DATA) DATA_OUT <= 8'h00;
+	if (S_DATA_reg) DATA_OUT <= 8'h00;
 	else
 	begin
 		if(SEND_Reg == 1'b1) begin DATA_OUT <= DATA_REG;  end  	//Si se recibe la señal "F0H" se envia el dato a salida 
@@ -237,5 +255,28 @@ begin
 	end 
 end 
 //////
+
+
+
+//(00 - UP - DO - RI - LE - TO - AS)
+//T  = Timer on
+//AS = Alarma STOP
+
+always @(posedge Reloj)
+begin
+	
+	case(DATA_OUT)
+	
+	8'h75 : OUT_DEC = 8'b00100000; //UP
+	8'h72 : OUT_DEC = 8'b00010000; //DO
+	8'h6B : OUT_DEC = 8'b00001000; //RI
+	8'h74 : OUT_DEC = 8'b00000100; //LE
+	
+	8'h2C : OUT_DEC = 8'b00000010; //TO
+	8'h1C : OUT_DEC = 8'b00000001; //AS
+	
+	default OUT_DEC = 8'b00000000;
+	endcase 
+end 
 
 endmodule 
