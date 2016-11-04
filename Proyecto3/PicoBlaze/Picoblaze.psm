@@ -328,19 +328,30 @@ Barrido_Memoria:
 ;Escritura de direccion
 	RDMEM s0,(sF);Se lee de memoria el valor anterior de la direccion	
 	WRPRT s0,Po_Dir;se pone en el puerto de direccion = dir+1
+	
+	;Salida de dato
+	RDMEM s2,(s3);se guarda el dato de memoria en s2
+	WRPRT s2,(s3);sw pone en el puerto s3 el dato s2
+	
+	
+	AND s6,s6;se identifica si el dato a enviarse va hacia el rtc
+	JUMP NZ,Dato_out_rtc;;el dato se debe enviar al rtc	
+	
+Dato_rtc_enviado:	
 	OR sD,b00000010
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
-;Salida de dato
-	RDMEM s2,(s3);se guarda el dato de memoria en s2
-	AND s6,s6;se identifica si el dato a enviarse va hacia el rtc
-	JUMP NZ,Dato_out_rtc;;el dato se debe enviar al rtc
-	WRPRT s2,(s3);sw pone en el puerto s3 el dato s2
-Dato_rtc_enviado:	
+	
+Espera_FRW2:
 ;Se confirma la lectura/escritura del RTC
 	RDPRT  s1, Pi_Ctrl_rtc;espera confirmacion de Lectura/escritura en la direccion vijente 
 	AND s1,b00000001;se aplica una mascara
 	SUB s1,b00000000
-	JUMP Z,Fin_inic;Se espera por FRW	
+	JUMP Z,Espera_FRW2;Se espera por FRW		
+	
+	LOAD sC,sD;
+	AND sC,b00000001;se aplica una mascara
+	SUB sC,b00000001
+	JUMP Z,No_Entrada;Se espera por FRW	
 	
 ;Entrada de dato desde el RTC
 	LOAD s8,s0;se respalda s0
@@ -425,7 +436,7 @@ JUMP Barrido_Memoria
 
 Dato_out_rtc:
 
-
+	RDMEM s2,(s3);se guarda el dato de memoria en s2
 	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2
 	JUMP Dato_rtc_enviado
 
