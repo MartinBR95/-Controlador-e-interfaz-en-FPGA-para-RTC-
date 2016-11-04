@@ -144,7 +144,7 @@ module ModuloVGA
 
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// SELECCION DE MEMORIAS EMPLEADAS /////////////////////////////
-	
+/*
 	reg [11:0]FLECHAS_DATA[0:FLECHAS]; //Memoria donde se almacena los datos de plantilla
 	reg [11:0]ALARMA_DATA[0:ALARM];   //Memoria donde se almacena los datos de plantilla
 	reg [11:0]FEHA_DATA[0:PLANT_FECHA];
@@ -160,7 +160,7 @@ module ModuloVGA
 	$readmemh ("TIMER.list"  ,TIMER_DATA  );
 
 	end
-
+*/
 	/////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////// SELECCION DE DATOS DE SALIDA ///////////////////////////////
 
@@ -382,7 +382,7 @@ module ModuloVGA
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //Imagnes cargadas 
-
+/*
 	wire [12:0]Adress1;
 	reg  [9:0]Y   = 9'h1FF; //Resta en Y 
 	reg  [9:0]X   = 9'h1FF; //Resta en X
@@ -409,7 +409,7 @@ module ModuloVGA
 	reg [12:0]Adress;
 	always @(posedge CLK) Adress = Adress1;
 
-
+*/
 	//////////////////////////////////////////////////////
 	//Seleccion de salida
 	
@@ -437,18 +437,18 @@ module ModuloVGA
 		5'd17 : COLOR_OUT = NUMEROS;
 		5'd18 : COLOR_OUT = NUMEROS;
 		5'd19 : COLOR_OUT = NUMEROS;
-		
+		/*
 	   5'd20 : COLOR_OUT = FLECHAS_DATA[{Adress}];
 		5'd21 : COLOR_OUT = ALARMA_DATA[{Adress}];
-		
+		*/
 		5'd22  : COLOR_OUT = COSAS;
 		5'd23  : COLOR_OUT = COSAS;
-		
+		/*
 		5'd24 : COLOR_OUT = FEHA_DATA[{Adress}];
 		5'd25 : COLOR_OUT = HORA_DATA[{Adress}];
 		
 		5'd26 : COLOR_OUT = TIMER_DATA[{Adress}];
-
+		*/
 		5'd27 : COLOR_OUT = COSAS;
 		
 		default COLOR_OUT = 12'h000;

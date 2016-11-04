@@ -4,29 +4,26 @@ module VGA_TOP_P3
 (		input wire[7:0]TecladoREG,
 		input wire[7:0]TecladoREG_ANTERIOR,
 
-		/////////////////////////////
-		//ENTRADA
-		input wire RST,
+		/////////////////////////////			
+		//ENTRADA									
+		input wire RST,				
 		input wire CLK,
 		input ALARMA,
-
-		//SEï¿½ALES PROBENIENTES DEL CONTROL
-		input wire WRITE_STROBE,            //Seï¿½al de actualizar registro (en flanco de subida)
+	
+		//SEÑALES PROBENIENTES DEL CONTROL 	
+		input wire WRITE_STROBE,            //Señal de actualizar registro (en flanco de subida)
 		input wire[7:0]POR_ID,              //Donde escribo
-		input wire[7:0]OUT_PORT,            //Datos de entrada
-
-		/////////////////////////////
-		//SALIDAS
+		input wire[7:0]OUT_PORT,            //Datos de entrada		
+														
+		/////////////////////////////			
+		//SALIDAS									
 		output reg[11:0]RGB,
 		output wire VS,
-		output wire HS,
+		output wire HS
+);	
 
-		//SIMULACION
-		output wire[9:0]ADDRV,
-		output wire[9:0]ADDRH,
-		output wire Video_ON
-);
-
+wire[9:0]ADDRV;
+wire[9:0]ADDRH;
 
 reg[7:0]ANO = 8'h00;
 reg[7:0]MES = 8'h00;
@@ -35,43 +32,43 @@ reg[7:0]DIA = 8'h00;
 reg[7:0]HORA = 8'h00;
 reg[7:0]MIN = 8'h00;
 reg[7:0]SEG = 8'h00;
-
+	
 reg[7:0]HORAT = 8'h00;
 reg[7:0]MINT = 8'h00;
 reg[7:0]SEGT = 8'h00;
 reg[7:0]Puntero = 8'h00;
-
+	
 localparam PUN_S  = 8'hFF;
-
-localparam ANO_S  = 8'h00;
-localparam MES_S  = 8'h01;
-localparam DIA_S  = 8'h02;
-
-localparam SEG_S  = 8'h03;
-localparam MIN_S  = 8'h04;
-localparam HORA_S = 8'h05;
-
-localparam SEGT_S = 8'h06;
-localparam MINT_S = 8'h07;
-localparam HORAT_S= 8'h08;
-
+	
+localparam ANO_S  = 8'h00; 
+localparam MES_S  = 8'h01; 
+localparam DIA_S  = 8'h02; 
+		
+localparam SEG_S  = 8'h03; 
+localparam MIN_S  = 8'h04; 
+localparam HORA_S = 8'h05; 
+		
+localparam SEGT_S = 8'h06; 
+localparam MINT_S = 8'h07; 
+localparam HORAT_S= 8'h08; 
+				
 always@(posedge CLK)
 begin
 	if(WRITE_STROBE)
 	begin
-		case(POR_ID)
+		case(POR_ID) 
 			ANO_S   : ANO   = OUT_PORT;
 			MES_S   : MES   = OUT_PORT;
 			DIA_S   : DIA   = OUT_PORT;
-
+	
 			SEG_S   : SEG   = OUT_PORT;
 			MIN_S   : MIN   = OUT_PORT;
 			HORA_S  : HORA  = OUT_PORT;
-
+	
 			SEGT_S  : SEGT  = OUT_PORT;
 			MINT_S  : MINT  = OUT_PORT;
 			HORAT_S : HORAT = OUT_PORT;
-
+		
 			PUN_S   : Puntero = OUT_PORT;
 
 		default  begin
@@ -82,16 +79,16 @@ begin
 					HORA = HORA;
 					MIN  = MIN;
 					SEG  = SEG;
-
+	
 					HORAT = HORAT;
 					MINT  = MINT;
 					SEGT  = SEGT;
 					Puntero = Puntero;
-					end
-		endcase
+					end 
+		endcase 
 	end
-
-	else
+			
+	else 
 	begin
 		ANO = ANO;
 		MES = MES;
@@ -100,34 +97,19 @@ begin
 		HORA = HORA;
 		MIN  = MIN;
 		SEG  = SEG;
-
+	
 		HORAT = HORAT;
 		MINT  = MINT;
 		SEGT  = SEGT;
 		Puntero = Puntero;
-	end
-end
+	end 
+end 
 
 
 wire[4:0]Selector;
 wire[11:0]COLOR_OUT;
 
-ModuloVGA VGA (CLK, RST, COLOR_OUT, HS, VS, ANO, MES, DIA, HORA, MIN, SEG, HORAT, MINT, SEGT,ALARMA, ADDRV, ADDRH, Selector);
-
-
-//////////////////////////////// SIMULACION ////////////////////////////////
-////////////////////////////////////////////////////////////////////////////
-/////// Parametros para simulacion
-	localparam F_ONX  = 1'd0;
-	localparam F_OFFX = 10'd639;
-
-	localparam F_ONY  = 1'd0;
-	localparam F_OFFY = 9'd479;
-
-	assign Video_ON = {F_ONY < ADDRV && F_OFFY > ADDRV && F_ONX < ADDRH && F_OFFX > ADDRH};
-//////
-////////////////////////////////////////////////////////////////////////////
-
+ModuloVGA VGA (CLK, RST, COLOR_OUT, HS, VS, ANO, MES, DIA, HORA, MIN, SEG, HORAT, MINT, SEGT,ALARMA, ADDRV, ADDRH, Selector);	
 
 ///
 localparam UP_X_in  = 10'd490;
@@ -159,9 +141,9 @@ assign LE = (LE_X_in <= ADDRH) && (ADDRH <= LE_X_end) && (LE_Y_in <= ADDRV) && (
 
 
 always @(posedge CLK)
-	begin
+	begin 
 	if ((UP || DO || RI || LE) && (COLOR_OUT == 12'hFFF)) RGB = 12'hF00;
-	else
+	else 
 	begin
 		case(Puntero)
 			8'h24 : begin if(((Selector == 8'd3)||(Selector == 8'd2))  && COLOR_OUT != 12'h000) RGB = 12'hF00;	//dia
@@ -190,10 +172,10 @@ always @(posedge CLK)
 
 			8'h41 : begin if(((Selector == 8'd19)||(Selector == 8'd18))&& COLOR_OUT != 12'h000) RGB = 12'hF00; //Segt
 							  else RGB = COLOR_OUT; end
-
+			
 		default RGB = COLOR_OUT;
-		endcase
-	end
-	end
+		endcase 
+	end 
+	end 
 
-endmodule
+endmodule 
