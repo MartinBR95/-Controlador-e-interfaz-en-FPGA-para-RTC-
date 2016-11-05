@@ -103,7 +103,11 @@ NET "address2[7]" LOC = P2;
 //NET "FRW_P" LOC = T16;
 ///////////////////////////////////////////////////
 
+NET "ps2c" 	      IOSTANDARD = LVCMOS33;
+NET "DATA_IN" 	 	IOSTANDARD = LVCMOS33;
 
+NET "ps2c"  		LOC = F4 |pullup;
+NET "DATA_IN" 	   LOC = B2 |pullup;
 
 NET "AD" IOSTANDARD = LVCMOS33;
 NET "clk" IOSTANDARD = LVCMOS33;

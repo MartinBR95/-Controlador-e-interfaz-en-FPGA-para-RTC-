@@ -19,7 +19,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module top(
-  input clk,reset,IRQ,
+  input clk,reset,IRQ,DATA_IN,ps2c,
   output wire AD,RD,WR,CS,HS,VS,
   inout [7:0] bus,
   output reg [7:0] Segundos,
@@ -41,12 +41,11 @@ module top(
   parameter VGA_min =     (DirInicial+1);
   parameter VGA_hor =     (DirInicial+2);
   parameter VGA_dia =     (DirInicial+3);
-  parameter VGA_mes =     (DirInicial+3);
-  parameter VGA_anio =    (DirInicial+4);
-  parameter VGA_tseg =    (DirInicial+5);
-  parameter VGA_tmin =    (DirInicial+6);
-  parameter VGA_thor =    (DirInicial+7);
-  parameter VGA_Alarma =  (DirInicial+8);
+  parameter VGA_mes =     (DirInicial+4);
+  parameter VGA_anio =    (DirInicial+5);
+  parameter VGA_tseg =    (DirInicial+6);
+  parameter VGA_tmin =    (DirInicial+7);
+  parameter VGA_thor =    (DirInicial+8);
   parameter VGA_Punt =                14;
   parameter ps2_data =                 3;
   parameter ps2_status =              13;
@@ -145,12 +144,12 @@ module top(
     		.VS(VS),
     		.HS(HS),
 
-        .ps2c(),
-        .DATA_IN(),
-        .DATA_OUT_TEC(),
-        .SOLICITUD(),
-        .TecladoREG_ANTERIOR(),
-        .TecladoREG()
+        .ps2c(ps2c),
+        .DATA_IN(DATA_IN),
+        .DATA_OUT_TEC(teclado),
+        .SOLICITUD(read_strobe),
+        //.TecladoREG_ANTERIOR(),
+        //.TecladoREG()
 
     		//SIMULACION
 /*    		.ADDRV(),
