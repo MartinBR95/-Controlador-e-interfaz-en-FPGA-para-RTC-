@@ -10,8 +10,8 @@ module VGA_TOP_P3
 		input wire CLK,
 		input ALARMA,
 	
-		//SEALES PROBENIENTES DEL CONTROL 	
-		input wire WRITE_STROBE,            //Seal de actualizar registro (en flanco de subida)
+		//SEÑALES PROBENIENTES DEL CONTROL 	
+		input wire WRITE_STROBE,            //Señal de actualizar registro (en flanco de subida)
 		input wire[7:0]POR_ID,              //Donde escribo
 		input wire[7:0]OUT_PORT,            //Datos de entrada		
 														
@@ -25,20 +25,20 @@ module VGA_TOP_P3
 wire[9:0]ADDRV;
 wire[9:0]ADDRH;
 
-reg[7:0]ANO = 8'h00;
-reg[7:0]MES = 8'h00;
-reg[7:0]DIA = 8'h00;
+reg[7:0]ANO = 8'h10;
+reg[7:0]MES = 8'h20;
+reg[7:0]DIA = 8'h30;
 
-reg[7:0]HORA = 8'h00;
-reg[7:0]MIN = 8'h00;
-reg[7:0]SEG = 8'h00;
+reg[7:0]HORA = 8'h40;
+reg[7:0]MIN = 8'h50;
+reg[7:0]SEG = 8'h60;
 	
-reg[7:0]HORAT = 8'h00;
-reg[7:0]MINT = 8'h00;
-reg[7:0]SEGT = 8'h00;
+reg[7:0]HORAT = 8'h70;
+reg[7:0]MINT = 8'h80;
+reg[7:0]SEGT = 8'h90;
 reg[7:0]Puntero = 8'h00;
 	
-localparam PUN_S  = 8'd14;
+localparam PUN_S  = 8'h0E;
 	
 localparam ANO_S  = 8'h07; 
 localparam MES_S  = 8'h06; 
@@ -50,13 +50,13 @@ localparam HORA_S = 8'h04;
 		
 localparam SEGT_S = 8'h08; 
 localparam MINT_S = 8'h09; 
-localparam HORAT_S= 8'h0a; 
+localparam HORAT_S= 8'h0A; 
 				
 always@(posedge CLK)
 begin
 	if(WRITE_STROBE)
 	begin
-		case(POR_ID) 
+		case(POR_ID)
 			ANO_S   : ANO   = OUT_PORT;
 			MES_S   : MES   = OUT_PORT;
 			DIA_S   : DIA   = OUT_PORT;

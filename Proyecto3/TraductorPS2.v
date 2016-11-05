@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 /////////////////////////////////////////////////////////////////////////////////
-module TraductorPS2(DATA_IN,ps2c,Reloj,RST,OUT_DEC,S_DATA,DATA_REG_ANTERIOR,DATA_REG);
+module TraductorPS2(DATA_IN,ps2c,Reloj,RST,OUT_DEC,S_DATA,DATA_REG_ANTERIOR,DATA_REG,POR_ID);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,6 +18,7 @@ lo que el usuario desea ejecutar. Conta de 3 secciones:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////Se declaran las conecciones del teclado, estas son dos de entrada y dos in/outs
 
+input [7:0]POR_ID;
 input  Reloj,RST;              		//Reloj del circuito (100MHz)
 input  ps2c;    				      	//Reloj del teclado 
 input  DATA_IN;   			   		//Datos del teclado (son de tipo serial)
@@ -33,7 +34,6 @@ wire Paridad;  			 //Asi mismo el protocolo posee un bit de paridad (impar)
 		
 		
 ////////DETECTOR DE FLANCO DE BAJADA////////
-
 reg [7:0]filter_reg;   //Filtro que se usa para evitar algun ruido en la señal
 reg f_ps2c_reg;        //Señal previa a la salida del flanco de bajada 
 
@@ -226,6 +226,9 @@ begin
 end
 
 //////
+
+wire DO;
+assign DO = (S_DATA) && (POR_ID == 8'h03);
 reg S_DATA_reg;
 reg S_DATA_anterior;
 
