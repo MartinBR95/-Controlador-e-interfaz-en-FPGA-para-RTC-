@@ -3,7 +3,6 @@
 /////////////////////////////////////////////////////////////////////////////////
 module TraductorPS2(DATA_IN,ps2c,Reloj,RST,OUT_DEC,S_DATA,DATA_REG_ANTERIOR,DATA_REG,POR_ID);
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////      FUNCIONAMIENTO DE MODULO        /////////////////////////////////////////
 /* 
@@ -23,11 +22,11 @@ input  Reloj,RST;              		//Reloj del circuito (100MHz)
 input  ps2c;    				      	//Reloj del teclado 
 input  DATA_IN;   			   		//Datos del teclado (son de tipo serial)
 output reg [7:0]OUT_DEC;	         //Datos de salida 
-input S_DATA;						//Indica se se puede o no leer el dato que se encuentra en los registros de salida 
+input S_DATA;								//Indica que se leyo un dato  
+
 reg [7:0]DATA_OUT;
-//EL  teclado trabaja en base a los negedges del puerto CLK
-reg ON = 1'h0; 			       //El protocolo posee un bit de inicio (Primer negedge del protocolo) y un bit de cierre (ultimo negedge del protocolo)
-wire Paridad;  			 //Asi mismo el protocolo posee un bit de paridad (impar)
+reg ON = 1'h0; 						 	//El protocolo posee un bit de inicio (Primer negedge del protocolo) y un bit de cierre (ultimo negedge del protocolo)
+wire Paridad;  						 	//Asi mismo el protocolo posee un bit de paridad (impar)
  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////    RECEPCION DE DATO Y ATRIBUTOS      /////////////////////////////////////////
@@ -131,7 +130,6 @@ assign DATA_P = b_reg[8:1];   //Se guarda en el registro DATA_P la recepcion de 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////    ALMACENAMIENTO DE DATO Y ATRIBUTOS      //////////////////////////////////////
 
-
 //Sub seccion de almacenan los datos cuando estos ya se encuentran completamente cargados y se a comprobado la paridad, se guardan dos datos (dos ciclos de lectura)
 //Para en uno almacenar el dato recibido y en el otro almacenar la señal "F0" indicando la necesidad de enviar el dato 
 
@@ -145,8 +143,8 @@ Paridad P_OK (Reloj, DATA_P, Paridad, Paridad_OK); //Comprobador de paridad
 //////////////////////////////////////////////////////////
 output reg[7:0]DATA_REG = 8'h74;          	       //Se crea el registro de almacenamiento de ultimo dato
 output reg[7:0]DATA_REG_ANTERIOR = 8'h74; 			 //Se crea el registro de almacenamiento de ultimo dato 
-reg[7:0]DATA_REG_ANTERIOR_ANTERIOR1 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
-reg[7:0]DATA_REG_ANTERIOR_ANTERIOR2 = 8'h00; //Se crea el registro de almacenamiento de ultimo dato 
+reg[7:0]DATA_REG_ANTERIOR_ANTERIOR1 = 8'h00;        //Se crea el registro de almacenamiento de ultimo dato 
+reg[7:0]DATA_REG_ANTERIOR_ANTERIOR2 = 8'h00;        //Se crea el registro de almacenamiento de ultimo dato 
 
 always @(posedge Reloj)
 begin 
@@ -192,23 +190,19 @@ begin
 end 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////    ENVIO DE DATO Y ATRIBUTOS      /////////////////////////////////////////
 
 reg SEND;               //Señal que indica que se puede enviar un dato 
-
 reg SEND_Reg;           //Registros para el detector de flanco 
 reg SEND_Reg_Anterior;  
 
+//Si se recibe la señal "F0H" y la senal del registro de almacenamiento es igual a alguna de las que se guardo con anterioridad se envia el dato a salida 
 always @(posedge Reloj)														
 begin
-	if(DATA_REG_ANTERIOR == 8'hF0 && (DATA_REG == DATA_REG_ANTERIOR_ANTERIOR1 || DATA_REG == DATA_REG_ANTERIOR_ANTERIOR2)) SEND = 1'b1; 
-	//Si se recibe la señal "F0H" y la senal del registro de almacenamiento es igual a alguna de las que se guardo con anterioridad se envia el dato a salida 
+	if(DATA_REG_ANTERIOR == 8'hF0 && (DATA_REG == DATA_REG_ANTERIOR_ANTERIOR1 || DATA_REG == DATA_REG_ANTERIOR_ANTERIOR2)) SEND = 1'b1;
 	else SEND = 1'b0;
 end 
-//////
-
 
 //////
 always@ (posedge Reloj, posedge RST)              //Detector de flanco para enviar datos 
@@ -226,7 +220,6 @@ begin
 end
 
 //////
-
 wire DO;
 assign DO = (S_DATA) && (POR_ID == 8'h03);
 reg S_DATA_reg;
@@ -240,8 +233,8 @@ begin
 	end
 
 	else begin
-		S_DATA_anterior <= S_DATA;
-		if(S_DATA_anterior && ~S_DATA) S_DATA_reg <= 1'b1;
+		S_DATA_anterior <=  DO;
+		if(S_DATA_anterior && ~ DO) S_DATA_reg <= 1'b1;
 		else  S_DATA_reg <= 1'b0;
 	end
 end
@@ -257,19 +250,15 @@ begin
 		else begin DATA_OUT <= DATA_OUT; end
 	end 
 end 
+
 //////
-
-
-
-//(00 - UP - DO - RI - LE - TO - AS)
-//T  = Timer on
-//AS = Alarma STOP
+// (00 - UP - DO - RI - LE - TO - AS)
+// T  = Timer on
+// AS = Alarma STOP
 
 always @(posedge Reloj)
 begin
-	
-	case(DATA_OUT)
-	
+	case(DATA_OUT)	
 	8'h75 : OUT_DEC = 8'b00100000; //UP
 	8'h72 : OUT_DEC = 8'b00010000; //DO
 	8'h6B : OUT_DEC = 8'b00001000; //RI

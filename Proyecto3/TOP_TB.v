@@ -1,26 +1,6 @@
 `timescale 1ns / 1ps
 
 ////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer:
-//
-// Create Date:   10:03:38 11/02/2016
-// Design Name:   Conexion_CONTROL_VGA_TECLADO
-// Module Name:   C:/PROYECTOS/VGA_4.7/TOP_TB.v
-// Project Name:  VGA_4.7
-// Target Device:  
-// Tool versions:  
-// Description: 
-//
-// Verilog Test Fixture created by ISE for module: Conexion_CONTROL_VGA_TECLADO
-//
-// Dependencies:
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-////////////////////////////////////////////////////////////////////////////////
 
 module TOP_TB;
 
