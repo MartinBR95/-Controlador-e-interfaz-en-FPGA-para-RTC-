@@ -65,7 +65,6 @@ module top(
   wire			kcpsm6_reset;         //See note above
   wire			rdl;
   wire			int_request;
-  reg  [7:0] teclado = 8'h00;
   wire [7:0] rtc_port;
 
   //Pruebas
@@ -122,6 +121,8 @@ module top(
 
 //////////////////////////////////////////   VGA y TECLADO  //////////////////////////////////////////
 
+	 wire [7:0] teclado;
+
     Conexion_CONTROL_VGA_TECLADO Perifericos
     (
         //input wire[7:0]TecladoREG,
@@ -147,7 +148,7 @@ module top(
         .ps2c(ps2c),
         .DATA_IN(DATA_IN),
         .DATA_OUT_TEC(teclado),
-        .SOLICITUD(read_strobe),
+        .SOLICITUD(read_strobe)
         //.TecladoREG_ANTERIOR(),
         //.TecladoREG()
 
@@ -182,7 +183,7 @@ module top(
   always @ (posedge clk)
   begin
     if(reset) Segundos <= 8'h66;
-  	if(port_id==VGA_seg && write_strobe)Segundos<=out_port;
+  	if(port_id==VGA_tseg && write_strobe)Segundos<=out_port;
     else Segundos <= Segundos;
   end
 

@@ -10,8 +10,8 @@ module VGA_TOP_P3
 		input wire CLK,
 		input ALARMA,
 	
-		//SEÑALES PROBENIENTES DEL CONTROL 	
-		input wire WRITE_STROBE,            //Señal de actualizar registro (en flanco de subida)
+		//SEALES PROBENIENTES DEL CONTROL 	
+		input wire WRITE_STROBE,            //Seal de actualizar registro (en flanco de subida)
 		input wire[7:0]POR_ID,              //Donde escribo
 		input wire[7:0]OUT_PORT,            //Datos de entrada		
 														
@@ -38,19 +38,19 @@ reg[7:0]MINT = 8'h00;
 reg[7:0]SEGT = 8'h00;
 reg[7:0]Puntero = 8'h00;
 	
-localparam PUN_S  = 8'hFF;
+localparam PUN_S  = 8'd14;
 	
-localparam ANO_S  = 8'h00; 
-localparam MES_S  = 8'h01; 
-localparam DIA_S  = 8'h02; 
+localparam ANO_S  = 8'h07; 
+localparam MES_S  = 8'h06; 
+localparam DIA_S  = 8'h05; 
 		
-localparam SEG_S  = 8'h03; 
-localparam MIN_S  = 8'h04; 
-localparam HORA_S = 8'h05; 
+localparam SEG_S  = 8'h02; 
+localparam MIN_S  = 8'h03; 
+localparam HORA_S = 8'h04; 
 		
-localparam SEGT_S = 8'h06; 
-localparam MINT_S = 8'h07; 
-localparam HORAT_S= 8'h08; 
+localparam SEGT_S = 8'h08; 
+localparam MINT_S = 8'h09; 
+localparam HORAT_S= 8'h0a; 
 				
 always@(posedge CLK)
 begin

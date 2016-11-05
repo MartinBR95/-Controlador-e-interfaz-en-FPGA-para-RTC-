@@ -338,26 +338,26 @@ module ModuloVGA
 	always @(posedge CLK)
 	begin	
 		case (Selector)
-		5'd2  : rom = ANO[3:0];
-		5'd3  : rom = ANO[7:4];
-		5'd4  : rom = MES[3:0];
-		5'd5  : rom = MES[7:4];
-		5'd6  : rom = DIA[3:0];
-		5'd7  : rom = DIA[7:4];
+		5'd3  : rom = ANO[3:0];
+		5'd2  : rom = ANO[7:4];
+		5'd5  : rom = MES[3:0];
+		5'd3  : rom = MES[7:4];
+		5'd7  : rom = DIA[3:0];
+		5'd6  : rom = DIA[7:4];
 		
-		5'd8  : rom = HORA[3:0];
-		5'd9  : rom = HORA[7:4]; 
-		5'd10 : rom = MIN[3:0] ;
-		5'd11 : rom = MIN[7:4] ;
-		5'd12 : rom = SEG[3:0] ;
-		5'd13 : rom = SEG[7:4] ;
+		5'd9  : rom = HORA[3:0];
+		5'd8  : rom = HORA[7:4]; 
+		5'd11 : rom = MIN[3:0] ;
+		5'd10 : rom = MIN[7:4] ;
+		5'd13 : rom = SEG[3:0] ;
+		5'd12 : rom = SEG[7:4] ;
 	
-		5'd14 : rom = HORAT[3:0];
-		5'd15 : rom = HORAT[7:4];
-		5'd16 : rom = MINT[3:0] ;
-		5'd17 : rom = MINT[7:4] ;
-		5'd18 : rom = SEGT[3:0] ;
-		5'd19 : rom = SEGT[7:4] ;
+		5'd15 : rom = HORAT[3:0];
+		5'd14 : rom = HORAT[7:4];
+		5'd17 : rom = MINT[3:0] ;
+		5'd16 : rom = MINT[7:4] ;
+		5'd19 : rom = SEGT[3:0] ;
+		5'd18 : rom = SEGT[7:4] ;
 		
 		5'd22  : rom = 4'h0;
 		5'd23  : rom = 4'h1;
