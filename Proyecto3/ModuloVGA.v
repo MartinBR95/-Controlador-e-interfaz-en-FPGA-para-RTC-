@@ -47,7 +47,7 @@ module ModuloVGA
 	
 	//Parametros en Y	
 	localparam Fecha_Y_in  = 6'd63 ; 
-	localparam Fecha_Y_off = 7'd12 ;
+	localparam Fecha_Y_off = 7'd127;
 	
 	localparam Hora_Y_in   = 8'd191;
 	localparam Hora_Y_off  = 8'd255;

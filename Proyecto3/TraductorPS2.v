@@ -33,13 +33,13 @@ wire Paridad;  						 	//Asi mismo el protocolo posee un bit de paridad (impar)
 		
 		
 ////////DETECTOR DE FLANCO DE BAJADA////////
-reg [7:0]filter_reg;   //Filtro que se usa para evitar algun ruido en la señal
-reg f_ps2c_reg;        //Señal previa a la salida del flanco de bajada 
+reg [7:0]filter_reg;   //Filtro que se usa para evitar algun ruido en la seÃ±al
+reg f_ps2c_reg;        //SeÃ±al previa a la salida del flanco de bajada 
 
 wire[7:0] filter_next; 
 wire f_ps2c_next;      
 
-wire fall_edge;        //Señal indicadora de si se ha detectado un flanco de bajada
+wire fall_edge;        //SeÃ±al indicadora de si se ha detectado un flanco de bajada
 
 always @(posedge Reloj, posedge RST)
 begin    
@@ -55,7 +55,7 @@ begin
 		end   
 end         
 	         
-assign filter_next = {ps2c,filter_reg[7:1]};              //Se va modificado la señal del filtro
+assign filter_next = {ps2c,filter_reg[7:1]};              //Se va modificado la seÃ±al del filtro
 assign f_ps2c_next = (filter_reg == 8'b11111111) ? 1'b1 :
 							(filter_reg == 8'b00000000) ? 1'b0 :
 							f_ps2c_reg;
@@ -64,7 +64,7 @@ assign fall_edge = f_ps2c_reg && ~f_ps2c_next;
             
 /////////////////////////////////////
 
-//Señales necesarias para recepcion de datos del teclado 
+//SeÃ±ales necesarias para recepcion de datos del teclado 
 reg [1:0]state_reg, state_next;  //State es el estado en el que se encuentra la recepcion de datos 
 reg [3:0]n_reg;
 reg [3:0]n_next;
@@ -77,7 +77,7 @@ localparam	load = 2'b10;
 
 always@ (posedge Reloj, posedge RST) //En esta seccion se van guardando los registros 
 begin
-	if (RST) //En caso de que se haga un reset, se devuelven las señales a sus valores iniciales 	
+	if (RST) //En caso de que se haga un reset, se devuelven las seÃ±ales a sus valores iniciales 	
 		begin
 			state_reg <= idle;
 			n_reg <= 0;
@@ -91,7 +91,7 @@ begin
 		end
 end
 
-always @*    //En esta seccion se modifican las señales que no son constantes
+always @*    //En esta seccion se modifican las seÃ±ales que no son constantes
 begin
 	 state_next = state_reg;
 	 n_next = n_reg;
@@ -131,7 +131,7 @@ assign DATA_P = b_reg[8:1];   //Se guarda en el registro DATA_P la recepcion de 
 //////////////////////////    ALMACENAMIENTO DE DATO Y ATRIBUTOS      //////////////////////////////////////
 
 //Sub seccion de almacenan los datos cuando estos ya se encuentran completamente cargados y se a comprobado la paridad, se guardan dos datos (dos ciclos de lectura)
-//Para en uno almacenar el dato recibido y en el otro almacenar la señal "F0" indicando la necesidad de enviar el dato 
+//Para en uno almacenar el dato recibido y en el otro almacenar la seÃ±al "F0" indicando la necesidad de enviar el dato 
 
 //////////////////////////////////////////////////////////
 /////////////  Comprobacion de paridad  //////////////////
@@ -193,11 +193,11 @@ end
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////    ENVIO DE DATO Y ATRIBUTOS      /////////////////////////////////////////
 
-reg SEND;               //Señal que indica que se puede enviar un dato 
+reg SEND;               //SeÃ±al que indica que se puede enviar un dato 
 reg SEND_Reg;           //Registros para el detector de flanco 
 reg SEND_Reg_Anterior;  
 
-//Si se recibe la señal "F0H" y la senal del registro de almacenamiento es igual a alguna de las que se guardo con anterioridad se envia el dato a salida 
+//Si se recibe la seÃ±al "F0H" y la senal del registro de almacenamiento es igual a alguna de las que se guardo con anterioridad se envia el dato a salida 
 always @(posedge Reloj)														
 begin
 	if(DATA_REG_ANTERIOR == 8'hF0 && (DATA_REG == DATA_REG_ANTERIOR_ANTERIOR1 || DATA_REG == DATA_REG_ANTERIOR_ANTERIOR2)) SEND = 1'b1;
@@ -221,7 +221,7 @@ end
 
 //////
 wire DO;
-assign DO = (S_DATA) && (POR_ID == 8'h03);
+assign DO = {(S_DATA) && (POR_ID == 8'h03)};
 reg S_DATA_reg;
 reg S_DATA_anterior;
 
@@ -246,7 +246,7 @@ begin
 	if (S_DATA_reg) DATA_OUT <= 8'h00;
 	else
 	begin
-		if(SEND_Reg == 1'b1) begin DATA_OUT <= DATA_REG;  end  	//Si se recibe la señal "F0H" se envia el dato a salida 
+		if(SEND_Reg == 1'b1) begin DATA_OUT <= DATA_REG;  end  	//Si se recibe la seÃ±al "F0H" se envia el dato a salida 
 		else begin DATA_OUT <= DATA_OUT; end
 	end 
 end 
