@@ -156,16 +156,29 @@
 		#EQU Mem_dir_F0,23
 		
 		
-		#EQU Mem_dir_Pseg,24
-		#EQU Mem_dir_Pmin,25
-		#EQU Mem_dir_Phor,26
-		#EQU Mem_dir_Pdia,27
-		#EQU Mem_dir_Pmes,28
-		#EQU Mem_dir_Panio,29
-		#EQU Mem_dir_Ptseg,30
-		#EQU Mem_dir_Ptmin,31
-		#EQU Mem_dir_Pthor,32
-
+		#EQU Mem_dir_Pseg,27;0x21
+		#EQU Mem_dir_Pmin,28;0x22
+		#EQU Mem_dir_Phor,29;0x23
+		#EQU Mem_dir_Pdia,24;0x24
+		#EQU Mem_dir_Pmes,25;0x25
+		#EQU Mem_dir_Panio,26;0x26
+		#EQU Mem_dir_Ptseg,30;0x41
+		#EQU Mem_dir_Ptmin,31;0x42
+		#EQU Mem_dir_Pthor,32;0x43
+;Valores de Comparacion
+		
+		#EQU Mem_dir_LimS_seg,(Mem_dir_LimS_dia+3)
+		#EQU Mem_dir_LimS_min,(Mem_dir_LimS_dia+4)
+		#EQU Mem_dir_LimS_hor,(Mem_dir_LimS_dia+5)
+		#EQU Mem_dir_LimS_dia,33
+		#EQU Mem_dir_LimS_mes,(Mem_dir_LimS_dia+1)
+		#EQU Mem_dir_LimS_anio,(Mem_dir_LimS_dia+2)
+		#EQU Mem_dir_LimS_tseg,(Mem_dir_LimS_dia+6)
+		#EQU Mem_dir_LimS_tmin,(Mem_dir_LimS_dia+7)
+		#EQU Mem_dir_LimS_thor,(Mem_dir_LimS_dia+8)
+		
+		#EQU Alinea_dir_valores, Mem_dir_Pseg-Mem_dir_seg;
+		#EQU Alinea_dir_MAX, Mem_dir_LimS_dia-Mem_dir_Pseg;
 ;Puertos control RTC		
 		#EQU Pi_Ctrl_rtc,1; 0000 00 IRQ,FRW activos = 0000 0011
 		#EQU Po_cmd,13; Comando a rtc en formato 0000 00,Acceso,Mod
@@ -216,8 +229,28 @@ inicializacion:
 	LOAD sF,0xF0
 	WRMEM sF,Mem_dir_F0
 	LOAD s0,0xF0;dato a enviar en la direccion F0
-	WRMEM s0,Mem_F0;	
-		
+	WRMEM s0,Mem_F0;
+	;Valores de limites
+	
+	LOAD s0, 0x59
+	WRMEM s0, Mem_dir_LimS_seg
+	LOAD s0, 0x59
+	WRMEM s0, Mem_dir_LimS_min
+	LOAD s0, 0x23
+	WRMEM s0, Mem_dir_LimS_hor
+	LOAD s0, 0x31
+	WRMEM s0, Mem_dir_LimS_dia
+	LOAD s0, 0x12
+	WRMEM s0, Mem_dir_LimS_mes
+	LOAD s0, 0x99
+	WRMEM s0, Mem_dir_LimS_anio
+	LOAD s0, 0x59
+	WRMEM s0, Mem_dir_LimS_tseg
+	LOAD s0, 0x59
+	WRMEM s0, Mem_dir_LimS_tmin
+	LOAD s0, 0x23
+    WRMEM s0, Mem_dir_LimS_thor
+			
 	;Valores iniciales del rtc	
 	LOAD s0,0x01;carga en el registro el valor inicial
 	WRMEM s0,Mem_seg;guarda en memoria el valor inicial
@@ -256,7 +289,7 @@ inicializacion2:
 	NOP
 	RDPRT  s0, Pi_Ctrl_rtc
 	AND s0,b00000001;se aplica una mascara
-	SUB s0,0;con el o0bjetivo de activar la bandera Z
+	SUB s0,0;con el objetivo de activar la bandera Z
 	JUMP Z,inicializacion2	
 	
 	
@@ -297,24 +330,62 @@ Fin_inic:
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00100000;se enmascara el valor de la tecla izquierda
 	SUB s1,b00100000
-	JUMP NZ,Abajo	
-	LOAD sD,b00000011
-	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial 
-	RDMEM s1,(sE);se lee el valor anterior del rtc
-	ADD s1,1;se añade 1
-	WRMEM s1,(sE)
+	JUMP NZ,Abajo
+	;se debe aumentar el valor
+	
+	LOAD s1,sE;se respalda sE
+	SUB s1,Alinea_dir_valores;se alinea la direccion a los valores datos
+	;aqui s1 es el la direccion de memoria del dato de reloj
+	RDMEM s2,(s1);Aqui s2 es el dato del reloj
+	
+	LOAD sA,sE;se respalda sE
+	ADD sA,Alinea_dir_MAX;
+	;Aqui sA apunta a los valores maximos
+	RDMEM sB,(sA);sB es el maximo correspondiente a ese puntero	
+	SUB s2,sB;
+	JUMP NZ No_max;
+	LOAD sC,0
+	WRMEM sC,(s1); se guarda el nuevo valor
+	JUMP Envia_max;
+	
+No_max:
+	RDMEM s2,(s1);Aqui s2 es el dato del reloj
+	CALL SumaBCD
+	WRMEM s2,(s1); se guarda el nuevo valor
+	JUMP Envia_max;
 	
 Abajo:
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00010000;se enmascara el valor de la tecla izquierda
 	SUB s1,b00010000
 	JUMP NZ,Retorno_puntero	
-	LOAD sD,b00000011
-	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial 
-	RDMEM s1,(sE);se lee el valor anterior del rtc
-	SUB s1,1;se resta 1
-	WRMEM s1,(sE)
+	;se debe reducir el valor
+	
+	LOAD s1,sE;se respalda sE
+	SUB s1,Alinea_dir_valores;se alinea la direccion a los valores datos
+	;aqui s1 es el la direccion de memoria del dato de reloj
+	RDMEM s2,(s1);Aqui s2 es el dato del reloj
+	SUB s2,0
+	JUMP NZ No_zero;
+	
+	LOAD sA,sE;se respalda sE
+	ADD sA,Alinea_dir_MAX;
+	;Aqui sA apunta a los valores maximos
+	RDMEM sB,(sA);sB es el maximo correspondiente a ese puntero
+	WRMEM sB,(s1);se guarda el nuevo valor
+	JUMP Envia_max;
 
+
+No_zero:
+	CALL RestaBCD
+	WRMEM s2,(s1); se guarda el nuevo valor
+Envia_max:
+	LOAD sD,b00000001
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura 
+	;se hara un barrido completo
+	LOAD s3,2;
+	LOAD sF,Mem_dir_seg;
+	
 Retorno_puntero:
 	RDMEM s1,(sE);se enviara el puntero
 	WRPRT s1,Po_Punt;
@@ -395,9 +466,7 @@ Reiniciar_Barrido:
 	JUMP Continua_Barrido;
 
 Control_Entradas:
-	;Aqui iria lo que se hace al oprimir las teclas de arriba,abajo,izquierda,derecha(dependen del puntero)
-	;se deberia hacer una etiqueta aparte para el control del puntero	
-	
+
 	AND s4,b00000010;se filtra el valor de IRQ
 	LOAD s0,s4
 	SUB s0,b00000000;se confirma IRQ	
@@ -452,8 +521,44 @@ Dir01:
 	LOAD s6,0x00;el siguiente valor no se envia al rtc
 	LOAD sD,b00000000
 	JUMP Z,Reiniciar_Barrido;
+	
+;;;;;;;;;Manejo aritmético de valores:
+
+SumaBCD: 
+	LOAD s8, s2  							
+	AND s8, 0x0F							    ;Se enmascara el valor para manejar solo la parte baja del byte
+	SUB  s8, 0x09							;Se compara el valor con 9
+	JUMP Z, Es_9							    ;Y si es 9 se ejecuta el caso límite
+	ADD s2, 1								;Si no es 9, solo se suma 1 al valor
+	RET
+	
+Es_9:
+	AND s2, 0xF0								;Se coloca un 0 en la parte baja
+	ADD s2, 0x10								;y se suma 1 a la parte alta
+	RET
+
+RestaBCD:
+	LOAD s8, s2
+	AND s8, 0x0F							    ;Se enmascara el valor para manejar solo la parte baja del byte
+	SUB s8, 0							    ;Se compara el valor con 0
+	JUMP Z, Menor_0							;Y si es 0 se ejecuta el caso límite
+	SUB s2, 1								;Si no es 0, solo se resta 1 al valor
+	RET	
+		
+Menor_0:
+	OR s2, 0x09								;Se coloca un 9 en la parte baja
+	SUB s2, 0x10								;y se resta 1 a la parte baja
+	RET
+	
+	
+	
+	
+	
 ;******************************************************************************************************************************
 JUMP	Fin_inic
+
+
+
 
 	
 ; *****************************************************************************************************************************
