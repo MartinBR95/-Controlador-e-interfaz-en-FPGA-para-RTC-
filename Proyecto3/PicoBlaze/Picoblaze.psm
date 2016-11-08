@@ -156,29 +156,29 @@
 		#EQU Mem_dir_F0,23
 		
 		
-		#EQU Mem_dir_Pseg,27;0x21
-		#EQU Mem_dir_Pmin,28;0x22
-		#EQU Mem_dir_Phor,29;0x23
-		#EQU Mem_dir_Pdia,24;0x24
-		#EQU Mem_dir_Pmes,25;0x25
-		#EQU Mem_dir_Panio,26;0x26
+		#EQU Mem_dir_Pseg,24;0x21
+		#EQU Mem_dir_Pmin,25;0x22
+		#EQU Mem_dir_Phor,26;0x23
+		#EQU Mem_dir_Pdia,27;0x24
+		#EQU Mem_dir_Pmes,28;0x25
+		#EQU Mem_dir_Panio,29;0x26
 		#EQU Mem_dir_Ptseg,30;0x41
 		#EQU Mem_dir_Ptmin,31;0x42
 		#EQU Mem_dir_Pthor,32;0x43
 ;Valores de Comparacion
 		
-		#EQU Mem_dir_LimS_seg,(Mem_dir_LimS_dia+3)
-		#EQU Mem_dir_LimS_min,(Mem_dir_LimS_dia+4)
-		#EQU Mem_dir_LimS_hor,(Mem_dir_LimS_dia+5)
-		#EQU Mem_dir_LimS_dia,33
-		#EQU Mem_dir_LimS_mes,(Mem_dir_LimS_dia+1)
-		#EQU Mem_dir_LimS_anio,(Mem_dir_LimS_dia+2)
-		#EQU Mem_dir_LimS_tseg,(Mem_dir_LimS_dia+6)
-		#EQU Mem_dir_LimS_tmin,(Mem_dir_LimS_dia+7)
-		#EQU Mem_dir_LimS_thor,(Mem_dir_LimS_dia+8)
+		#EQU Mem_dir_LimS_seg,33
+		#EQU Mem_dir_LimS_min,(Mem_dir_LimS_seg+1)
+		#EQU Mem_dir_LimS_hor,(Mem_dir_LimS_seg+2)
+		#EQU Mem_dir_LimS_dia,(Mem_dir_LimS_seg+3)
+		#EQU Mem_dir_LimS_mes,(Mem_dir_LimS_seg+4)
+		#EQU Mem_dir_LimS_anio,(Mem_dir_LimS_seg+5)
+		#EQU Mem_dir_LimS_tseg,(Mem_dir_LimS_seg+6)
+		#EQU Mem_dir_LimS_tmin,(Mem_dir_LimS_seg+7)
+		#EQU Mem_dir_LimS_thor,(Mem_dir_LimS_seg+8)
 		
 		#EQU Alinea_dir_valores, Mem_dir_Pseg-Mem_seg;
-		#EQU Alinea_dir_MAX, Mem_dir_LimS_dia-Mem_dir_Pseg;
+		#EQU Alinea_dir_MAX, Mem_dir_LimS_seg-Mem_dir_Pseg;
 ;Puertos control RTC		
 		#EQU Pi_Ctrl_rtc,1; 0000 00 IRQ,FRW activos = 0000 0011
 		#EQU Po_cmd,13; Comando a rtc en formato 0000 00,Acceso,Mod
@@ -257,20 +257,28 @@ inicializacion:
 	;Valores iniciales del rtc	
 	LOAD s0,0x01;carga en el registro el valor inicial
 	WRMEM s0,Mem_seg;guarda en memoria el valor inicial
+	LOAD s0,0x02;carga en el registro el valor inicial
 	WRMEM s0,Mem_min;guarda en memoria el valor inicial
+	LOAD s0,0x03;carga en el registro el valor inicial
 	WRMEM s0,Mem_hor;guarda en memoria el valor inicial
+	LOAD s0,0x04;carga en el registro el valor inicial
 	WRMEM s0,Mem_dia;guarda en memoria el valor inicial
+	LOAD s0,0x05;carga en el registro el valor inicial
 	WRMEM s0,Mem_mes;guarda en memoria el valor inicial
+	LOAD s0,0x06;carga en el registro el valor inicial
 	WRMEM s0,Mem_anio;guarda en memoria el valor inicial
+	LOAD s0,0x07;carga en el registro el valor inicial
 	WRMEM s0,Mem_tseg;guarda en memoria el valor inicial
+	LOAD s0,0x08;carga en el registro el valor inicial
 	WRMEM s0,Mem_tmin;guarda en memoria el valor inicial
+	LOAD s0,0x09;carga en el registro el valor inicial
 	WRMEM s0,Mem_thor;guarda en memoria el valor inicial	
 
 	LOAD s0,0x02;
 	WRPRT s0, Po_Dir;Direccion de inicializacion
 	LOAD s2,0x10;primer valor de inicializacion
 	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2 
-	LOAD s0,0x21
+	LOAD s0,0x23
 	WRPRT s0, Po_Punt ;se envia el valor del puntero
 	LOAD sD,b00000011
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
@@ -306,8 +314,6 @@ inicializacion2:
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
 	LOAD s6,1
 	JUMP Fin_inic
-	
-LimitePuntero:
 	
 	
 Fin_inic:
@@ -394,6 +400,7 @@ Envia_max:
 	;se hara un barrido completo
 	LOAD s3,2;
 	LOAD sF,Mem_dir_seg;
+	LOAD s6,1
 	
 Retorno_puntero:
 	RDMEM s1,(sE);se enviara el puntero
