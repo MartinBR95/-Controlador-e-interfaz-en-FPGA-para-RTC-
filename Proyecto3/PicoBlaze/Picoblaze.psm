@@ -177,7 +177,7 @@
 		#EQU Mem_dir_LimS_tmin,(Mem_dir_LimS_dia+7)
 		#EQU Mem_dir_LimS_thor,(Mem_dir_LimS_dia+8)
 		
-		#EQU Alinea_dir_valores, Mem_dir_Pseg-Mem_dir_seg;
+		#EQU Alinea_dir_valores, Mem_dir_Pseg-Mem_seg;
 		#EQU Alinea_dir_MAX, Mem_dir_LimS_dia-Mem_dir_Pseg;
 ;Puertos control RTC		
 		#EQU Pi_Ctrl_rtc,1; 0000 00 IRQ,FRW activos = 0000 0011
@@ -222,10 +222,13 @@ inicializacion:
 	WRMEM sF,Mem_dir_Panio
 	LOAD sF,0x41
 	WRMEM sF,Mem_dir_tseg
+	WRMEM sF,Mem_dir_Ptseg
 	LOAD sF,0x42
 	WRMEM sF,Mem_dir_tmin
+	WRMEM sF,Mem_dir_Ptmin
 	LOAD sF,0x43
 	WRMEM sF,Mem_dir_thor
+	WRMEM sF,Mem_dir_Pthor	
 	LOAD sF,0xF0
 	WRMEM sF,Mem_dir_F0
 	LOAD s0,0xF0;dato a enviar en la direccion F0
@@ -304,9 +307,13 @@ inicializacion2:
 	LOAD s6,1
 	JUMP Fin_inic
 	
+LimitePuntero:
+	
+	
 Fin_inic:
 
-	RDPRT s0,Pi_teclado;se ingresara los cambios del puntero
+	RDPRT s4,Pi_teclado;se ingresara los cambios del puntero
+	LOAD s0,s4
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00000100;se enmascara el valor de la tecla izquierda
 	SR0 s1;se desplaza para usarlo
@@ -315,6 +322,7 @@ Fin_inic:
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00001000;se enmascara el valor de la tecla izquierda
 	SR0 s1;se desplaza para usarlo
+	SR0 s1;
 	SR0 s1;
 	SUB sE,s1;se incrementa el valor del puntero
 	
@@ -326,7 +334,8 @@ Fin_inic:
 	SUB s1,33;
 	JUMP Z,Pjump_tseg;
 
-	RDPRT s0,Pi_teclado;se ingresara los cambios del puntero
+	;RDPRT s0,Pi_teclado;se ingresara los cambios del puntero
+	LOAD s0,s4	
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00100000;se enmascara el valor de la tecla izquierda
 	SUB s1,b00100000
@@ -350,7 +359,7 @@ Fin_inic:
 	
 No_max:
 	RDMEM s2,(s1);Aqui s2 es el dato del reloj
-	CALL SumaBCD
+	CALL Suma1BCD
 	WRMEM s2,(s1); se guarda el nuevo valor
 	JUMP Envia_max;
 	
@@ -377,7 +386,7 @@ Abajo:
 
 
 No_zero:
-	CALL RestaBCD
+	CALL Resta1BCD
 	WRMEM s2,(s1); se guarda el nuevo valor
 Envia_max:
 	LOAD sD,b00000001
@@ -389,10 +398,11 @@ Envia_max:
 Retorno_puntero:
 	RDMEM s1,(sE);se enviara el puntero
 	WRPRT s1,Po_Punt;
+;Entradas teclado
+	LOAD s5,s4
 ;Entradas IRQ
 	RDPRT  s4,Pi_Ctrl_rtc; entrada de IRQ
-;Entradas teclado
-	RDPRT s5,Pi_teclado
+
 	JUMP Control_Entradas;se revisara que acciones se deben hacer segun las entradas
 	
 Barrido_Memoria:
@@ -524,7 +534,7 @@ Dir01:
 	
 ;;;;;;;;;Manejo aritmético de valores:
 
-SumaBCD: 
+Suma1BCD: 
 	LOAD s8, s2  							
 	AND s8, 0x0F							    ;Se enmascara el valor para manejar solo la parte baja del byte
 	SUB  s8, 0x09							;Se compara el valor con 9
@@ -537,7 +547,7 @@ Es_9:
 	ADD s2, 0x10								;y se suma 1 a la parte alta
 	RET
 
-RestaBCD:
+Resta1BCD:
 	LOAD s8, s2
 	AND s8, 0x0F							    ;Se enmascara el valor para manejar solo la parte baja del byte
 	SUB s8, 0							    ;Se compara el valor con 0
@@ -547,12 +557,10 @@ RestaBCD:
 		
 Menor_0:
 	OR s2, 0x09								;Se coloca un 9 en la parte baja
-	SUB s2, 0x10								;y se resta 1 a la parte baja
+	SUB s2, 0x10								;y se resta 1 a la parte baja.
 	RET
 	
-	
-	
-	
+
 	
 ;******************************************************************************************************************************
 JUMP	Fin_inic
