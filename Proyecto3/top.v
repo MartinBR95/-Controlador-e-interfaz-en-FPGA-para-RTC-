@@ -25,8 +25,16 @@ module top(
   output reg [7:0] Segundos,
   //Pruebas
   output wire	[7:0] address2,
-  output wire [11:0] RGB
+  output wire [11:0] RGB,
   //,output wire	[7:0] instruction2
+
+  input wire UP,
+  input wire DOWN,
+  input wire NEXT,
+  input wire PREV,
+  input wire TT,
+  input wire AL
+
   );
 
   //assign instruction2[7:0] =instruction[7:0];
@@ -68,7 +76,7 @@ module top(
   wire [7:0] rtc_port;
 
   //Pruebas
-  assign address2[7:0] =address[7:0];
+  assign address2 = address;
 
 //////////////////////////////////////////Procesador/////////////////////////////////
   kcpsm6
@@ -145,6 +153,14 @@ module top(
     		.VS(VS),
     		.HS(HS),
 
+        .UP(UP),
+				.DOWN(DOWN),
+				.NEXT(NEXT),
+				.PREV(PREV),
+
+				.TT(TT),
+				.AL(AL),
+
         .ps2c(ps2c),
         .DATA_IN(DATA_IN),
         .DATA_OUT_TEC(teclado),
@@ -183,7 +199,7 @@ module top(
   always @ (posedge clk)
   begin
     if(reset) Segundos <= 8'h66;
-  	if(port_id==VGA_tseg && write_strobe)Segundos<=out_port;
+  	if(port_id==VGA_seg && write_strobe) Segundos <= out_port;
     else Segundos <= Segundos;
   end
 

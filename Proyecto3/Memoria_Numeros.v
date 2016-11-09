@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps5
+`timescale 1ns / 1ps
 
 /////////////////////////////////////////////////////////////////////////////
 module Memoria_Numeros(direccion, rom, data_out, direccion_data,CLK,RST,ADDRV); 
