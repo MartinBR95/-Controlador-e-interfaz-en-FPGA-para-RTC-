@@ -76,7 +76,7 @@ module Conexion_CONTROL_VGA_TECLADO
 				.OUT_DEC(DATA_OUT_TEC),
 				.POR_ID(POR_ID)
 			);*/
-	/*	TraductorPS2 TECLADO( //Llamada a modulo de teclado
+		TraductorPS2 TECLADO( //Llamada a modulo de teclado
 				.DATA_IN(DATA_IN),
 				.ps2c(ps2c),
 				.Reloj(CLK),
@@ -85,11 +85,11 @@ module Conexion_CONTROL_VGA_TECLADO
 				.S_DATA(SOLICITUD),
 				.DATA_REG_ANTERIOR(TecladoREG_ANTERIOR),
 				.DATA_REG(TecladoREG),
-				.POR_ID(POR_ID));*/
+				.POR_ID(POR_ID));
 
 		//////
 	//	MUSICA ALARM(        //Llamada a modulo de musica
-		//		.clk(ON),
+		 //	.clk(ON),
 			//	.speaker(speaker));
 
 endmodule

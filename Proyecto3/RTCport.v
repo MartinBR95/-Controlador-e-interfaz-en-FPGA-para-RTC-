@@ -47,20 +47,6 @@ module RTCport(
 
 end
 
-  reg [7:0] ajuste;
-  wire [7:0] restaIN, restaOUT;
-  BCDsub ENVIAR (restaIN, ajuste, Dato_in);
-  BCDsub RECIBIDO (restaOUT, ajuste, bus);
-
-  always @(*) begin
-    case(Direccion)
-      8'h41: ajuste = 8'h59;
-      8'h42: ajuste = 8'h59;
-      8'h43: ajuste = 8'h23;
-      default ajuste = 8'h00;
-      endcase
-  end
-
 
   always @(posedge clk) begin
 	  if(rst) begin
@@ -73,8 +59,7 @@ end
         if (FRW) Ctrl_rtc_out[0] <= 1'b1;
         else Ctrl_rtc_out <= Ctrl_rtc_out;
         if(Fetch) begin
-          if(Direccion == 8'h41 || Direccion == 8'h42 || Direccion == 8'h43) Dato_out <= restaOUT;
-          else Dato_out <= bus;
+          Dato_out <= bus;
         end
         else Dato_out <= Dato_out;
       end
@@ -89,7 +74,7 @@ end
     endcase
   end
 
-  assign bus = (Address) ? Direccion : (Send && (Direccion == 8'h41 || Direccion == 8'h42 || Direccion == 8'h43)) ? restaIN : (Send) ? Dato_in : 8'bz;
+  assign bus = (Address) ? Direccion : (Send) ? Dato_in : 8'bz;
 
   transfer control(Ctrl_rtc_in[1],~Ctrl_rtc_in[0],clk,rst,AD,CS,RD,WR,FRW,Address, Send, Fetch);
 

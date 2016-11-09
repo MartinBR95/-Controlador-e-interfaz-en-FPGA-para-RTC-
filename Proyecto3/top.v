@@ -18,6 +18,7 @@
 // Additional Comments:
 //
 //////////////////////////////////////////////////////////////////////////////////
+
 module top(
   input clk,reset,IRQ,DATA_IN,ps2c,
   output wire AD,RD,WR,CS,HS,VS,
@@ -26,7 +27,7 @@ module top(
   //Pruebas
   output wire	[7:0] address2,
   output wire [11:0] RGB,
-  //,output wire	[7:0] instruction2
+  //output wire	[7:0] instruction2
 
   input wire UP,
   input wire DOWN,
@@ -165,13 +166,7 @@ module top(
         .DATA_IN(DATA_IN),
         .DATA_OUT_TEC(teclado),
         .SOLICITUD(read_strobe)
-        //.TecladoREG_ANTERIOR(),
-        //.TecladoREG()
 
-    		//SIMULACION
-/*    		.ADDRV(),
-    		.ADDRH(),
-    		.Video_ON() */
     );
 
 //////////////////////////////////////////ROM////////////////////////////////////////
@@ -180,7 +175,8 @@ module top(
   .enable 		(bram_enable),
   .address 		(address),
   .instruction 	(instruction),
-  .clk 			(clk));
+  .clk 			(clk)
+  );
 
 //////////////////////////////////////////Control Entradas Picoblaze////////////////////////////////////
 

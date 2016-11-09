@@ -408,11 +408,13 @@ Retorno_puntero:
 ;Entradas teclado
 	LOAD s5,s4
 ;Entradas IRQ
+	LOAD s1,sF;se respalda el valor de la direccion
+	SUB s1,Mem_dir_01 ;comparacion para no leer IRQ cuando se esta por borrar IRQ en el RTC
+	JUMP Z,Barrido_Memoria
 	RDPRT  s4,Pi_Ctrl_rtc; entrada de IRQ
-
 	JUMP Control_Entradas;se revisara que acciones se deben hacer segun las entradas
 	
-Barrido_Memoria:
+Barrido_Memoria:;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Escritura de direccion
 	RDMEM s0,(sF);Se lee de memoria el valor anterior de la direccion	
 	WRPRT s0,Po_Dir;se pone en el puerto de direccion = dir+1

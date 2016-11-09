@@ -65,6 +65,11 @@ localparam SEGT_S = 8'h08;  //Direccion para modificar registro de segundos del 
 localparam MINT_S = 8'h09;  //Direccion para modificar registro de minutos del timer
 localparam HORAT_S= 8'h0A;  //Direccion para modificar registro de horas del timer
 
+wire [7:0] restaH, restaM, restaS;
+BCDsub hor(restaH,8'h23,OUT_PORT);
+BCDsub min(restaM,8'h59,OUT_PORT);
+BCDsub seg(restaS,8'h59,OUT_PORT);
+
 always@(posedge CLK)
 begin
 	if(WRITE_STROBE) //Si hay una se�al de escritura se modifica uno de los registros
@@ -76,9 +81,9 @@ begin
 				SEG_S   : SEG   = OUT_PORT;
 				MIN_S   : MIN   = OUT_PORT;
 				HORA_S  : HORA  = OUT_PORT;
-				SEGT_S  : SEGT  = OUT_PORT;
-				MINT_S  : MINT  = OUT_PORT;
-				HORAT_S : HORAT = OUT_PORT;
+				SEGT_S  : SEGT  =   restaS;
+				MINT_S  : MINT  =   restaM;
+				HORAT_S : HORAT =   restaH;
 				PUN_S   : Punt  = OUT_PORT;
 		endcase
 	end
