@@ -14,18 +14,18 @@
 	; \navSep "Xilinx PicoBlaze core configuration"
 	; *************************************************************************************************************************
 		#ifDef proc::xPblze6
-	
+
 			#set proc::xPblze6::scrpdSize,				64						; [64, 128, 256]
 ;			#set proc::xPblze6::scrpdioDev,				ioDev::yourDev
 			#set proc::xPblze6::intVector,				1023					; [0 to 4095]
 			#set proc::xPblze6::clkFreq,				100000000					; in Hz
-			
+
 		#elseIf proc::xPblze3
-	
+
 ;			#set proc::XPblze3::scrpdioDev,				ioDev::yourDev
 			#set proc::XPblze3::clkFreq,				100000000					; in Hz
 		#endIf
-		
+
 	; *************************************************************************************************************************
 	;  \navSep "Instruction memory config"
 	; *************************************************************************************************************************
@@ -42,9 +42,9 @@
 		#set ioDev::page0::baseAddr,					0x00
 		#set ioDev::page0::simEn,						false					; Enabling IO device in simulator
 ; 		#set ioDev::page0::simAccessMode,				rd						; [ rdWr, rd, wr ]
-	
+
 		#set ioDev::page0::initValue,					0x00000					; Initial value
-	
+
 ;		#set ioDev::page0::value,						0x33, 0x44, 0x55
 ;		#set ioDev::page0::value,						0x10: 0x33, 0x44, 0x55
 ;		#set ioDev::page0::value,						0x01: 0x33
@@ -58,21 +58,21 @@
 ;		#set ioDev::page0::value,						instMem[page0][7..0]
 ;		#set ioDev::page0::value,						instMem[0..1023][7..0]
 ;		#set ioDev::page0::value,						instMem[1023..0]
-	
-	
+
+
 ;		#set ioDev::page0::vhdlEn,						true					; Enable/disable vhdl output
 ;		#set ioDev::page0::vhdlEntityName,				"vhdlPblzeRom"			; VHDL entity name
 ;		#set ioDev::page0::vhdlTmplFile,				"tmpl.vhd"				; VHDL template file
 ;		#set ioDev::page0::vhdlTargetFile,				"out.vhd"				; VHDL target file
-	
+
 		#set ioDev::page0::verilogEn,					true					; Enable/disable verilog output
 		#set ioDev::page0::verilogEntityName,			"verilogPblzeRom"		; VHDL entity name
 		#set ioDev::page0::verilogTmplFile,				"ROM_form.v"					; VHDL template file
 		#set ioDev::page0::verilogTargetFile,			"program_rom .v"					; VHDL target file
-	
+
 		#set ioDev::page0::hexEn,						true					; Enable/disable hex output
 		#set ioDev::page0::hexTargetFile,				"program_rom.hex"		; Hex target file
-	
+
 ;		#set ioDev::page0::memEn,						true					; Enable/disable mem output
 ;		#set ioDev::page0::memTargetFile,				"out.mem"				; Mem target file
 ;		#set ioDev::page0::memGapStuffing,				true					; Mem gap stuffing enable: [ true | false ]
@@ -82,7 +82,7 @@
 	;
 	; Setting up a small FIFO for simulation purposes.
 	; *************************************************************************************************************************
-	
+
 		; rxFIFO data
 		#set ioDev::rxFIFO::en,					true					; [ true | false ]
 		#set ioDev::rxFIFO::type,				fifo					; [ mem | fifo | reg ]
@@ -90,7 +90,7 @@
 		#set ioDev::rxFIFO::baseAddr,			0x20
 		#set ioDev::rxFIFO::simEn,				true					; Enabling IO device in simulator
 		#set ioDev::rxFIFO::simAccessMode,		rd						; [ rdWr, rd, wr ]
-	
+
 		#set ioDev::rxFIFO::initValue,			0x00000					; Initial value
 
 		#set ioDev::rxFIFO::value,				append: 0x01, 0x89, 0x8d, 0x8a, 0xe7, 0xc0, 0xa0, 0x04
@@ -100,13 +100,13 @@
 	; \navHw "Register renaming"
 	; *************************************************************************************************************************
 		#equ reg_work, 			sF
-	
+
 	; *************************************************************************************************************************
 	; \navHw "Port addresses"
 	; *************************************************************************************************************************
 		#equ busAddr_intReg,	0x01
 		#equ busAddr_dbg,		0xFF
-	
+
 ; *****************************************************************************************************************************
 ; \navGrpEnd
 ; \navGrpBegin "Sources"
@@ -115,9 +115,9 @@
 ; *****************************************************************************************************************************
 ; Main function
 ; *****************************************************************************************************************************
-	
+
 ;Definicion de puertos y direcciones de memoria
-;Memoria	
+;Memoria
 		#EQU Mem_00, 0;
 		#EQU Mem_01, 1;
 ;Puertos del control VGA
@@ -140,7 +140,7 @@
 		#EQU Po_thor, 10;
 		#EQU Mem_thor, 10;
 		#EQU Po_Punt,14;
-		
+
 		;
 		#EQU Mem_dir_00,12
 		#EQU Mem_dir_01,13
@@ -154,8 +154,8 @@
 		#EQU Mem_dir_tmin,21
 		#EQU Mem_dir_thor,22
 		#EQU Mem_dir_F0,23
-		
-		
+
+
 		#EQU Mem_dir_Pseg,24;0x21
 		#EQU Mem_dir_Pmin,25;0x22
 		#EQU Mem_dir_Phor,26;0x23
@@ -166,7 +166,7 @@
 		#EQU Mem_dir_Ptmin,31;0x42
 		#EQU Mem_dir_Pthor,32;0x43
 ;Valores de Comparacion
-		
+
 		#EQU Mem_dir_LimS_seg,33
 		#EQU Mem_dir_LimS_min,(Mem_dir_LimS_seg+1)
 		#EQU Mem_dir_LimS_hor,(Mem_dir_LimS_seg+2)
@@ -176,10 +176,10 @@
 		#EQU Mem_dir_LimS_tseg,(Mem_dir_LimS_seg+6)
 		#EQU Mem_dir_LimS_tmin,(Mem_dir_LimS_seg+7)
 		#EQU Mem_dir_LimS_thor,(Mem_dir_LimS_seg+8)
-		
+
 		#EQU Alinea_dir_valores, Mem_dir_Pseg-Mem_seg;
 		#EQU Alinea_dir_MAX, Mem_dir_LimS_seg-Mem_dir_Pseg;
-;Puertos control RTC		
+;Puertos control RTC
 		#EQU Pi_Ctrl_rtc,1; 0000 00 IRQ,FRW activos = 0000 0011
 		#EQU Po_cmd,13; Comando a rtc en formato 0000 00,Acceso,Mod
 		#EQU Pi_Dato_rtc,2; valores de entrada del rtc
@@ -190,15 +190,17 @@
 		#EQU Po_Dir 12;
 ;Datos internos
 		#EQU Mem_F0 11;
+		#EQU Mem_IRQ_ant,42;guarda el valoar anterior de IRQ con en fin de no leerlo dos veces
 main:
-			
+
 ;******************************************************************************************************************************
 ;inicializacion
 inicializacion:
 ;Valores iniciales
 	LOAD s0,0x04;valor para bajar la bandera de IRQ
 	WRMEM s0,Mem_01;guarda en memoria el valor inicial
-	
+	LOAD s0,b00000010;
+	WRMEM s0,Mem_IRQ_ant;valor anterior inicial de IRQ
 	;Valores de las direcciones
 	LOAD sF,0x01
 	WRMEM sF,Mem_dir_01
@@ -228,13 +230,13 @@ inicializacion:
 	WRMEM sF,Mem_dir_Ptmin
 	LOAD sF,0x43
 	WRMEM sF,Mem_dir_thor
-	WRMEM sF,Mem_dir_Pthor	
+	WRMEM sF,Mem_dir_Pthor
 	LOAD sF,0xF0
 	WRMEM sF,Mem_dir_F0
 	LOAD s0,0xF0;dato a enviar en la direccion F0
 	WRMEM s0,Mem_F0;
 	;Valores de limites
-	
+
 	LOAD s0, 0x59
 	WRMEM s0, Mem_dir_LimS_seg
 	LOAD s0, 0x59
@@ -253,8 +255,8 @@ inicializacion:
 	WRMEM s0, Mem_dir_LimS_tmin
 	LOAD s0, 0x23
     WRMEM s0, Mem_dir_LimS_thor
-			
-	;Valores iniciales del rtc	
+
+	;Valores iniciales del rtc
 	LOAD s0,0x01;carga en el registro el valor inicial
 	WRMEM s0,Mem_seg;guarda en memoria el valor inicial
 	LOAD s0,0x02;carga en el registro el valor inicial
@@ -272,17 +274,17 @@ inicializacion:
 	LOAD s0,0x08;carga en el registro el valor inicial
 	WRMEM s0,Mem_tmin;guarda en memoria el valor inicial
 	LOAD s0,0x09;carga en el registro el valor inicial
-	WRMEM s0,Mem_thor;guarda en memoria el valor inicial	
+	WRMEM s0,Mem_thor;guarda en memoria el valor inicial
 
 	LOAD s0,0x02;
 	WRPRT s0, Po_Dir;Direccion de inicializacion
 	LOAD s2,0x10;primer valor de inicializacion
-	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2 
+	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2
 	LOAD s0,0x23
 	WRPRT s0, Po_Punt ;se envia el valor del puntero
 	LOAD sD,b00000011
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
-		
+
 	;se confirma la inicializacion?
 	RDPRT  s0, Pi_Ctrl_rtc
 	AND s0,b00000001;se aplica una mascara
@@ -290,20 +292,20 @@ inicializacion:
 	JUMP Z,inicializacion
 	AND sD,b00000001
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
-	
-inicializacion2:	
+
+inicializacion2:
 	LOAD sD,b00000011
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
 	LOAD s2,0x00;primer valor de inicializacion
-	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2	
+	WRPRT s2,Po_Dato_rtc;se pone en el puerto del rtc el dato s2
 	;se confirma la inicializacion?
 	NOP
 	RDPRT  s0, Pi_Ctrl_rtc
 	AND s0,b00000001;se aplica una mascara
 	SUB s0,0;con el objetivo de activar la bandera Z
-	JUMP Z,inicializacion2	
-	
-	
+	JUMP Z,inicializacion2
+
+
 	;Inicializacion confirmada
 	LOAD s0,0x21
 	WRPRT s0, Po_Dir ;se envia la direccion de segundos
@@ -314,8 +316,8 @@ inicializacion2:
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
 	LOAD s6,1
 	JUMP Fin_inic
-	
-	
+
+
 Fin_inic:
 
 	RDPRT s4,Pi_teclado;se ingresara los cambios del puntero
@@ -331,58 +333,58 @@ Fin_inic:
 	SR0 s1;
 	SR0 s1;
 	SUB sE,s1;se incrementa el valor del puntero
-	
+
 	LOAD s1,sE;se respalda sE
 	SUB s1,23;
 	JUMP Z,Pjump_thor
-	
+
 	LOAD s1,sE;se respalda sE
 	SUB s1,33;
 	JUMP Z,Pjump_tseg;
 
 	;RDPRT s0,Pi_teclado;se ingresara los cambios del puntero
-	LOAD s0,s4	
+	LOAD s0,s4
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00100000;se enmascara el valor de la tecla izquierda
 	SUB s1,b00100000
 	JUMP NZ,Abajo
 	;se debe aumentar el valor
-	
+
 	LOAD s1,sE;se respalda sE
 	SUB s1,Alinea_dir_valores;se alinea la direccion a los valores datos
 	;aqui s1 es el la direccion de memoria del dato de reloj
 	RDMEM s2,(s1);Aqui s2 es el dato del reloj
-	
+
 	LOAD sA,sE;se respalda sE
 	ADD sA,Alinea_dir_MAX;
 	;Aqui sA apunta a los valores maximos
-	RDMEM sB,(sA);sB es el maximo correspondiente a ese puntero	
+	RDMEM sB,(sA);sB es el maximo correspondiente a ese puntero
 	SUB s2,sB;
 	JUMP NZ No_max;
 	LOAD sC,0
 	WRMEM sC,(s1); se guarda el nuevo valor
 	JUMP Envia_max;
-	
+
 No_max:
 	RDMEM s2,(s1);Aqui s2 es el dato del reloj
 	CALL Suma1BCD
 	WRMEM s2,(s1); se guarda el nuevo valor
 	JUMP Envia_max;
-	
+
 Abajo:
 	LOAD s1,s0;se respalda el valor de entrada del teclado
 	AND s1,b00010000;se enmascara el valor de la tecla izquierda
 	SUB s1,b00010000
-	JUMP NZ,Retorno_puntero	
+	JUMP NZ,Retorno_puntero
 	;se debe reducir el valor
-	
+
 	LOAD s1,sE;se respalda sE
 	SUB s1,Alinea_dir_valores;se alinea la direccion a los valores datos
 	;aqui s1 es el la direccion de memoria del dato de reloj
 	RDMEM s2,(s1);Aqui s2 es el dato del reloj
 	SUB s2,0
 	JUMP NZ No_zero;
-	
+
 	LOAD sA,sE;se respalda sE
 	ADD sA,Alinea_dir_MAX;
 	;Aqui sA apunta a los valores maximos
@@ -396,107 +398,114 @@ No_zero:
 	WRMEM s2,(s1); se guarda el nuevo valor
 Envia_max:
 	LOAD sD,b00000001
-	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura 
+	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura
 	;se hara un barrido completo
 	LOAD s3,2;
 	LOAD sF,Mem_dir_seg;
 	LOAD s6,1
-	
+
 Retorno_puntero:
 	RDMEM s1,(sE);se enviara el puntero
 	WRPRT s1,Po_Punt;
 ;Entradas teclado
 	LOAD s5,s4
 ;Entradas IRQ
-	LOAD s1,sF;se respalda el valor de la direccion
-	SUB s1,Mem_dir_01 ;comparacion para no leer IRQ cuando se esta por borrar IRQ en el RTC
-	JUMP Z,Barrido_Memoria
 	RDPRT  s4,Pi_Ctrl_rtc; entrada de IRQ
 	JUMP Control_Entradas;se revisara que acciones se deben hacer segun las entradas
-	
+
 Barrido_Memoria:;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Escritura de direccion
-	RDMEM s0,(sF);Se lee de memoria el valor anterior de la direccion	
+	RDMEM s0,(sF);Se lee de memoria el valor anterior de la direccion
 	WRPRT s0,Po_Dir;se pone en el puerto de direccion = dir+1
-	
+
 	;Salida de dato
 	RDMEM s2,(s3);se guarda el dato de memoria en s2
 	WRPRT s2,(s3);sw pone en el puerto s3 el dato s2
-	
-	
+
+
 	AND s6,s6;se identifica si el dato a enviarse va hacia el rtc
-	JUMP NZ,Dato_out_rtc;;el dato se debe enviar al rtc	
-	
-Dato_rtc_enviado:	
+	JUMP NZ,Dato_out_rtc;;el dato se debe enviar al rtc
+
+Dato_rtc_enviado:
 	OR sD,b00000010
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
-	
+
 Espera_FRW2:
 ;Se confirma la lectura/escritura del RTC
-	RDPRT  s1, Pi_Ctrl_rtc;espera confirmacion de Lectura/escritura en la direccion vijente 
+	RDPRT  s1, Pi_Ctrl_rtc;espera confirmacion de Lectura/escritura en la direccion vijente
 	AND s1,b00000001;se aplica una mascara
 	SUB s1,b00000000
-	JUMP Z,Espera_FRW2;Se espera por FRW		
-	
+	JUMP Z,Espera_FRW2;Se espera por FRW
+
 	LOAD sC,sD;
 	AND sC,b00000001;se aplica una mascara
 	SUB sC,b00000001
-	JUMP Z,No_Entrada;Se espera por FRW	
-	
+	JUMP Z,No_Entrada;Se espera por FRW
+
 ;Entrada de dato desde el RTC
 	LOAD s8,s0;se respalda s0
 	SUB s8,0x00
-	JUMP Z,No_Entrada;No se lee de la direccion 00		
+	JUMP Z,No_Entrada;No se lee de la direccion 00
 	SUB s0,0x01;se compara la direccion
 	JUMP Z,Dir01;No se lee de la direccion 01
 	LOAD s0,b00000010
 	WRPRT s0,Po_cmd
 	RDPRT s1,Pi_Dato_rtc;se lee un valor desde el RTC
 	WRMEM s1,(s3) ;se guarda el dato de entrada
-		
-	
+
+
 No_Entrada:
 	ADD sF,1;se hace dir+1
 	ADD s3,1;se hace dir+1
 	AND sD,b00000001
 	WRPRT sD, Po_cmd ;se envia un comado de escritura para una escritura inicial
-	LOAD s9,sF;se respalda sF
-	;SUB s9,13;direccion 1?
-	;ADD s0,s9;se comprueba que ya se escribieron las direcciones 0 y 1
 
-	
-Continua_Barrido:	
+	LOAD s0,sF;se respalda sF
+	SUB s0,Mem_dir_01;direccion 1?
+	JUMP NZ Continua_Barrido
+	AND s9,s9
+	JUMP NZ Continua_Barrido;
+
+	LOAD s9,1
+	JUMP NO_DIR_1;
+
+
+Continua_Barrido:
 DirF0:
 	LOAD s0,sF;se respalda el valor de sF
 	SUB s0,24;compara
-	JUMP NZ,Fin_inic; en caso de no tener que saltar pasa a la siguiente comparacion	
-	LOAD sF,Mem_dir_seg;carga en el registro la direccion de salto a comando
+	JUMP NZ,Fin_inic; en caso de no tener que saltar pasa a la siguiente comparacion
+NO_DIR_1:
+	LOAD sF,Mem_dir_seg;se continua el barrido desde los segundos
 	LOAD s6,0x00;los siguientes datos ya no van al RTC
 	LOAD s3,Mem_seg;se reinicia el puntero de memoria
 	LOAD sD,b00000000
 	WRPRT sD,Po_cmd; FIN BARRIDO DE ESCRITURA
-	LOAD s6,0	
+	LOAD s6,0
 	JUMP Fin_inic
 
-Reiniciar_Barrido:	
+Reiniciar_Barrido:
 	LOAD sF,Mem_dir_seg;carga en el registro la direccion de salto
 	LOAD s6,0x00;en caso de haber enviado dato al rtc de baja la bandera de "envio a rtc"
 	LOAD s3,Mem_seg;se alinea el puntero de direccion de memoria
 	JUMP Continua_Barrido;
 
 Control_Entradas:
-
 	AND s4,b00000010;se filtra el valor de IRQ
-	LOAD s0,s4
-	SUB s0,b00000000;se confirma IRQ	
-	JUMP Z,Temporizador;Condicion suficiente para direcciones de temporizador
+	RDMEM s0,Mem_IRQ_ant;
+	WRMEM s4,Mem_IRQ_ant;nuevo valor anterior de IRQ
+	SUB s0,s4;se compara IRQ con el anterior
+	SUB s0,b00000010
+	;si s0 es cero entonces se debe pasar por la direccion 0
+	LOAD s9,s0
+	JUMP Z,Temporizador;Condicion suficiente para direccion 0
 	AND s5,b00000011;se filtra Timer_ON y Alarma_Stop
 	LOAD s0,s5;se copia para no perder el valor en s5(luego se ocupa)
 	SUB s0,b00000000;
-	JUMP NZ,Temporizador	
+	JUMP NZ,Temporizador
 	;continua entradas
-	JUMP Barrido_Memoria	
-	
+	JUMP Barrido_Memoria
+
 Temporizador:
 	LOAD sD,b00000011
 	LOAD s6,0x01;control de dato de salida a rtc
@@ -514,8 +523,8 @@ Temporizador:
 	OR s5,s4;
 	SUB s5,b00000010
 	JUMP Z,Encender_Alarma;
-	JUMP Barrido_Memoria	
-		
+	JUMP Barrido_Memoria
+
 Encender_Alarma:
 	LOAD s0,0x08;
 	WRMEM s0,Mem_00;Se envia el comando de encender la alarma
@@ -531,26 +540,26 @@ Dato_out_rtc:
 Pjump_thor:
 	LOAD sE,Mem_dir_Pthor;
 	JUMP Retorno_puntero;
-	
+
 Pjump_tseg:
 	LOAD sE,Mem_dir_Pseg;
-	JUMP Retorno_puntero;	
-	
+	JUMP Retorno_puntero;
+
 Dir01:
 	LOAD s6,0x00;el siguiente valor no se envia al rtc
 	LOAD sD,b00000000
 	JUMP Z,Reiniciar_Barrido;
-	
+
 ;;;;;;;;;Manejo aritmético de valores:
 
-Suma1BCD: 
-	LOAD s8, s2  							
+Suma1BCD:
+	LOAD s8, s2
 	AND s8, 0x0F							    ;Se enmascara el valor para manejar solo la parte baja del byte
 	SUB  s8, 0x09							;Se compara el valor con 9
 	JUMP Z, Es_9							    ;Y si es 9 se ejecuta el caso límite
 	ADD s2, 1								;Si no es 9, solo se suma 1 al valor
 	RET
-	
+
 Es_9:
 	AND s2, 0xF0								;Se coloca un 0 en la parte baja
 	ADD s2, 0x10								;y se suma 1 a la parte alta
@@ -562,22 +571,22 @@ Resta1BCD:
 	SUB s8, 0							    ;Se compara el valor con 0
 	JUMP Z, Menor_0							;Y si es 0 se ejecuta el caso límite
 	SUB s2, 1								;Si no es 0, solo se resta 1 al valor
-	RET	
-		
+	RET
+
 Menor_0:
 	OR s2, 0x09								;Se coloca un 9 en la parte baja
 	SUB s2, 0x10								;y se resta 1 a la parte baja.
 	RET
-	
 
-	
+
+
 ;******************************************************************************************************************************
 JUMP	Fin_inic
 
 
 
 
-	
+
 ; *****************************************************************************************************************************
 ; Interrupt service routine
 ; *****************************************************************************************************************************
@@ -586,14 +595,14 @@ isr:
 					rdPrt	reg_work,	busAddr_intReg
 					wrPrt	reg_work,	busAddr_dbg
 
-					
+
 					; Do your staff here
-					
+
 					retI	enable
 
 					#org	addr,		0x3FF
 					jump	isr
-					
+
 ; *****************************************************************************************************************************
 ; \navGrpEnd
 ; *****************************************************************************************************************************

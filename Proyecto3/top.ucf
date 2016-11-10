@@ -81,28 +81,6 @@ NET "address2[5]" LOC = U1;
 NET "address2[6]" LOC = R2;
 NET "address2[7]" LOC = P2;
 
-//NET "instruction2[0]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[1]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[2]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[3]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[4]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[5]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[6]" IOSTANDARD = LVCMOS33;
-//NET "instruction2[7]" IOSTANDARD = LVCMOS33;
-
-//NET "instruction2[7]" LOC = U6;
-//NET "instruction2[6]" LOC = U7;
-//NET "instruction2[5]" LOC = T4;
-//NET "instruction2[4]" LOC = T5;
-//NET "instruction2[3]" LOC = T6;
-//NET "instruction2[2]" LOC = R8;
-//NET "instruction2[1]" LOC = V9;
-//NET "instruction2[0]" LOC = T8;
-
-//NET "FRW_P" IOSTANDARD = LVCMOS33;
-//NET "FRW_P" LOC = T16;
-
-
 NET "AL" IOSTANDARD = LVCMOS33;
 NET "TT" IOSTANDARD = LVCMOS33;
 
@@ -150,3 +128,7 @@ NET "clk" LOC = E3;
 //NET "clk" LOC = E16;
 //NET "clk" CLOCK_DEDICATED_ROUTE = FALSE;
 NET "reset" LOC = U9;
+
+## PWM Audio Amplifier
+NET "speaker"			LOC = "A11"	| IOSTANDARD = "LVCMOS33";		#Bank = 15, Pin name = IO_L4N_T0_15,						Sch name = AUD_PWM
+NET "ampSD"			LOC = "D12"	| IOSTANDARD = "LVCMOS33";		#Bank = 15, Pin name = IO_L6P_T0_15,						Sch name = AUD_SD

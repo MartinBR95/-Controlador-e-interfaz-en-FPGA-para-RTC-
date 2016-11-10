@@ -88,8 +88,9 @@ module Conexion_CONTROL_VGA_TECLADO
 				.POR_ID(POR_ID));
 
 		//////
-	//	MUSICA ALARM(        //Llamada a modulo de musica
-		 //	.clk(ON),
-			//	.speaker(speaker));
+		MUSICA ALARM(        //Llamada a modulo de musica
+		 	.clk(ON),
+			.speaker(speaker)
+		);
 
 endmodule

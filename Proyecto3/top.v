@@ -21,7 +21,7 @@
 
 module top(
   input clk,reset,IRQ,DATA_IN,ps2c,
-  output wire AD,RD,WR,CS,HS,VS,
+  output wire AD,RD,WR,CS,HS,VS,speaker,ampSD,
   inout [7:0] bus,
   output reg [7:0] Segundos,
   //Pruebas
@@ -58,6 +58,8 @@ module top(
   parameter VGA_Punt =                14;
   parameter ps2_data =                 3;
   parameter ps2_status =              13;
+  
+  assign ampSD = 1'b1;
 
   wire	[11:0]	address;
   wire	[17:0]	instruction;
@@ -165,7 +167,9 @@ module top(
         .ps2c(ps2c),
         .DATA_IN(DATA_IN),
         .DATA_OUT_TEC(teclado),
-        .SOLICITUD(read_strobe)
+        .SOLICITUD(read_strobe),
+		  
+		  .speaker(speaker)
 
     );
 
