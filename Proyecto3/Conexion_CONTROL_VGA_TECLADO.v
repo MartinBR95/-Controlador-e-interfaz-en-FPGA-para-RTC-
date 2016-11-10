@@ -39,8 +39,16 @@ module Conexion_CONTROL_VGA_TECLADO
 
 		wire [7:0]TecladoREG_ANTERIOR, TecladoREG;  //Cables de conexion entre el teclado y la VGA
 
+/*		reg [1:0] cont;
+		
+		always @(posedge CLK) begin
+			if(RST) cont <= 2'b0;
+			else cont <= cont + 2'b1;
+		end
+*/
+	
 		wire ON;
-		assign ON = (CLK && ~ALARMA);
+		assign ON = (CLK && ALARMA);
 
 		//////
 		VGA_TOP_P3 VGA(       //Llamada a modulo de VGA
