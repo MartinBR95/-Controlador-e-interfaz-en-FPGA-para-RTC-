@@ -156,7 +156,7 @@ module ModuloVGA
 	/////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////// SELECCION DE MEMORIAS EMPLEADAS /////////////////////////////
 //
-//	reg [11:0]COMANDOS[0:COM_D];
+	reg [11:0]COMANDOS[0:COM_D];
 	reg [11:0]FLECHAS_DATA[0:FLECHAS]; //Memoria donde se almacena los datos de plantilla
 	reg [11:0]ALARMA_DATA[0:ALARM];   //Memoria donde se almacena los datos de plantilla//
 	reg [11:0]FEHA_DATA[0:PLANT_FECHA];
@@ -170,7 +170,7 @@ module ModuloVGA
 	$readmemh ("FECHA.list"   ,FEHA_DATA   );
 	$readmemh ("HORA.list"    ,HORA_DATA   );
 	$readmemh ("TIMER.list"   ,TIMER_DATA  );
-//	$readmemh ("COMANDOS.list",COMANDOS  	);
+	$readmemh ("COMANDOS.list",COMANDOS  	);
 	end
 
 	/////////////////////////////////////////////////////////////////////////////////////////
@@ -246,11 +246,12 @@ module ModuloVGA
 	wire P_FECHA;
 	wire P_TIMER;
 	wire P_HORA;
+	wire CM_ON;
 	
 	assign P_FECHA = (PF_Y_in <= ADDRV) && (PF_Y_off >= ADDRV) && (ADDRH >= PF_X_in) && (PF_X_off >= ADDRH);
 	assign P_HORA  = (PH_Y_in <= ADDRV) && (PH_Y_off >= ADDRV) && (ADDRH >= PH_X_in) && (PH_X_off >= ADDRH);
 	assign P_TIMER = (PT_Y_in <= ADDRV) && (PT_Y_off >= ADDRV) && (ADDRH >= PT_X_in) && (PT_X_off >= ADDRH);	
-	//assign CM_ON   = (CM_Y_in <= ADDRV) && (CM_Y_off >= ADDRV) && (ADDRH >= CM_X_in) && (CM_X_off >= ADDRH);	
+	assign CM_ON   = (CM_Y_in <= ADDRV) && (CM_Y_off >= ADDRV) && (ADDRH >= CM_X_in) && (CM_X_off >= ADDRH);	
 	
 
 	reg [4:0]Selector = 5'd0;
@@ -340,8 +341,8 @@ module ModuloVGA
 		if(LINEA_DIV) Selector = 5'd27;
 		else Selector = Selector;
 		
-		//if(CM_ON)    Selector = 5'd28;
-		//else Selector = Selector;
+		if(CM_ON)    Selector = 5'd28;
+		else Selector = Selector;
 		
 	end 
 
@@ -457,7 +458,7 @@ module ModuloVGA
 		5'd18 : COLOR_OUT = NUMEROS;
 		5'd19 : COLOR_OUT = NUMEROS;
 		
-	   5'd20 : COLOR_OUT = FLECHAS_DATA[{Adress}];
+	   	5'd20 : COLOR_OUT = FLECHAS_DATA[{Adress}];
 		5'd21 : COLOR_OUT = ALARMA_DATA[{Adress}];
 		
 		5'd22  : COLOR_OUT = COSAS;
@@ -470,7 +471,7 @@ module ModuloVGA
 		
 		5'd27 : COLOR_OUT = COSAS;
 
-	//	5'd28 : COLOR_OUT = COMANDOS[{Adress}];
+		5'd28 : COLOR_OUT = COMANDOS[{Adress}];
 		
 		default COLOR_OUT = 12'h000;
 		endcase
