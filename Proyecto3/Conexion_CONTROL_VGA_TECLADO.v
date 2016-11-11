@@ -17,14 +17,7 @@ module Conexion_CONTROL_VGA_TECLADO
 
 		///////// TECLADO /////////
 		//Entradas
-		/////////////////////////////////// SIMULACION
-		input wire UP,
-		input wire DOWN,
-		input wire NEXT,
-		input wire PREV,
-		input wire TT,
-		input wire AL,
-		///////////////////////////////////
+	
 
 		input ps2c,                         //Reloj proveniente del teclado
 		input DATA_IN,                      //Datos provenientes del teclado (En forma serial)
@@ -39,16 +32,9 @@ module Conexion_CONTROL_VGA_TECLADO
 
 		wire [7:0]TecladoREG_ANTERIOR, TecladoREG;  //Cables de conexion entre el teclado y la VGA
 
-/*		reg [1:0] cont;
-		
-		always @(posedge CLK) begin
-			if(RST) cont <= 2'b0;
-			else cont <= cont + 2'b1;
-		end
-*/
 	
 		wire ON;
-		assign ON = (CLK && ALARMA);
+		assign ON = (CLK && ~ALARMA);
 
 		//////
 		VGA_TOP_P3 VGA(       //Llamada a modulo de VGA
@@ -56,7 +42,7 @@ module Conexion_CONTROL_VGA_TECLADO
 				.TecladoREG_ANTERIOR(TecladoREG_ANTERIOR),
 				.RST(RST),
 				.CLK(CLK),
-				.ALARMA(ALARMA),
+				.ALARMA(~ALARMA),
 				.WRITE_STROBE(WRITE_STROBE),
 				.POR_ID(POR_ID),
 				.OUT_PORT(OUT_PORT),
@@ -66,24 +52,6 @@ module Conexion_CONTROL_VGA_TECLADO
 
 		//////
 
-	/*	JOKER UUT (
-				.CLK(CLK),
-				.RST(RST),
-
-				.UP(UP),
-				.DOWN(DOWN),
-				.NEXT(NEXT),
-				.PREV(PREV),
-
-				.S_DATA(SOLICITUD),
-
-				.TT(TT),
-				.AL(AL),
-
-				.DATA_REG(TecladoREG),
-				.OUT_DEC(DATA_OUT_TEC),
-				.POR_ID(POR_ID)
-			);*/
 		TraductorPS2 TECLADO( //Llamada a modulo de teclado
 				.DATA_IN(DATA_IN),
 				.ps2c(ps2c),

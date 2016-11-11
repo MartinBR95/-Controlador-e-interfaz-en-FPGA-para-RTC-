@@ -11,10 +11,10 @@ module VGA_TOP_P3
 		input wire CLK,							//Reloj de la FPGA
 
 		//SE�ALES PROBENIENTES DEL CONTROL
+		input ALARMA,								//Se�al de alarma (IRQ)
 		input wire WRITE_STROBE,            //Se�al de actualizar registro (en flanco de subida)
 		input wire[7:0]POR_ID,              //Donde escribo
 		input wire[7:0]OUT_PORT,            //Datos de entrada
-		input ALARMA,								//Se�al de alarma (IRQ)
 
 		/////////////////////////////
 		//SALIDAS
@@ -122,7 +122,7 @@ ModuloVGA VGA (
 			.HORAT(HORAT),
 			.MINT(MINT),
 			.SEGT(SEGT),
-			.ALARMA(~ALARMA),
+			.ALARMA(ALARMA),
 			.ADDRV(ADDRV),
 			.ADDRH(ADDRH),
 			.SelecOUT(Selector));

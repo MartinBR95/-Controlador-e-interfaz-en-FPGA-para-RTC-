@@ -26,16 +26,8 @@ module top(
   output reg [7:0] Segundos,
   //Pruebas
   output wire	[7:0] address2,
-  output wire [11:0] RGB,
+  output wire [11:0] RGB
   //output wire	[7:0] instruction2
-
-  input wire UP,
-  input wire DOWN,
-  input wire NEXT,
-  input wire PREV,
-  input wire TT,
-  input wire AL
-
   );
 
   //assign instruction2[7:0] =instruction[7:0];
@@ -143,7 +135,7 @@ module top(
     		//ENTRADA
     		.RST(reset),
     		.CLK(clk),
-    		.ALARMA(~IRQ),
+    		.ALARMA(IRQ),
 
     		//SE�ALES PROBENIENTES DEL CONTROL
     		.WRITE_STROBE(write_strobe),            //Se�al de actualizar registro
@@ -155,14 +147,6 @@ module top(
     		.RGB(RGB),
     		.VS(VS),
     		.HS(HS),
-
-        .UP(UP),
-				.DOWN(DOWN),
-				.NEXT(NEXT),
-				.PREV(PREV),
-
-				.TT(TT),
-				.AL(AL),
 
         .ps2c(ps2c),
         .DATA_IN(DATA_IN),
